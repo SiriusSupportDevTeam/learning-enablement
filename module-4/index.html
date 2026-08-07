@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Service Probing & Troubleshooting Course</title>
+    <style>
+        :root {
+            /* Pastel Theme Palette */
+            --primary: #a8dadc; /* Soft Cyan */
+            --primary-dark: #457b9d;
+            --secondary: #f1faee; /* Cream White */
+            --accent: #e9c46a; /* Pastel Gold */
+            --highlight: #f4a261; /* Soft Orange */
+            --text: #1d3557;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --shadow: 0 10px 20px rgba(0,0,0,0.05);
+            --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+
+        /* Animation Keyframes */
+        @keyframes fadeInSlideUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes subtlePulse {
+            0% { box-shadow: 0 0 0 0 rgba(168, 218, 220, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(168, 218, 220, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(168, 218, 220, 0); }
+        }
+
+        /* Standard Animated Element Class */
+        .animate-in { animation: fadeInSlideUp 0.8s var(--ease-in-out) forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        /* --- Global Structure --- */
+        header { background-color: var(--primary); padding: 40px 20px; text-align: center; color: white; animation: scaleIn 0.8s var(--ease-in-out); }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { font-size: 1.2rem; font-weight: 300; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; padding-bottom: 100px; }
+        .module { background: white; border-radius: 20px; padding: 40px; margin-bottom: 40px; box-shadow: var(--shadow); position: relative; }
+        
+        .module-title { color: var(--primary-dark); margin-bottom: 25px; border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 5px; }
+        h3 { color: var(--text); margin-top: 20px; margin-bottom: 10px; }
+        p { margin-bottom: 15px; }
+        ul { margin-left: 20px; margin-bottom: 20px; }
+        li { margin-bottom: 8px; }
+
+        /* Navigation */
+        .nav-buttons { display: flex; justify-content: space-between; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 1000px; padding: 0 20px; z-index: 100; }
+        .btn { padding: 12px 24px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-prev { background-color: white; color: var(--primary-dark); }
+        .btn-prev:hover { background-color: #f8f9fa; }
+        .btn-next { background-color: var(--accent); color: white; animation: subtlePulse 2s infinite; }
+        .btn-next:hover { background-color: #e0b355; transform: translateY(-2px); }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; animation: none; }
+
+        /* CARE Model Animation */
+        .care-container { display: flex; justify-content: space-around; margin-top: 30px; }
+        .care-box { text-align: center; width: 22%; padding: 20px; background-color: var(--secondary); border-radius: 15px; transition: all 0.5s ease; border: 2px solid transparent; }
+        .care-box:hover { transform: translateY(-10px) scale(1.05); border-color: var(--primary); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .care-letter { font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; display: block; }
+        .care-box h4 { margin-bottom: 10px; }
+
+        /* Case Study / Role Play */
+        .scenario-box { background-color: #fdf2e9; /* Pastel orange tint */ border-left: 5px solid var(--highlight); padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+        .quote { font-style: italic; color: #555; background: #fff; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #eee; }
+        .observer-eval { background-color: #eafaf1; /* Pastel green tint */ border-radius: 10px; padding: 20px; margin-top: 20px; }
+
+        /* Knowledge Check & Quiz */
+        .quiz-option { display: block; background: var(--secondary); margin-bottom: 10px; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; position: relative; }
+        .quiz-option:hover { background-color: #e2f3f5; border-color: var(--primary); }
+        .quiz-option input { margin-right: 10px; transform: scale(1.2); }
+        
+        .feedback { font-weight: 600; margin-top: 10px; display: none; padding: 10px; border-radius: 5px; animation: fadeInSlideUp 0.5s ease forwards; }
+        .feedback.correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        th, td { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary); color: white; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: var(--secondary); }
+
+        /* Summary */
+        .summary-list { list-style: none; margin-left: 0; }
+        .summary-list li { background: var(--secondary); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid var(--primary); transition: transform 0.3s ease; }
+        .summary-list li:hover { transform: translateX(10px); }
+
+        /* Hide modules by default */
+        .module { display: none; }
+        .module.active { display: block; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="animate-in">
+        <h1>Troubleshooting with CARE</h1>
+        <p>Mastering Customer Service Communication</p>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Module 1: CARE Model -->
+    <div class="module active animate-in" id="module-1">
+        <h2 class="module-title">The CARE Communication Model</h2>
+        <p>A successful troubleshooting conversation requires a structured approach. The CARE model helps you navigate these interactions smoothly, balancing technical problem-solving with emotional intelligence.</p>
+        
+        <div class="care-container">
+            <div class="care-box delay-1">
+                <span class="care-letter">C</span>
+                <h4>Connect</h4>
+                <p>Build rapport and make a positive first impression.</p>
+            </div>
+            <div class="care-box delay-2">
+                <span class="care-letter">A</span>
+                <h4>Acknowledge</h4>
+                <p>Validate the customer's effort and feelings immediately.</p>
+            </div>
+            <div class="care-box delay-3">
+                <span class="care-letter">R</span>
+                <h4>Reason</h4>
+                <p>Troubleshoot logically and explain the 'why' behind steps.</p>
+            </div>
+            <div class="care-box delay-3">
+                <span class="care-letter">E</span>
+                <h4>Empower</h4>
+                <p>Set clear expectations and execute the solution.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module 2: Case Study -->
+    <div class="module animate-in" id="module-2">
+        <h2 class="module-title">Case Study: The Angry Customer</h2>
+        <div class="scenario-box">
+            <p>A customer contacts support after receiving the wrong item. They are immediately escalated.</p>
+            <p class="quote">"This is ridiculous! I've wasted my whole afternoon because of your company."</p>
+        </div>
+
+        <h3>Discussion & Reflection</h3>
+        <p>How would you handle this? Think about these questions before reviewing the Communication Guide.</p>
+        <ul>
+            <li>What emotion is the customer expressing?</li>
+            <li>What should the representative acknowledge first?</li>
+            <li>Which probing questions would help clarify the issue?</li>
+            <li>How should expectations be set?</li>
+            <li>How would you end the interaction if a replacement is required?</li>
+        </ul>
+    </div>
+
+    <!-- Module 3: Role Play -->
+    <div class="module animate-in" id="module-3">
+        <h2 class="module-title">Role Play Exercise: System Outage</h2>
+        <p>Practice navigating a difficult situation where the solution is out of your immediate control.</p>
+        
+        <div class="scenario-box">
+            <h3>Scenario</h3>
+            <p>A known system outage is preventing customers from accessing their accounts. The representative must manage frustration without being able to fix the root cause.</p>
+        </div>
+
+        <h3>Representative Instructions</h3>
+        <p>One learner acts as the support representative. You should focus on:</p>
+        <ul>
+            <li>Acknowledge frustration.</li>
+            <li>Explain the outage in simple language.</li>
+            <li>Set realistic expectations (e.g., when the next update will be).</li>
+            <li>Avoid making promises ("It will be fixed in 10 minutes").</li>
+            <li>Reassure the customer that updates will be provided.</li>
+        </ul>
+
+        <div class="observer-eval">
+            <h3>Observers should evaluate:</h3>
+            <ul>
+                <li>Was empathy demonstrated?</li>
+                <li>Were expectations clear?</li>
+                <li>Did the representative avoid unnecessary jargon?</li>
+                <li>Did the conversation end positively?</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Module 4: Knowledge Check -->
+    <div class="module animate-in" id="module-4">
+        <h2 class="module-title">Knowledge Check</h2>
+        <p>Test your understanding of the concepts covered so far.</p>
+
+        <!-- Question 1 -->
+        <div class="quiz-question" margin-bottom="30px">
+            <h3>Question 1: What is the primary goal of the Connect stage in the CARE model?</h3>
+            <div class="quiz-options">
+                <label class="quiz-option"><input type="radio" name="q1" value="a"> Resolve the issue immediately</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="b"> Gather technical information</label>
+                <label class="quiz-option" id="q1-correct"><input type="radio" name="q1" value="c"> Build rapport and acknowledge the customer's experience</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="d"> Escalate the issue</label>
+            </div>
+            <div class="feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-question">
+            <h3>Question 2: Why should agents explain the reason behind troubleshooting steps?</h3>
+            <div class="quiz-options">
+                <label class="quiz-option"><input type="radio" name="q2" value="a"> It makes the interaction longer.</label>
+                <label class="quiz-option" id="q2-correct"><input type="radio" name="q2" value="b"> It builds customer understanding and cooperation.</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="c"> Company policy requires it.</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="d"> Customers enjoy technical explanations.</label>
+            </div>
+            <div class="feedback" id="q2-feedback"></div>
+        </div>
+        
+        <button class="btn btn-next" style="margin-top: 20px;" onclick="checkKnowledgeCheck()">Submit Answers</button>
+    </div>
+
+    <!-- Module 5: Quick Guide -->
+    <div class="module animate-in" id="module-5">
+        <h2 class="module-title">Communication Quick Guide</h2>
+        <p>Use this table as a rapid reference for common troubleshooting scenarios.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Situation</th>
+                    <th>Recommended Approach</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Customer is confused</td>
+                    <td>Use simple, everyday language.</td>
+                </tr>
+                <tr>
+                    <td>Customer is frustrated</td>
+                    <td>Acknowledge emotions before troubleshooting.</td>
+                </tr>
+                <tr>
+                    <td>Customer questions the process</td>
+                    <td>Explain the purpose of each step.</td>
+                </tr>
+                <tr>
+                    <td>Issue requires escalation</td>
+                    <td>Set realistic timelines and explain next steps.</td>
+                </tr>
+                <tr>
+                    <td>Issue is resolved</td>
+                    <td>Confirm success and invite final questions.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Module 6: Summary -->
+    <div class="module animate-in" id="module-6">
+        <h2 class="module-title">Module Summary</h2>
+        <p>A successful troubleshooting conversation is about more than finding the right solution—it's about helping the customer feel heard, informed, and supported throughout the process.</p>
+        <p>By following the CARE model, using clear language, managing emotions professionally, and setting realistic expectations, you create a positive customer experience even when the issue is complex or cannot be resolved immediately.</p>
+        
+        <h3>Remember:</h3>
+        <ul class="summary-list">
+            <li>Empathy builds trust.</li>
+            <li>Clarity builds confidence.</li>
+            <li>Expectations shape customer satisfaction.</li>
+            <li>Great communication turns problem-solving into relationship-building.</li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+    <button class="btn btn-prev" id="prev-btn" onclick="prevModule()" disabled>Previous</button>
+    <button class="btn btn-next" id="next-btn" onclick="nextModule()">Next</button>
+</div>
+
+<script>
+    let currentModule = 1;
+    const totalModules = 6;
+
+    function showModule(moduleNumber) {
+        // Hide all modules
+        document.querySelectorAll('.module').forEach(module => {
+            module.classList.remove('active');
+        });
+
+        // Show the selected module
+        const targetModule = document.getElementById(`module-${moduleNumber}`);
+        targetModule.classList.add('active');
+
+        // Restart animations for the new module
+        targetModule.style.animation = 'none';
+        targetModule.offsetHeight; /* trigger reflow */
+        targetModule.style.animation = null;
+
+        // Update button states
+        document.getElementById('prev-btn').disabled = (moduleNumber === 1);
+        
+        const nextBtn = document.getElementById('next-btn');
+        if (moduleNumber === totalModules) {
+            nextBtn.innerHTML = "Finish";
+            nextBtn.style.animation = 'none'; // Stop pulsing on last screen
+        } else {
+            nextBtn.innerHTML = "Next";
+            nextBtn.style.animation = 'subtlePulse 2s infinite';
+        }
+    }
+
+    function nextModule() {
+        if (currentModule < totalModules) {
+            currentModule++;
+            showModule(currentModule);
+            window.scrollTo(0, 0);
+        } else {
+            alert("Congratulations! You have completed the course.");
+        }
+    }
+
+    function prevModule() {
+        if (currentModule > 1) {
+            currentModule--;
+            showModule(currentModule);
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function checkKnowledgeCheck() {
+        // Question 1
+        const q1Answer = document.querySelector('input[name="q1"]:checked');
+        const q1Feedback = document.getElementById('q1-feedback');
+        const q1CorrectOption = document.getElementById('q1-correct');
+
+        if (q1Answer) {
+            if (q1Answer.value === 'c') {
+                q1Feedback.innerHTML = "Correct! The Connect stage focuses on establishing a human connection.";
+                q1Feedback.className = "feedback correct";
+                q1CorrectOption.style.borderColor = "#c3e6cb";
+                q1CorrectOption.style.backgroundColor = "#d4edda";
+            } else {
+                q1Feedback.innerHTML = "Incorrect. The correct answer is C.";
+                q1Feedback.className = "feedback incorrect";
+                q1CorrectOption.style.borderColor = "#c3e6cb"; // Highlight the correct answer anyway
+            }
+            q1Feedback.style.display = "block";
+        }
+
+        // Question 2
+        const q2Answer = document.querySelector('input[name="q2"]:checked');
+        const q2Feedback = document.getElementById('q2-feedback');
+        const q2CorrectOption = document.getElementById('q2-correct');
+
+        if (q2Answer) {
+            if (q2Answer.value === 'b') {
+                q2Feedback.innerHTML = "Correct! Explaining the 'why' reduces anxiety and increases cooperation.";
+                q2Feedback.className = "feedback correct";
+                q2CorrectOption.style.borderColor = "#c3e6cb";
+                q2CorrectOption.style.backgroundColor = "#d4edda";
+            } else {
+                q2Feedback.innerHTML = "Incorrect. The correct answer is B.";
+                q2Feedback.className = "feedback incorrect";
+                q2CorrectOption.style.borderColor = "#c3e6cb";
+            }
+            q2Feedback.style.display = "block";
+        }
+        
+        if(!q1Answer || !q2Answer) {
+            alert("Please answer both questions before submitting.");
+        }
+    }
+</script>
+
+</body>
+</html>
