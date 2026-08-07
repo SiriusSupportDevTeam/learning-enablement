@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case File 07 — The Detective Mindset | Knowledge Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171c;
+    --bg-alt:#1b1f26;
+    --card:#1e232b;
+    --card-border:#30363f;
+    --paper:#ece4d2;
+    --paper-shadow:#c9bd9c;
+    --paper-line:#cbbfa0;
+    --ink:#26221a;
+    --brass:#c9a227;
+    --brass-light:#e2c458;
+    --brass-dark:#8f7018;
+    --alert:#b3432b;
+    --text:#e9e6df;
+    --text-dim:#a7a49c;
+    --correct:#5a9e6f;
+    --incorrect:#c1523a;
+    --radius:4px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top left, #1c212a 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+    padding:32px 18px 90px;
+    min-height:100vh;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+
+  /* ---------- HEADER / CASE FILE MASTHEAD ---------- */
+  .masthead{
+    border:1px solid var(--card-border);
+    background:
+      linear-gradient(180deg, rgba(201,162,39,0.06), transparent 40%),
+      var(--card);
+    border-radius:var(--radius);
+    padding:26px 26px 20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .masthead::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px);
+    pointer-events:none;
+  }
+  .file-tab{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--brass-light);
+    background:rgba(201,162,39,0.1);
+    border:1px solid rgba(201,162,39,0.35);
+    padding:5px 10px;
+    border-radius:2px;
+  }
+  .file-tab .dot{width:6px;height:6px;border-radius:50%;background:var(--brass);}
+  h1{
+    font-family:'Special Elite', monospace;
+    font-weight:400;
+    font-size:clamp(26px, 4vw, 36px);
+    letter-spacing:.01em;
+    margin:14px 0 6px;
+    color:#f4efe2;
+  }
+  .subtitle{color:var(--text-dim); font-size:14.5px; margin:0 0 18px; max-width:60ch;}
+
+  .gauge-row{display:flex; align-items:center; gap:22px; flex-wrap:wrap; margin-top:10px;}
+  .gauge{position:relative; width:88px; height:88px; flex:0 0 auto;}
+  .gauge svg{transform:rotate(-90deg);}
+  .gauge-track{fill:none; stroke:#2c313a; stroke-width:8;}
+  .gauge-fill{fill:none; stroke:var(--brass); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset .6s ease;}
+  .gauge-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; font-family:'IBM Plex Mono', monospace;
+  }
+  .gauge-label .pct{font-size:17px; font-weight:600; color:#f4efe2;}
+  .gauge-label .cap{font-size:8px; color:var(--text-dim); letter-spacing:.1em;}
+  .gauge-caption{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--text-dim); letter-spacing:.08em; text-transform:uppercase;}
+  .gauge-caption strong{color:var(--text); display:block; font-size:13px; letter-spacing:normal; text-transform:none; margin-bottom:2px; font-family:'IBM Plex Sans', sans-serif; font-weight:600;}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{margin-top:38px;}
+  .section-head{display:flex; align-items:baseline; gap:12px; margin-bottom:16px; border-bottom:1px solid var(--card-border); padding-bottom:10px;}
+  .section-head .idx{font-family:'IBM Plex Mono', monospace; color:var(--brass); font-size:13px; letter-spacing:.1em;}
+  .section-head h2{font-family:'Special Elite', monospace; font-weight:400; font-size:21px; margin:0; color:#f4efe2;}
+  .section-desc{color:var(--text-dim); font-size:13.5px; margin:-8px 0 18px;}
+
+  /* ---------- EVIDENCE CARDS (Knowledge Check) ---------- */
+  .exhibit{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+    margin-bottom:18px;
+    position:relative;
+    opacity:0.35;
+    filter:grayscale(0.6);
+    pointer-events:none;
+    transition:opacity .45s ease, filter .45s ease;
+  }
+  .exhibit.active{opacity:1; filter:none; pointer-events:auto;}
+  .exhibit.done{opacity:1; filter:none;}
+  .exhibit-tag{
+    position:absolute; top:-11px; left:20px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    background:var(--brass); color:#20180a;
+    padding:3px 9px; border-radius:2px; font-weight:600;
+  }
+  .exhibit legend{padding:0; margin:0;}
+  .prompt-label{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-dim); letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px;}
+  .quote{
+    font-family:'Special Elite', monospace;
+    color:#f4efe2; font-size:16.5px; line-height:1.5;
+    background:rgba(255,255,255,0.03);
+    border-left:3px solid var(--brass);
+    padding:12px 16px; margin:6px 0 14px; border-radius:0 3px 3px 0;
+  }
+  .q-text{font-size:15.5px; font-weight:600; color:#f4efe2; margin:4px 0 14px;}
+
+  .opt{
+    display:flex; align-items:flex-start; gap:10px;
+    border:1px solid var(--card-border);
+    background:var(--bg-alt);
+    border-radius:var(--radius);
+    padding:11px 14px; margin-bottom:9px;
+    cursor:pointer; transition:border-color .2s, background .2s;
+  }
+  .opt:hover{border-color:var(--brass-dark);}
+  .opt input{accent-color:var(--brass); margin-top:3px; flex:0 0 auto; width:16px; height:16px;}
+  .opt label{cursor:pointer; font-size:14.5px; flex:1;}
+  .opt .letter{
+    font-family:'IBM Plex Mono', monospace; color:var(--brass-light);
+    font-weight:600; margin-right:2px;
+  }
+  .opt.correct-state{border-color:var(--correct); background:rgba(90,158,111,0.1);}
+  .opt.incorrect-state{border-color:var(--incorrect); background:rgba(193,82,58,0.1);}
+  .opt input:focus-visible, .tf-btn:focus-visible, .btn:focus-visible, textarea:focus-visible, .toggle-btn:focus-visible{
+    outline:2px solid var(--brass-light); outline-offset:2px;
+  }
+
+  .tf-row{display:flex; gap:10px; margin-bottom:14px;}
+  .tf-btn{
+    flex:1; font-family:'IBM Plex Mono', monospace; letter-spacing:.06em;
+    background:var(--bg-alt); border:1px solid var(--card-border); color:var(--text);
+    padding:12px; border-radius:var(--radius); cursor:pointer; font-size:14px; font-weight:600;
+    transition:border-color .2s, background .2s;
+  }
+  .tf-btn:hover{border-color:var(--brass-dark);}
+  .tf-btn.selected{border-color:var(--brass); background:rgba(201,162,39,0.12);}
+  .tf-btn.correct-state{border-color:var(--correct); background:rgba(90,158,111,0.15);}
+  .tf-btn.incorrect-state{border-color:var(--incorrect); background:rgba(193,82,58,0.15);}
+
+  .btn{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:.08em; text-transform:uppercase;
+    background:var(--brass); color:#20180a; border:none; font-weight:700;
+    padding:10px 18px; border-radius:2px; cursor:pointer; transition:background .2s, transform .1s;
+  }
+  .btn:hover{background:var(--brass-light);}
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{background:#4a4735; color:#8a8672; cursor:not-allowed;}
+  .btn.ghost{background:transparent; color:var(--brass-light); border:1px solid var(--brass-dark);}
+  .btn.ghost:hover{background:rgba(201,162,39,0.1);}
+
+  .feedback{
+    margin-top:14px; padding:13px 16px; border-radius:var(--radius);
+    font-size:14px; display:none; gap:10px; align-items:flex-start;
+    border:1px solid; opacity:0; transform:translateY(-4px);
+    animation:fadeIn .35s ease forwards;
+  }
+  @keyframes fadeIn{to{opacity:1; transform:translateY(0);}}
+  .feedback.show{display:flex;}
+  .feedback.correct{border-color:var(--correct); background:rgba(90,158,111,0.09); color:#cfe8d7;}
+  .feedback.incorrect{border-color:var(--incorrect); background:rgba(193,82,58,0.09); color:#f0d3ca;}
+  .feedback .stamp-mark{
+    font-family:'Special Elite', monospace; font-weight:400; font-size:13px;
+    border:2px solid currentColor; padding:2px 8px; border-radius:3px;
+    letter-spacing:.08em; text-transform:uppercase; flex:0 0 auto; transform:rotate(-4deg);
+  }
+  .feedback .body b{display:block; margin-bottom:2px; font-family:'IBM Plex Sans',sans-serif;}
+
+  /* ---------- CASE SUMMARY STAMP ---------- */
+  .verdict{
+    margin-top:24px; border:1px solid var(--card-border); border-radius:var(--radius);
+    background:var(--card); padding:24px; text-align:center; display:none;
+  }
+  .verdict.show{display:block; animation:fadeIn .5s ease forwards;}
+  .stamp{
+    display:inline-block; font-family:'Special Elite', monospace; font-size:20px;
+    letter-spacing:.12em; text-transform:uppercase; padding:10px 22px;
+    border:3px double; border-radius:4px; transform:rotate(-3deg); margin-bottom:12px;
+  }
+  .stamp.solved{color:var(--correct); border-color:var(--correct);}
+  .stamp.pending{color:var(--brass-light); border-color:var(--brass);}
+  .stamp.reopen{color:var(--incorrect); border-color:var(--incorrect);}
+  .verdict p{color:var(--text-dim); font-size:14px; max-width:52ch; margin:0 auto;}
+  .score-line{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:8px;}
+
+  /* ---------- NOTEBOOK (Module Quiz) ---------- */
+  .notebook-item{
+    background:linear-gradient(180deg, var(--paper) 0%, #e6ddc6 100%);
+    color:var(--ink);
+    border-radius:3px;
+    padding:20px 22px 18px;
+    margin-bottom:16px;
+    position:relative;
+    box-shadow:0 3px 0 rgba(0,0,0,0.25), 0 6px 14px rgba(0,0,0,0.25);
+  }
+  .notebook-item::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:34px;
+    background-image: repeating-linear-gradient(0deg, transparent 0 20px, rgba(160,60,45,0.28) 20px 21px);
+    border-right:1px dashed rgba(38,34,26,0.25);
+  }
+  .nb-num{
+    font-family:'Special Elite', monospace; font-size:13px; color:#8a6a1e;
+    letter-spacing:.08em; margin-left:40px; margin-bottom:6px; text-transform:uppercase;
+  }
+  .nb-q{
+    font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:15.5px;
+    margin:0 0 12px 40px; color:var(--ink);
+  }
+  .notebook-item textarea{
+    width:calc(100% - 40px); margin-left:40px; min-height:90px;
+    background:rgba(255,255,255,0.35); border:1px solid var(--paper-line);
+    border-radius:3px; padding:10px 12px; font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px; color:var(--ink); resize:vertical; line-height:1.55;
+  }
+  .notebook-item textarea:focus{outline:2px solid var(--brass-dark); outline-offset:1px;}
+  .nb-meta{display:flex; justify-content:space-between; align-items:center; margin:8px 0 0 40px;}
+  .char-count{font-family:'IBM Plex Mono', monospace; font-size:11px; color:#7a6b4a;}
+  .toggle-btn{
+    background:none; border:1px solid #8a6a1e; color:#6b5316;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    padding:6px 11px; border-radius:2px; cursor:pointer; font-weight:600;
+  }
+  .toggle-btn:hover{background:rgba(138,106,30,0.12);}
+  .field-notes{
+    display:none; margin:12px 0 0 40px; padding:12px 14px;
+    background:rgba(38,34,26,0.06); border-left:3px solid #8a6a1e;
+    font-size:13.5px; color:#3a3324; border-radius:0 3px 3px 0;
+  }
+  .field-notes.show{display:block; animation:fadeIn .3s ease forwards;}
+  .field-notes .fn-label{font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:#8a6a1e; margin-bottom:4px; display:block;}
+
+  /* ---------- FOOTER ACTIONS ---------- */
+  .footer-actions{display:flex; gap:10px; justify-content:center; margin-top:34px; flex-wrap:wrap;}
+  .print-note{text-align:center; color:var(--text-dim); font-size:12px; margin-top:14px; font-family:'IBM Plex Mono', monospace;}
+
+  @media print{
+    body{background:#fff; color:#000; padding:0;}
+    .masthead, .exhibit, .verdict, .notebook-item{box-shadow:none; break-inside:avoid;}
+    .footer-actions{display:none;}
+    .exhibit{opacity:1 !important; filter:none !important;}
+    textarea{min-height:70px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="file-tab"><span class="dot"></span>Case File No. 07 — Restricted / Training Use</span>
+    <h1>The Detective Mindset</h1>
+    <p class="subtitle">Every ticket starts with a witness statement, not a diagnosis. Work the evidence below to close out this case.</p>
+
+    <div class="gauge-row">
+      <div class="gauge" aria-hidden="true">
+        <svg width="88" height="88" viewBox="0 0 88 88">
+          <circle class="gauge-track" cx="44" cy="44" r="38"></circle>
+          <circle id="gaugeFill" class="gauge-fill" cx="44" cy="44" r="38"
+            stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+        </svg>
+        <div class="gauge-label">
+          <span class="pct" id="gaugePct">0%</span>
+          <span class="cap">SOLVED</span>
+        </div>
+      </div>
+      <div class="gauge-caption">
+        <strong id="gaugeStatus">Investigation not yet opened</strong>
+        Progress through the Evidence Log and Detective's Notebook below.
+      </div>
+    </div>
+  </header>
+
+  <!-- ============= SECTION A: KNOWLEDGE CHECK ============= -->
+  <section class="section" id="sectionA">
+    <div class="section-head">
+      <span class="idx">PART I</span>
+      <h2>The Evidence Log</h2>
+    </div>
+    <p class="section-desc">Three exhibits. Log your answer on each before the next is released for review.</p>
+
+    <!-- EXHIBIT A -->
+    <form class="exhibit active" id="ex1" data-correct="C">
+      <span class="exhibit-tag">Exhibit A</span>
+      <div class="prompt-label">Witness statement</div>
+      <div class="quote">"Your website is broken."</div>
+      <fieldset style="border:none; padding:0; margin:0;">
+        <legend class="q-text">What should you do first?</legend>
+        <div class="opt"><input type="radio" name="ex1" id="ex1a" value="A"><label for="ex1a"><span class="letter">A.</span> Apologize and escalate the issue.</label></div>
+        <div class="opt"><input type="radio" name="ex1" id="ex1b" value="B"><label for="ex1b"><span class="letter">B.</span> Tell them to refresh the page.</label></div>
+        <div class="opt"><input type="radio" name="ex1" id="ex1c" value="C"><label for="ex1c"><span class="letter">C.</span> Gather more information to understand the problem.</label></div>
+        <div class="opt"><input type="radio" name="ex1" id="ex1d" value="D"><label for="ex1d"><span class="letter">D.</span> Assume it's a system outage.</label></div>
+      </fieldset>
+      <button type="button" class="btn" onclick="submitMC('ex1')">Log Answer</button>
+      <div class="feedback" id="ex1-feedback" role="status" aria-live="polite">
+        <span class="stamp-mark"></span>
+        <span class="body"></span>
+      </div>
+    </form>
+
+    <!-- EXHIBIT B -->
+    <form class="exhibit" id="ex2" data-correct="C">
+      <span class="exhibit-tag">Exhibit B</span>
+      <div class="prompt-label">Terminology check</div>
+      <legend class="q-text">A symptom is:</legend>
+      <fieldset style="border:none; padding:0; margin:0;">
+        <div class="opt"><input type="radio" name="ex2" id="ex2a" value="A"><label for="ex2a"><span class="letter">A.</span> The underlying cause.</label></div>
+        <div class="opt"><input type="radio" name="ex2" id="ex2b" value="B"><label for="ex2b"><span class="letter">B.</span> The customer's preferred solution.</label></div>
+        <div class="opt"><input type="radio" name="ex2" id="ex2c" value="C"><label for="ex2c"><span class="letter">C.</span> What the customer experiences or notices.</label></div>
+        <div class="opt"><input type="radio" name="ex2" id="ex2d" value="D"><label for="ex2d"><span class="letter">D.</span> The final diagnosis.</label></div>
+      </fieldset>
+      <button type="button" class="btn" onclick="submitMC('ex2')">Log Answer</button>
+      <div class="feedback" id="ex2-feedback" role="status" aria-live="polite">
+        <span class="stamp-mark"></span>
+        <span class="body"></span>
+      </div>
+    </form>
+
+    <!-- EXHIBIT C -->
+    <form class="exhibit" id="ex3" data-correct="True">
+      <span class="exhibit-tag">Exhibit C</span>
+      <div class="prompt-label">True or false</div>
+      <p class="q-text">Good troubleshooters avoid making assumptions before gathering evidence.</p>
+      <div class="tf-row" role="group" aria-label="True or False">
+        <button type="button" class="tf-btn" id="ex3-true" onclick="selectTF('ex3','True')">True</button>
+        <button type="button" class="tf-btn" id="ex3-false" onclick="selectTF('ex3','False')">False</button>
+      </div>
+      <button type="button" class="btn" id="ex3-submit" onclick="submitTF('ex3')" disabled>Log Answer</button>
+      <div class="feedback" id="ex3-feedback" role="status" aria-live="polite">
+        <span class="stamp-mark"></span>
+        <span class="body"></span>
+      </div>
+    </form>
+
+    <div class="verdict" id="verdict">
+      <div class="stamp" id="verdictStamp">Case Solved</div>
+      <p id="verdictText"></p>
+      <p class="score-line" id="scoreLine"></p>
+    </div>
+  </section>
+
+  <!-- ============= SECTION B: MODULE QUIZ / NOTEBOOK ============= -->
+  <section class="section" id="sectionB">
+    <div class="section-head">
+      <span class="idx">PART II</span>
+      <h2>The Detective's Notebook</h2>
+    </div>
+    <p class="section-desc">Write your own field notes for each question, then compare them against a sample response. There's no single "correct" wording — aim to capture the same reasoning.</p>
+
+    <div class="notebook-item">
+      <div class="nb-num">Note 1</div>
+      <p class="nb-q">Why do customers often describe symptoms instead of root causes?</p>
+      <textarea id="nb1" maxlength="1200" placeholder="Jot your notes here..." oninput="updateCount('nb1')"></textarea>
+      <div class="nb-meta">
+        <span class="char-count" id="nb1-count">0 / 1200</span>
+        <button type="button" class="toggle-btn" onclick="toggleNotes('nb1')">Compare with Field Notes</button>
+      </div>
+      <div class="field-notes" id="nb1-notes">
+        <span class="fn-label">Field Notes</span>
+        Customers experience the effect of a problem, not its mechanics. They see a frozen screen or an error message, not the server, code, or configuration behind it. They also aren't trained to diagnose systems, and in the moment they're often frustrated or in a hurry, so they report what they notice rather than investigating why it's happening.
+      </div>
+    </div>
+
+    <div class="notebook-item">
+      <div class="nb-num">Note 2</div>
+      <p class="nb-q">What is the difference between a symptom and a root cause?</p>
+      <textarea id="nb2" maxlength="1200" placeholder="Jot your notes here..." oninput="updateCount('nb2')"></textarea>
+      <div class="nb-meta">
+        <span class="char-count" id="nb2-count">0 / 1200</span>
+        <button type="button" class="toggle-btn" onclick="toggleNotes('nb2')">Compare with Field Notes</button>
+      </div>
+      <div class="field-notes" id="nb2-notes">
+        <span class="fn-label">Field Notes</span>
+        A symptom is the visible or reported effect — "the page won't load." The root cause is the underlying condition that produced it — an expired session token, a browser extension conflict, a server timeout. Fixing a symptom (like telling someone to refresh) may offer temporary relief, but the issue returns until the root cause is found and addressed.
+      </div>
+    </div>
+
+    <div class="notebook-item">
+      <div class="nb-num">Note 3</div>
+      <p class="nb-q">List three principles of the Detective Mindset.</p>
+      <textarea id="nb3" maxlength="1200" placeholder="Jot your notes here..." oninput="updateCount('nb3')"></textarea>
+      <div class="nb-meta">
+        <span class="char-count" id="nb3-count">0 / 1200</span>
+        <button type="button" class="toggle-btn" onclick="toggleNotes('nb3')">Compare with Field Notes</button>
+      </div>
+      <div class="field-notes" id="nb3-notes">
+        <span class="fn-label">Field Notes</span>
+        Any three of: (1) Gather evidence before drawing conclusions — ask questions before proposing fixes. (2) Stay curious rather than reactive — treat every report as a clue, not an inconvenience. (3) Separate fact from assumption — verify what's actually happening instead of guessing. (4) Listen for what isn't said — details customers leave out are often relevant. (5) Follow the evidence, even if it points away from the obvious answer.
+      </div>
+    </div>
+
+    <div class="notebook-item">
+      <div class="nb-num">Note 4</div>
+      <p class="nb-q">Why is active listening essential during troubleshooting?</p>
+      <textarea id="nb4" maxlength="1200" placeholder="Jot your notes here..." oninput="updateCount('nb4')"></textarea>
+      <div class="nb-meta">
+        <span class="char-count" id="nb4-count">0 / 1200</span>
+        <button type="button" class="toggle-btn" onclick="toggleNotes('nb4')">Compare with Field Notes</button>
+      </div>
+      <div class="field-notes" id="nb4-notes">
+        <span class="fn-label">Field Notes</span>
+        Active listening surfaces the small details customers mention almost in passing — what they were doing right before the issue, what device or browser they were using, whether it's happened before — that often turn out to be the key clue. It also shows the customer they're being heard, which lowers frustration and builds the trust needed to ask follow-up questions without the interaction feeling like an interrogation.
+      </div>
+    </div>
+
+    <div class="notebook-item">
+      <div class="nb-num">Note 5</div>
+      <p class="nb-q">How can making assumptions negatively affect the customer experience?</p>
+      <textarea id="nb5" maxlength="1200" placeholder="Jot your notes here..." oninput="updateCount('nb5')"></textarea>
+      <div class="nb-meta">
+        <span class="char-count" id="nb5-count">0 / 1200</span>
+        <button type="button" class="toggle-btn" onclick="toggleNotes('nb5')">Compare with Field Notes</button>
+      </div>
+      <div class="field-notes" id="nb5-notes">
+        <span class="fn-label">Field Notes</span>
+        Acting on an unverified assumption often leads to the wrong fix, which wastes the customer's time and can require them to repeat information or re-explain the issue to someone else. It can also come across as not being listened to, which erodes trust — and if the guess is wrong more than once, the customer may escalate or disengage entirely rather than continue the conversation.
+      </div>
+    </div>
+
+  </section>
+
+  <div class="footer-actions">
+    <button type="button" class="btn ghost" onclick="window.print()">Print Case File</button>
+    <button type="button" class="btn ghost" onclick="resetCase()">Reset Case File</button>
+  </div>
+  <p class="print-note">Progress on this page is not saved after the browser is closed or the module is exited.</p>
+
+</div>
+
+<script>
+  const state = { ex1:null, ex2:null, ex3:null };
+  const CIRC = 238.76;
+
+  function setGauge(){
+    const total = 3;
+    let done = 0;
+    if(state.ex1) done++;
+    if(state.ex2) done++;
+    if(state.ex3) done++;
+    const pct = Math.round((done/total)*100);
+    document.getElementById('gaugeFill').style.strokeDashoffset = CIRC - (CIRC*pct/100);
+    document.getElementById('gaugePct').textContent = pct + '%';
+    const statusEl = document.getElementById('gaugeStatus');
+    if(done === 0) statusEl.textContent = 'Investigation not yet opened';
+    else if(done < total) statusEl.textContent = 'Investigation in progress — ' + done + ' of ' + total + ' exhibits logged';
+    else statusEl.textContent = 'Evidence Log complete';
+  }
+
+  function unlockNext(currentId){
+    const order = ['ex1','ex2','ex3'];
+    const idx = order.indexOf(currentId);
+    const next = order[idx+1];
+    if(next){
+      const el = document.getElementById(next);
+      el.classList.add('active');
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+    } else {
+      showVerdict();
+    }
+  }
+
+  function submitMC(id){
+    const form = document.getElementById(id);
+    const selected = form.querySelector('input[name="'+id+'"]:checked');
+    if(!selected){
+      alert('Select an answer before logging it.');
+      return;
+    }
+    const correct = form.dataset.correct;
+    const isCorrect = selected.value === correct;
+    state[id] = isCorrect;
+
+    form.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+    form.querySelectorAll('.opt').forEach(o => {
+      const input = o.querySelector('input');
+      if(input.value === correct) o.classList.add('correct-state');
+      else if(input.checked) o.classList.add('incorrect-state');
+    });
+
+    showFeedback(id, isCorrect);
+    form.classList.add('done');
+    form.querySelector('.btn').disabled = true;
+    setGauge();
+    unlockNext(id);
+  }
+
+  function selectTF(id, val){
+    document.getElementById(id+'-true').classList.toggle('selected', val==='True');
+    document.getElementById(id+'-false').classList.toggle('selected', val==='False');
+    document.getElementById(id).dataset.selected = val;
+    document.getElementById(id+'-submit').disabled = false;
+  }
+
+  function submitTF(id){
+    const form = document.getElementById(id);
+    const selected = form.dataset.selected;
+    if(!selected){ return; }
+    const correct = form.dataset.correct;
+    const isCorrect = selected === correct;
+    state[id] = isCorrect;
+
+    document.getElementById(id+'-true').style.pointerEvents = 'none';
+    document.getElementById(id+'-false').style.pointerEvents = 'none';
+    const correctBtn = document.getElementById(id+'-' + correct.toLowerCase());
+    correctBtn.classList.add('correct-state');
+    if(!isCorrect){
+      document.getElementById(id+'-' + selected.toLowerCase()).classList.add('incorrect-state');
+    }
+
+    showFeedback(id, isCorrect);
+    form.classList.add('done');
+    document.getElementById(id+'-submit').disabled = true;
+    setGauge();
+    unlockNext(id);
+  }
+
+  const rationale = {
+    ex1: {
+      correct: "Correct. \"Broken\" is a symptom, not a diagnosis. Before apologizing, escalating, or guessing at a cause, find out what the customer was doing, what they saw, and when it started.",
+      incorrect: "Not quite. The correct answer is C — gather more information. A vague report like \"broken\" needs clarifying questions before any fix, escalation, or apology will actually land on the right problem."
+    },
+    ex2: {
+      correct: "Correct. A symptom is what the customer experiences or notices — it's the visible effect, not the explanation behind it.",
+      incorrect: "Not quite. The correct answer is C. A symptom is what the customer experiences or notices — the effect they can see, not the cause producing it."
+    },
+    ex3: {
+      correct: "Correct. Assumptions made before the evidence is in are how the wrong fix gets applied. Verify first, conclude second.",
+      incorrect: "Actually, this one is True. Good troubleshooters hold off on conclusions until they've gathered enough evidence to support them."
+    }
+  };
+
+  function showFeedback(id, isCorrect){
+    const fb = document.getElementById(id+'-feedback');
+    fb.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+    fb.querySelector('.stamp-mark').textContent = isCorrect ? 'Confirmed' : 'Revisit';
+    fb.querySelector('.body').innerHTML = '<b>' + (isCorrect ? 'Correct.' : 'Not quite.') + '</b>' + rationale[id][isCorrect ? 'correct' : 'incorrect'].replace(/^Correct\.\s*|^Not quite\.\s*|^Actually,\s*/,'');
+  }
+
+  function showVerdict(){
+    const correctCount = ['ex1','ex2','ex3'].filter(k => state[k] === true).length;
+    const verdict = document.getElementById('verdict');
+    const stamp = document.getElementById('verdictStamp');
+    const text = document.getElementById('verdictText');
+    const scoreLine = document.getElementById('scoreLine');
+
+    stamp.classList.remove('solved','pending','reopen');
+    if(correctCount === 3){
+      stamp.textContent = 'Case Solved';
+      stamp.classList.add('solved');
+      text.textContent = 'All three exhibits check out. You gathered information before acting — exactly the instinct a detective mindset runs on.';
+    } else if(correctCount === 2){
+      stamp.textContent = 'Case Pending';
+      stamp.classList.add('pending');
+      text.textContent = 'Close, but one exhibit needs a second look. Review the flagged answer above before moving on.';
+    } else {
+      stamp.textContent = 'Reopen Investigation';
+      stamp.classList.add('reopen');
+      text.textContent = 'A few exhibits need another pass. Revisit the flagged answers above — the rationale explains what to look for next time.';
+    }
+    scoreLine.textContent = 'Score: ' + correctCount + ' of 3';
+    verdict.classList.add('show');
+    verdict.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function updateCount(id){
+    const ta = document.getElementById(id);
+    document.getElementById(id+'-count').textContent = ta.value.length + ' / 1200';
+  }
+
+  function toggleNotes(id){
+    const notes = document.getElementById(id+'-notes');
+    const btn = notes.previousElementSibling.querySelector ? null : null;
+    notes.classList.toggle('show');
+    const trigger = document.querySelector('.nb-meta button[onclick="toggleNotes(\''+id+'\')"]');
+    if(trigger){
+      trigger.textContent = notes.classList.contains('show') ? 'Hide Field Notes' : 'Compare with Field Notes';
+    }
+  }
+
+  function resetCase(){
+    if(!confirm('Reset all answers and notes on this page?')) return;
+    location.reload();
+  }
+
+  setGauge();
+</script>
+</body>
+</html>
