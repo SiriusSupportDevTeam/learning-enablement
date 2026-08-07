@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Solving Masterclass 🌸</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+
+        :root {
+            --bg-color: #ffe6f0;
+            --card-bg: #ffffff;
+            --pastel-pink: #ffb7b2;
+            --pastel-blue: #e2f0cb;
+            --pastel-purple: #c7ceea;
+            --pastel-yellow: #ffdac1;
+            --text-main: #5a5a5a;
+            --highlight: #ff9aa2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#ffb7b2 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Container */
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid var(--pastel-pink);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            color: var(--highlight);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            color: #888;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--pastel-pink);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 4px 15px rgba(255, 154, 162, 0.4);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 154, 162, 0.6);
+        }
+
+        /* Senpai's Tip Box */
+        .tip-box {
+            background: var(--pastel-yellow);
+            border-left: 5px solid #ffb7b2;
+            padding: 15px;
+            border-radius: 0 15px 15px 0;
+            margin: 20px 0;
+            font-weight: bold;
+            position: relative;
+        }
+        .tip-box::before {
+            content: "✨ Senpai's Tip!";
+            display: block;
+            color: #d87070;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        /* 5 Questions Grid */
+        .grid-5 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .q-card {
+            background: var(--card-bg);
+            border: 2px dashed var(--pastel-purple);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .q-card:hover {
+            background: var(--pastel-purple);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .q-card .answer {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .q-card.revealed {
+            background: var(--pastel-purple);
+            color: white;
+            border-style: solid;
+        }
+
+        .q-card.revealed .answer {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Pause Button Area */
+        .pause-area {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .huge-pause {
+            background: var(--pastel-blue);
+            color: #557c3d;
+            font-size: 2em;
+            padding: 30px;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            border: none;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .prevents-list {
+            display: none;
+            margin-top: 30px;
+            text-align: left;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--pastel-blue);
+        }
+
+        .prevents-list li {
+            margin-bottom: 10px;
+            list-style: none;
+        }
+        .prevents-list li::before {
+            content: "🛡️";
+            margin-right: 10px;
+        }
+
+        /* Visual Novel Scenario */
+        .vn-container {
+            background: #f4f4f4;
+            border-radius: 15px;
+            height: 300px;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="%23e2f0cb" opacity="0.3"/></svg>');
+        }
+
+        .character {
+            font-size: 100px;
+            position: absolute;
+            bottom: -20px;
+            transition: all 0.3s;
+        }
+
+        .char-customer { left: 20px; }
+        .char-agent { right: 20px; transform: scaleX(-1); }
+
+        .dialogue-box {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.95);
+            border: 3px solid var(--pastel-pink);
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        .speaker-name {
+            background: var(--pastel-pink);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 10px;
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            font-weight: bold;
+        }
+
+        /* Quiz */
+        .quiz-option {
+            display: block;
+            background: #f9f9f9;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .quiz-option:hover {
+            border-color: var(--pastel-pink);
+            background: #fff5f5;
+        }
+        input[type="radio"] { margin-right: 10px; }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+        }
+        .feedback.success { background: #d4edda; color: #155724; }
+        .feedback.error { background: #f8d7da; color: #721c24; }
+
+        .progress-bar {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--highlight);
+            width: 25%;
+            transition: width 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+        <!-- SCREEN 1: Intro & 5 Questions -->
+        <div class="screen active" id="screen1">
+            <h1>🌸 The 5 Questions Before You Solve</h1>
+            <p class="subtitle">Welcome, Agent! Before offering a solution, click each card to reveal the core questions you must ask yourself.</p>
+            
+            <div class="grid-5">
+                <div class="q-card" onclick="revealCard(this)">
+                    <div>1️⃣ What is the customer actually experiencing?</div>
+                    <div class="answer">Not what I think is happening. What do I *know*?</div>
+                </div>
+                <div class="q-card" onclick="revealCard(this)">
+                    <div>2️⃣ What info am I missing?</div>
+                    <div class="answer">What unanswered question could change my diagnosis?</div>
+                </div>
+                <div class="q-card" onclick="revealCard(this)">
+                    <div>3️⃣ What have I verified?</div>
+                    <div class="answer">Separate hard facts from assumptions.</div>
+                </div>
+                <div class="q-card" onclick="revealCard(this)">
+                    <div>4️⃣ What is the most likely root cause?</div>
+                    <div class="answer">Use evidence—not instinct alone.</div>
+                </div>
+                <div class="q-card" onclick="revealCard(this)">
+                    <div>5️⃣ Have I confirmed the solution?</div>
+                    <div class="answer">Don't assume the problem is fixed. Ask!</div>
+                </div>
+            </div>
+
+            <div class="tip-box" style="margin-top: 30px;">
+                Speed matters. But accuracy creates sustainable speed! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+            </div>
+
+            <button class="btn" onclick="nextScreen(2)">Next: The Secret Technique ➡️</button>
+        </div>
+
+        <!-- SCREEN 2: Pause Before Solve -->
+        <div class="screen" id="screen2">
+            <h1>⏸️ The "Pause Before Solve" Technique</h1>
+            <p class="subtitle">One of the simplest habits an agent can develop is a diagnostic pause.</p>
+            
+            <div class="pause-area">
+                <button class="huge-pause" onclick="revealPause()">CLICK TO PAUSE</button>
+                <div class="prevents-list" id="preventsList">
+                    <p style="margin-bottom: 10px;"><strong>Before providing a solution, mentally stop for a moment and ask: <br><i>"Do I actually know what caused this?"</i></strong></p>
+                    <p>If the answer is no, keep investigating. This tiny pause prevents:</p>
+                    <ul style="margin-top: 15px;">
+                        <li>Incorrect solutions</li>
+                        <li>Repeat contacts</li>
+                        <li>Unnecessary escalations</li>
+                        <li>Customer frustration</li>
+                        <li>Incorrect documentation</li>
+                    </ul>
+                    <button class="btn" onclick="nextScreen(3)">Enter Scenario Mode ➡️</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: Advanced Scenario -->
+        <div class="screen" id="screen3">
+            <h1>📖 Advanced Scenario: The Wrong Diagnosis</h1>
+            <p class="subtitle">Click the dialogue box to advance the story.</p>
+
+            <div class="vn-container">
+                <div class="character char-customer">😠</div>
+                <div class="character char-agent" style="opacity: 0.5;">🧑‍💻</div>
+                
+                <div class="dialogue-box" onclick="advanceStory()">
+                    <div class="speaker-name" id="speakerName">Customer</div>
+                    <div id="dialogueText">"I can't reset my password! It's so frustrating!"</div>
+                    <div style="font-size: 0.8em; color: #888; text-align: right; margin-top: 5px;">Click to continue...</div>
+                </div>
+            </div>
+
+            <div id="scenarioAnalysis" style="display: none;">
+                <div class="tip-box">
+                    <strong>What went wrong?</strong><br>
+                    The agent started troubleshooting (sending links) before verifying the customer's account info (the email address). The system wasn't broken!
+                </div>
+                <h3>The Golden Rule:</h3>
+                <p style="text-align: center; font-size: 1.2em; color: var(--highlight); font-weight: bold;">
+                    Observe ➡️ Question ➡️ Verify ➡️ Test ➡️ Resolve
+                </p>
+                <button class="btn" onclick="nextScreen(4)">Take the Final Quiz ➡️</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: Quiz -->
+        <div class="screen" id="screen4">
+            <h1>🎓 Knowledge Check</h1>
+            <p class="subtitle">Let's see what you've learned, Senpai!</p>
+
+            <div id="q1">
+                <h3>1. What is the very first step in the Golden Rule of troubleshooting?</h3>
+                <label class="quiz-option"><input type="radio" name="q1" value="wrong"> Test the solution</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="wrong"> Ask for a supervisor</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="correct"> Observe</label>
+                <label class="quiz-option"><input type="radio" name="q1" value="wrong"> Resolve immediately</label>
+                <button class="btn" onclick="checkAnswer('q1', 'q2')">Submit</button>
+                <div class="feedback" id="feedback-q1"></div>
+            </div>
+
+            <div id="q2" style="display:none;">
+                <h3>2. Why is the "Pause Before Solve" technique important?</h3>
+                <label class="quiz-option"><input type="radio" name="q2" value="wrong"> It gives the agent time to stretch.</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="correct"> It prevents incorrect solutions and customer frustration.</label>
+                <label class="quiz-option"><input type="radio" name="q2" value="wrong"> It guarantees the problem is fixed.</label>
+                <button class="btn" onclick="checkAnswer('q2', 'end')">Submit</button>
+                <div class="feedback" id="feedback-q2"></div>
+            </div>
+            
+            <div id="end-screen" style="display:none; text-align: center; padding: 40px 0;">
+                <h1 style="font-size: 3em;">🎉</h1>
+                <h2>Course Complete!</h2>
+                <p>You are now a master of the Diagnostic Pause. Go forth and solve accurately!</p>
+                <button class="btn" onclick="location.reload()">Restart Course 🌸</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Screen Navigation
+        function nextScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + num).classList.add('active');
+            document.getElementById('progress').style.width = (num * 25) + '%';
+        }
+
+        // Screen 1: Card Reveal
+        function revealCard(card) {
+            card.classList.add('revealed');
+        }
+
+        // Screen 2: Pause Reveal
+        function revealPause() {
+            const btn = document.querySelector('.huge-pause');
+            btn.style.animation = 'none';
+            btn.style.transform = 'scale(0.8)';
+            btn.style.opacity = '0.5';
+            btn.disabled = true;
+            
+            const list = document.getElementById('preventsList');
+            list.style.display = 'block';
+            list.style.animation = 'fadeIn 0.8s ease';
+        }
+
+        // Screen 3: Visual Novel logic
+        const storyLines = [
+            { speaker: "Customer", text: "I can't reset my password! It's so frustrating!", focus: "customer" },
+            { speaker: "Agent", text: "*Thinks: Ah, the reset system must be broken again.*", focus: "agent" },
+            { speaker: "Agent", text: "I apologize for that! Let me send you a new reset link manually.", focus: "agent" },
+            { speaker: "Customer", text: "Okay... waiting... I still can't access it. It's not working.", focus: "customer" },
+            { speaker: "Agent", text: "Let me try generating one more... wait. Could you confirm your email address?", focus: "agent" },
+            { speaker: "Customer", text: "It's coolguy99@email.com.", focus: "customer" },
+            { speaker: "Agent", text: "...That email isn't associated with any account in our system. 🤦‍♂️", focus: "agent" }
+        ];
+        
+        let storyIndex = 0;
+
+        function advanceStory() {
+            storyIndex++;
+            if (storyIndex < storyLines.length) {
+                const line = storyLines[storyIndex];
+                document.getElementById('speakerName').innerText = line.speaker;
+                document.getElementById('dialogueText').innerHTML = line.text;
+                
+                if (line.focus === 'agent') {
+                    document.querySelector('.char-agent').style.opacity = '1';
+                    document.querySelector('.char-customer').style.opacity = '0.5';
+                    document.querySelector('.dialogue-box').style.borderColor = 'var(--pastel-blue)';
+                    document.getElementById('speakerName').style.background = 'var(--pastel-blue)';
+                    document.getElementById('speakerName').style.color = '#557c3d';
+                } else {
+                    document.querySelector('.char-customer').style.opacity = '1';
+                    document.querySelector('.char-agent').style.opacity = '0.5';
+                    document.querySelector('.dialogue-box').style.borderColor = 'var(--pastel-pink)';
+                    document.getElementById('speakerName').style.background = 'var(--pastel-pink)';
+                    document.getElementById('speakerName').style.color = 'white';
+                }
+            } else {
+                document.querySelector('.dialogue-box').style.display = 'none';
+                document.getElementById('scenarioAnalysis').style.display = 'block';
+                document.getElementById('scenarioAnalysis').style.animation = 'fadeIn 0.5s ease';
+            }
+        }
+
+        // Screen 4: Quiz Logic
+        function checkAnswer(qId, nextQId) {
+            const selected = document.querySelector(`input[name="${qId}"]:checked`);
+            const feedback = document.getElementById(`feedback-${qId}`);
+            
+            if (!selected) {
+                alert("Please select an answer, Senpai! (・_・;)");
+                return;
+            }
+
+            feedback.style.display = 'block';
+            if (selected.value === 'correct') {
+                feedback.className = 'feedback success';
+                feedback.innerHTML = "✨ Correct! Sasuga! (As expected!)";
+                
+                setTimeout(() => {
+                    document.getElementById(qId).style.display = 'none';
+                    if (nextQId === 'end') {
+                        document.getElementById('end-screen').style.display = 'block';
+                        document.getElementById('end-screen').style.animation = 'fadeIn 0.5s ease';
+                        document.getElementById('progress').style.width = '100%';
+                    } else {
+                        document.getElementById(nextQId).style.display = 'block';
+                        document.getElementById(nextQId).style.animation = 'fadeIn 0.5s ease';
+                    }
+                }, 1500);
+
+            } else {
+                feedback.className = 'feedback error';
+                feedback.innerHTML = "💦 Oops! That's not right. Try again!";
+            }
+        }
+    </script>
+</body>
+</html>
