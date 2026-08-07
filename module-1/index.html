@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attention to Detail — A Customer Service Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF0E9;
+    --paper-alt:#E2E5DA;
+    --card:#F8F9F4;
+    --ink:#1E2A32;
+    --ink-soft:#51616A;
+    --ink-faint:#8B968D;
+    --red:#B8433A;
+    --red-soft:#F3DEDB;
+    --teal:#2C6A63;
+    --teal-soft:#DCE7E2;
+    --line:#C9CDBE;
+    --shadow: 0 1px 0 rgba(30,42,50,0.06);
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    line-height:1.55;
+  }
+  h1,h2,h3,.mono,.tag,.stamp,nav,button,.qopt{
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* subtle paper texture via layered gradient */
+  body{
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(30,42,50,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  a{color:inherit;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+
+  /* ---------- NAV ---------- */
+  nav.top{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,240,233,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.top .inner{
+    max-width:920px; margin:0 auto; padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; align-items:baseline; gap:10px;
+    font-weight:600; font-size:15px; letter-spacing:0.02em;
+  }
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--red); display:inline-block;}
+  .navlinks{display:flex; gap:4px; flex-wrap:wrap;}
+  .navlinks a{
+    font-size:12.5px; text-transform:uppercase; letter-spacing:0.06em;
+    padding:8px 12px; border-radius:2px; text-decoration:none;
+    color:var(--ink-soft); border:1px solid transparent;
+  }
+  .navlinks a:hover{color:var(--ink); border-color:var(--line);}
+
+  /* ---------- HERO ---------- */
+  header.hero{padding:64px 0 40px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--red); margin:0 0 14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:""; width:26px; height:1px; background:var(--red); display:inline-block;}
+  h1.title{
+    font-size:clamp(34px,5.5vw,54px); line-height:1.04; margin:0 0 18px;
+    font-weight:700; letter-spacing:-0.01em;
+  }
+  .lede{
+    font-size:18px; color:var(--ink-soft); max-width:560px; margin:0 0 36px;
+  }
+
+  /* ---------- TICKET WIDGET (signature element) ---------- */
+  .ticket{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow: 0 2px 0 rgba(30,42,50,0.05), 0 14px 30px -18px rgba(30,42,50,0.35);
+    max-width:640px;
+    position:relative;
+    overflow:hidden;
+  }
+  .ticket::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:repeating-linear-gradient(180deg, var(--red) 0 8px, transparent 8px 16px);
+  }
+  .ticket-head{
+    padding:16px 22px 14px 26px; border-bottom:1px dashed var(--line);
+    display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+  }
+  .ticket-head .field-label{font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 4px;}
+  .ticket-head .subject{font-size:15px; font-weight:600; margin:0;}
+  .ticket-id{font-size:12px; color:var(--ink-faint); text-align:right; white-space:nowrap;}
+  .ticket-body{padding:20px 22px 22px 26px; font-size:15.5px;}
+  .ticket-body p{margin:0 0 10px;}
+  .signoff{color:var(--ink-soft); font-size:14px;}
+  .hotspot{
+    cursor:pointer; padding:0 2px; border-radius:2px;
+    border-bottom:1.5px dotted var(--ink-faint);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .hotspot:hover{background:var(--paper-alt);}
+  .hotspot.correct-marked{background:var(--teal-soft); border-bottom-color:var(--teal); color:var(--teal); font-weight:600;}
+  .hotspot.wrong-marked{background:var(--red-soft); border-bottom-color:var(--red); color:var(--red);}
+  .ticket-instruction{
+    padding:12px 22px 16px 26px; font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    color:var(--ink-soft); border-top:1px dashed var(--line); background:var(--paper-alt);
+  }
+  .ticket-feedback{
+    padding:0 22px 20px 26px; font-size:14px; display:none;
+  }
+  .ticket-feedback.show{display:block;}
+  .ticket-feedback .ok{color:var(--teal); font-weight:600;}
+  .ticket-feedback .not-quite{color:var(--red); font-weight:600;}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:70px 0;}
+  section.alt{background:var(--paper-alt);}
+  .section-head{margin-bottom:36px; max-width:560px;}
+  .section-head .eyebrow{margin-bottom:10px;}
+  h2.section-title{font-size:clamp(26px,3.6vw,34px); margin:0 0 10px; font-weight:700; letter-spacing:-0.01em;}
+  .section-sub{color:var(--ink-soft); font-size:16px; margin:0;}
+
+  /* ---------- TIPS ---------- */
+  .tip-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  @media (max-width:720px){.tip-grid{grid-template-columns:1fr;}}
+  .tip-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 22px 18px; position:relative;
+  }
+  .tip-num{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-faint);
+    letter-spacing:0.08em; margin-bottom:10px; display:block;
+  }
+  .tip-card h3{font-size:17px; margin:0 0 8px; font-weight:600;}
+  .tip-card p.body-text{font-size:14.5px; color:var(--ink-soft); margin:0 0 14px;}
+  .tip-toggle{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.04em;
+    background:none; border:1px solid var(--line); color:var(--ink); cursor:pointer;
+    padding:7px 12px; border-radius:2px; text-transform:uppercase;
+  }
+  .tip-toggle:hover{border-color:var(--ink);}
+  .tip-example{
+    margin-top:14px; display:none; border-top:1px dashed var(--line); padding-top:14px;
+  }
+  .tip-example.show{display:block;}
+  .ex-line{font-size:13.5px; padding:8px 10px; border-radius:2px; margin-bottom:6px; display:flex; gap:8px;}
+  .ex-line.bad{background:var(--red-soft); color:#7A2B25;}
+  .ex-line.good{background:var(--teal-soft); color:#1E4A44;}
+  .ex-tag{font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; flex-shrink:0; padding-top:1px;}
+
+  /* ---------- STORIES ---------- */
+  .story{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    margin-bottom:20px; overflow:hidden;
+  }
+  .story-top{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+    padding:20px 24px 16px; border-bottom:1px dashed var(--line);
+  }
+  .story-top .case-id{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-faint);}
+  .story-top h3{font-size:20px; margin:6px 0 0; font-weight:700;}
+  .stamp{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    border:1.5px solid var(--teal); color:var(--teal); padding:5px 10px; border-radius:2px;
+    transform:rotate(-3deg); white-space:nowrap; font-weight:600;
+  }
+  .story-body{padding:18px 24px 22px;}
+  .story-body p{margin:0 0 12px; font-size:15px;}
+  .story-body .label{font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-faint); display:block; margin-bottom:5px;}
+  .lesson{
+    background:var(--paper-alt); border-left:3px solid var(--red); padding:12px 16px; border-radius:0 2px 2px 0;
+    font-size:14.5px; margin-top:6px;
+  }
+
+  /* ---------- QUIZ ---------- */
+  .quiz-shell{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    max-width:680px; padding:0; overflow:hidden;
+  }
+  .quiz-progress-track{height:4px; background:var(--paper-alt);}
+  .quiz-progress-fill{height:100%; background:var(--red); width:0%; transition:width 0.3s ease;}
+  .quiz-meta{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 24px 0; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-faint);
+  }
+  .quiz-body{padding:20px 24px 24px;}
+  .q-text{font-size:19px; font-weight:600; margin:6px 0 20px; font-family:'Space Grotesk',sans-serif; line-height:1.35;}
+  .qopt{
+    display:flex; gap:12px; align-items:flex-start; width:100%; text-align:left;
+    background:var(--paper); border:1px solid var(--line); border-radius:2px;
+    padding:13px 14px; margin-bottom:10px; cursor:pointer; font-size:14.5px; color:var(--ink);
+    font-family:'Source Serif 4', serif;
+  }
+  .qopt:hover{border-color:var(--ink-soft);}
+  .qopt .letter{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600;
+    width:22px; height:22px; border:1px solid var(--line); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink-soft);
+  }
+  .qopt.selected-correct{background:var(--teal-soft); border-color:var(--teal);}
+  .qopt.selected-correct .letter{background:var(--teal); color:#fff; border-color:var(--teal);}
+  .qopt.selected-wrong{background:var(--red-soft); border-color:var(--red);}
+  .qopt.selected-wrong .letter{background:var(--red); color:#fff; border-color:var(--red);}
+  .qopt.reveal-correct{border-color:var(--teal);}
+  .qopt[disabled]{cursor:default;}
+  .explain{
+    margin-top:6px; padding:14px 16px; border-radius:2px; font-size:14px; display:none;
+    background:var(--paper-alt); border-left:3px solid var(--ink-soft);
+  }
+  .explain.show{display:block;}
+  .explain .verdict{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; margin-bottom:4px; display:block;}
+  .explain.correct{border-left-color:var(--teal);}
+  .explain.correct .verdict{color:var(--teal);}
+  .explain.incorrect{border-left-color:var(--red);}
+  .explain.incorrect .verdict{color:var(--red);}
+  .quiz-nav{display:flex; justify-content:flex-end; margin-top:18px;}
+  .btn-next{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+    background:var(--ink); color:var(--paper); border:none; padding:11px 20px; border-radius:2px;
+    cursor:pointer; display:none;
+  }
+  .btn-next.show{display:inline-block;}
+  .btn-next:hover{background:var(--red);}
+
+  .dots{display:flex; gap:6px;}
+  .dots span{width:6px; height:6px; border-radius:50%; background:var(--line); display:inline-block;}
+  .dots span.done{background:var(--teal);}
+  .dots span.active{background:var(--red);}
+
+  /* results */
+  .results{padding:36px 24px; text-align:left; display:none;}
+  .results.show{display:block;}
+  .results .score-big{font-family:'Space Grotesk',sans-serif; font-size:52px; font-weight:700; line-height:1; margin:0;}
+  .results .score-label{font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint); margin:0 0 6px;}
+  .results .tier{font-size:20px; font-weight:600; margin:16px 0 8px; font-family:'Space Grotesk',sans-serif;}
+  .results p.msg{color:var(--ink-soft); font-size:15px; max-width:480px;}
+  .retake{
+    margin-top:18px; font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase;
+    background:none; border:1px solid var(--line); padding:9px 16px; border-radius:2px; cursor:pointer;
+  }
+  .retake:hover{border-color:var(--ink);}
+  .cert{
+    margin-top:26px; border:1.5px solid var(--ink); padding:22px; border-radius:2px;
+    background:repeating-linear-gradient(135deg, var(--paper) 0 10px, var(--paper-alt) 10px 11px);
+  }
+  .cert .cert-inner{background:var(--card); border:1px dashed var(--line); padding:20px; text-align:center;}
+  .cert .cert-eyebrow{font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint);}
+  .cert h3{font-size:22px; margin:8px 0 4px;}
+  .cert .cert-name{font-family:'Space Grotesk',sans-serif; font-size:15px; color:var(--ink-soft);}
+
+  footer{padding:40px 0 60px; text-align:center; color:var(--ink-faint); font-size:12.5px; font-family:'IBM Plex Mono', monospace;}
+
+  :focus-visible{outline:2px solid var(--red); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="inner">
+    <div class="brand"><span class="dot"></span> ATTENTION TO DETAIL</div>
+    <div class="navlinks">
+      <a href="#tips">Field Notes</a>
+      <a href="#stories">Case Files</a>
+      <a href="#quiz">Inspection</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Customer Service Field Guide</p>
+    <h1 class="title">The small stuff<br>is the whole job.</h1>
+    <p class="lede">A wrong digit, a missed sentence, a promise made before you checked — these are the moments that decide whether a customer trusts you again. This guide sharpens that instinct. Start below: something in this ticket doesn't add up.</p>
+
+    <div class="ticket" id="ticket">
+      <div class="ticket-head">
+        <div>
+          <p class="field-label">Subject</p>
+          <p class="subject">Order <span class="hotspot" data-answer="wrong" data-id="subj">#48231</span> — where's my package?</p>
+        </div>
+        <div class="ticket-id mono">TICKET #90142<br>Received 9:14 AM</div>
+      </div>
+      <div class="ticket-body">
+        <p>Hi, I placed order <span class="hotspot" data-answer="correct" data-id="body">#48213</span> last Tuesday and it still says "processing" three days later. Can you check on this?</p>
+        <p>Also, this is <span class="hotspot" data-answer="close" data-id="phrase">the second time this month</span> I've had a delay. Thanks, — Jordan</p>
+      </div>
+      <div class="ticket-feedback" id="ticketFeedback"></div>
+      <div class="ticket-instruction">CLICK THE DETAIL THAT DOESN'T MATCH →</div>
+    </div>
+  </div>
+</header>
+
+<section id="tips">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Field Notes</p>
+      <h2 class="section-title">Six habits to build</h2>
+      <p class="section-sub">None of these take extra time once they're automatic. They just change what you notice.</p>
+    </div>
+
+    <div class="tip-grid" id="tipGrid"></div>
+  </div>
+</section>
+
+<section id="stories" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Case Files</p>
+      <h2 class="section-title">Three real patterns</h2>
+      <p class="section-sub">Composite cases drawn from the kind of tickets that look routine — until they aren't.</p>
+    </div>
+    <div id="storyList"></div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Inspection</p>
+      <h2 class="section-title">Knowledge check</h2>
+      <p class="section-sub">Seven scenarios. Read carefully — that's rather the point.</p>
+    </div>
+
+    <div class="quiz-shell" id="quizShell">
+      <div class="quiz-progress-track"><div class="quiz-progress-fill" id="progressFill"></div></div>
+      <div class="quiz-meta">
+        <span id="quizCounter">QUESTION 1 / 7</span>
+        <div class="dots" id="quizDots"></div>
+      </div>
+      <div class="quiz-body" id="quizBody"></div>
+
+      <div class="results" id="results">
+        <p class="score-label">Inspection complete</p>
+        <p class="score-big"><span id="scoreNum">0</span><span style="font-size:22px;color:var(--ink-faint)">/7</span></p>
+        <p class="tier" id="tier"></p>
+        <p class="msg" id="tierMsg"></p>
+        <button class="retake" id="retakeBtn">RETAKE INSPECTION</button>
+
+        <div class="cert" id="cert" style="display:none;">
+          <div class="cert-inner">
+            <p class="cert-eyebrow">Certificate of Completion</p>
+            <h3>Attention to Detail — Inspector Grade</h3>
+            <p class="cert-name">Awarded for a perfect reading of every case</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  ATTENTION TO DETAIL FIELD GUIDE — CUSTOMER SERVICE EDITION
+</footer>
+
+<script>
+/* ---------------- Ticket hotspot ---------------- */
+const ticketSpots = document.querySelectorAll('#ticket .hotspot');
+const ticketFeedback = document.getElementById('ticketFeedback');
+let ticketSolved = false;
+ticketSpots.forEach(spot=>{
+  spot.addEventListener('click', ()=>{
+    if(ticketSolved) return;
+    const answer = spot.dataset.answer;
+    if(answer === 'wrong' || answer === 'correct'){
+      ticketSolved = true;
+      document.querySelector('[data-id="subj"]').classList.add(document.querySelector('[data-id="subj"]').dataset.answer==='wrong' ? 'wrong-marked' : 'correct-marked');
+      document.querySelector('[data-id="body"]').classList.add('correct-marked');
+      ticketFeedback.innerHTML = '<span class="ok">Good catch.</span> The subject line reads #48231, but Jordan\'s message says #48213 — transposed digits. Reply on the wrong order number and you\'re now troubleshooting the wrong ticket entirely.';
+      ticketFeedback.classList.add('show');
+    } else {
+      spot.classList.add('wrong-marked');
+      ticketFeedback.innerHTML = '<span class="not-quite">Worth flagging, but not the mismatch.</span> "Second time this month" is a real signal — it means this customer has a pattern, not just a one-off delay. Keep looking for the detail that flat-out contradicts itself.';
+      ticketFeedback.classList.add('show');
+    }
+  });
+});
+
+/* ---------------- Tips ---------------- */
+const tips = [
+  {
+    title:"Read the whole message before you type",
+    body:"Skimming for keywords is how details get missed. Read start to finish — including the P.S. — before drafting anything.",
+    bad:"“Thanks for reaching out! I've refunded your order.”",
+    good:"“You'd like to exchange the medium for a large, not a refund — I've started that swap now.”"
+  },
+  {
+    title:"Echo their exact details back",
+    body:"Repeat the order number, product name, or date the customer gave you. It proves you read carefully and catches mismatches on the spot.",
+    bad:"“I've processed the change for you.”",
+    good:"“I've updated order #48213 — the navy jacket, size M — to ship Friday, Aug 1.”"
+  },
+  {
+    title:"Verify, don't assume",
+    body:"“Should be fine” is a guess. Check the system of record before you promise a date, status, or amount.",
+    bad:"“Your refund should land in a few days.”",
+    good:"“I checked — it was issued Tuesday, so it'll land by Thursday at the latest.”"
+  },
+  {
+    title:"Notice what's said between the lines",
+    body:"A repeated word, a shift in tone, “this is the third time” — these are signals, not noise. Flag them before they become complaints.",
+    bad:"Replies with the standard script, misses the word “again.”",
+    good:"“I see this has happened twice before — I'm escalating so it doesn't happen a third time.”"
+  },
+  {
+    title:"Proofread like it'll be screenshotted",
+    body:"A typo in a name or order number does more damage than a slow reply. Read your message once more before you send it.",
+    bad:"“Order #48231 has shipped!” (their order was #48213)",
+    good:"Catches the transposed digits before hitting send."
+  },
+  {
+    title:"Close the loop, not just the ticket",
+    body:"End with exactly what happens next and by when. Silence after “resolved” makes customers write back just to be sure.",
+    bad:"“Resolved!”",
+    good:"“Your replacement ships today and arrives by Aug 2 — I'll email tracking the moment it's out.”"
+  }
+];
+
+const tipGrid = document.getElementById('tipGrid');
+tips.forEach((tip,i)=>{
+  const card = document.createElement('div');
+  card.className = 'tip-card';
+  card.innerHTML = `
+    <span class="tip-num mono">0${i+1} / 0${tips.length}</span>
+    <h3>${tip.title}</h3>
+    <p class="body-text">${tip.body}</p>
+    <button class="tip-toggle">See it in action</button>
+    <div class="tip-example">
+      <div class="ex-line bad"><span class="ex-tag mono">Before</span><span>${tip.bad}</span></div>
+      <div class="ex-line good"><span class="ex-tag mono">After</span><span>${tip.good}</span></div>
+    </div>
+  `;
+  const btn = card.querySelector('.tip-toggle');
+  const ex = card.querySelector('.tip-example');
+  btn.addEventListener('click', ()=>{
+    const showing = ex.classList.toggle('show');
+    btn.textContent = showing ? 'Hide example' : 'See it in action';
+  });
+  tipGrid.appendChild(card);
+});
+
+/* ---------------- Stories ---------------- */
+const stories = [
+  {
+    id:"CS-4471",
+    title:"The Two Sizes",
+    stamp:"Reopened → Resolved",
+    body:[
+      ["Summary","A customer wrote asking to return “the medium” jacket. The order on file actually showed two jackets — a medium and a large — bought the same day. A first-pass agent processed a return for the medium and closed the ticket."],
+      ["What happened next","Three days later the customer wrote back confused: they'd meant to return the large, which ran big. The medium fit fine."],
+      ["What went right, eventually","A second agent, before replying, cross-checked the order history, caught both sizes, and reissued the correct return label without another back-and-forth."]
+    ],
+    lesson:"When a customer's words and the record don't perfectly match, that gap is the detail worth chasing before you act — not after."
+  },
+  {
+    id:"CS-5028",
+    title:"The Silent Second Account",
+    stamp:"Duplicate Found",
+    body:[
+      ["Summary","A customer emailed “please cancel my subscription.” The agent canceled the account on file. A week later, they were still being charged."],
+      ["What happened next","It turned out the customer had signed up years ago with a work email, then again more recently with a personal one — two active subscriptions, only one cancellation."],
+      ["What went right, eventually","A stray line in the original message — “I signed up again last year, not sure why” — was enough for the next agent to search by name instead of email, and find the duplicate."]
+    ],
+    lesson:"The detail that matters isn't always in a structured field. Sometimes it's a passing sentence you almost skip past."
+  },
+  {
+    id:"CS-3899",
+    title:"The Transposed Digits",
+    stamp:"Root Cause Flagged",
+    body:[
+      ["Summary","A confirmation email listed order #48231 instead of the correct #48213. Tracking the wrong number, the customer found nothing and assumed the order had vanished."],
+      ["What happened next","Two more emails and a phone call followed before anyone spotted the mix-up — all to explain something that was never actually broken."],
+      ["What went right, eventually","The next agent traced it to the original confirmation email, corrected it, and flagged the transposition pattern to the wider team."]
+    ],
+    lesson:"A single flipped digit can undo an otherwise perfect interaction. Proofreading identifiers isn't optional — it's the job."
+  }
+];
+
+const storyList = document.getElementById('storyList');
+stories.forEach(s=>{
+  const el = document.createElement('div');
+  el.className = 'story';
+  el.innerHTML = `
+    <div class="story-top">
+      <div>
+        <div class="case-id mono">CASE ${s.id}</div>
+        <h3>${s.title}</h3>
+      </div>
+      <span class="stamp">${s.stamp}</span>
+    </div>
+    <div class="story-body">
+      ${s.body.map(([label,text])=>`<span class="label">${label}</span><p>${text}</p>`).join('')}
+      <div class="lesson"><strong>Lesson:</strong> ${s.lesson}</div>
+    </div>
+  `;
+  storyList.appendChild(el);
+});
+
+/* ---------------- Quiz ---------------- */
+const questions = [
+  {
+    q:"A customer's message says they ordered “the blue jacket in Medium,” but your system shows they ordered it in Large. What's the best first move?",
+    opts:[
+      "Process their requested change, assuming they mean Medium",
+      "Point out the mismatch and confirm which size they actually have before changing anything",
+      "Ignore the system and trust the customer's word completely",
+      "Ask them to cancel the order and place a new one"
+    ],
+    correct:1,
+    explain:"When what the customer says and what your system shows disagree, that gap is exactly the detail to chase. A quick confirmation now prevents a second, more frustrating ticket later."
+  },
+  {
+    q:"Which habit best prevents you from missing something the customer mentioned only once, in passing?",
+    opts:[
+      "Skimming for the main request keyword",
+      "Reading the entire message once, start to finish, before typing a reply",
+      "Replying with the fastest applicable template",
+      "Waiting for the customer to repeat it if it's important"
+    ],
+    correct:1,
+    explain:"Passing details — “this is the third time,” “not sure why” — only surface if you read the whole message, not just the part that looks like the ask."
+  },
+  {
+    q:"True or false: repeating the customer's order number and product back to them is unnecessary once you've already fixed the issue.",
+    opts:["True","False"],
+    correct:1,
+    explain:"Echoing details back isn't just courtesy — it's a built-in check. If you misread something, saying it back gives the customer a chance to catch it before it becomes a second problem."
+  },
+  {
+    q:"A customer asks when their refund will arrive. You haven't checked the system yet. Which reply should you avoid?",
+    opts:[
+      "“Let me check that for you now.”",
+      "“It should be back within a few business days.”",
+      "“I can see it was issued Tuesday — it should land by Thursday.”",
+      "“I'll confirm the exact date and follow up shortly.”"
+    ],
+    correct:1,
+    explain:"“Should be” language is a guess dressed up as an answer. Verify in the system before promising a timeline, amount, or status."
+  },
+  {
+    q:"You're about to send a reply that includes an order number. What's the highest-leverage last step?",
+    opts:[
+      "Send immediately — speed matters more than a re-read",
+      "Re-read the message once, specifically checking any numbers, names, or dates",
+      "Run a spellcheck only",
+      "Have someone else send it instead"
+    ],
+    correct:1,
+    explain:"Identifiers like order numbers are exactly what spellcheck won't catch and a fast send will miss. A ten-second check prevents a multi-email mix-up."
+  },
+  {
+    q:"A ticket is technically resolved — the item shipped. What actually makes the close-out complete?",
+    opts:[
+      "Marking the ticket “resolved” in the system",
+      "Telling the customer what happens next and by when",
+      "Nothing further — the fix speaks for itself",
+      "Asking the customer to check back on their own"
+    ],
+    correct:1,
+    explain:"“Resolved” on your end isn't the same as resolved on theirs. Naming the next step and the timeline closes the loop instead of leaving them to wonder."
+  },
+  {
+    q:"Two subscriptions exist under slightly different emails for the same customer, but only one ticket mentions it — in a single offhand sentence. What does this scenario mainly test?",
+    opts:[
+      "Speed of response",
+      "Willingness to notice and act on a detail that isn't in a structured field",
+      "Refund policy knowledge",
+      "Typing accuracy"
+    ],
+    correct:1,
+    explain:"The most costly misses aren't in the obvious fields — they're in the sentence you almost skipped. Noticing them is the core of the job."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = [];
+
+const quizBody = document.getElementById('quizBody');
+const quizCounter = document.getElementById('quizCounter');
+const progressFill = document.getElementById('progressFill');
+const quizDots = document.getElementById('quizDots');
+const resultsEl = document.getElementById('results');
+const quizShellInner = document.getElementById('quizBody');
+
+function buildDots(){
+  quizDots.innerHTML = '';
+  questions.forEach((_,i)=>{
+    const d = document.createElement('span');
+    if(i < current) d.classList.add('done');
+    if(i === current) d.classList.add('active');
+    quizDots.appendChild(d);
+  });
+}
+
+function renderQuestion(){
+  const item = questions[current];
+  quizCounter.textContent = `QUESTION ${current+1} / ${questions.length}`;
+  progressFill.style.width = `${(current/questions.length)*100}%`;
+  buildDots();
+
+  const letters = ['A','B','C','D'];
+  quizBody.innerHTML = `
+    <p class="q-text">${item.q}</p>
+    <div id="optsWrap"></div>
+    <div class="explain" id="explainBox"></div>
+    <div class="quiz-nav"><button class="btn-next" id="nextBtn">${current === questions.length-1 ? 'See results' : 'Next question'} →</button></div>
+  `;
+  const optsWrap = document.getElementById('optsWrap');
+  item.opts.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className = 'qopt';
+    b.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    b.addEventListener('click', ()=> selectAnswer(i));
+    optsWrap.appendChild(b);
+  });
+}
+
+function selectAnswer(i){
+  const item = questions[current];
+  const allOpts = document.querySelectorAll('.qopt');
+  allOpts.forEach(o => o.setAttribute('disabled','true'));
+  const chosen = allOpts[i];
+  const isCorrect = i === item.correct;
+
+  if(isCorrect){
+    chosen.classList.add('selected-correct');
+    score++;
+  } else {
+    chosen.classList.add('selected-wrong');
+    allOpts[item.correct].classList.add('reveal-correct');
+  }
+
+  const explainBox = document.getElementById('explainBox');
+  explainBox.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+  explainBox.innerHTML = `<span class="verdict">${isCorrect ? 'Correct' : 'Not quite'}</span>${item.explain}`;
+
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+document.addEventListener('click', (e)=>{
+  if(e.target && e.target.id === 'nextBtn'){
+    current++;
+    if(current < questions.length){
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  }
+});
+
+function showResults(){
+  progressFill.style.width = '100%';
+  quizCounter.textContent = 'INSPECTION COMPLETE';
+  quizDots.innerHTML = '';
+  quizBody.style.display = 'none';
+  resultsEl.classList.add('show');
+
+  document.getElementById('scoreNum').textContent = score;
+
+  let tier, msg;
+  if(score === 7){
+    tier = "Inspector-Grade";
+    msg = "A perfect read on every case. This is exactly the instinct that turns a routine ticket into a customer who trusts you the next time something goes wrong.";
+    document.getElementById('cert').style.display = 'block';
+  } else if(score >= 5){
+    tier = "Sharp-Eyed";
+    msg = "You're catching the details that matter most. Revisit the missed case above — the pattern there is worth locking in.";
+  } else if(score >= 3){
+    tier = "On the Right Track";
+    msg = "You've got the framework. The gap now is slowing down at the exact moment a message and a record disagree — that's where the misses came from.";
+  } else {
+    tier = "Time to Slow Down";
+    msg = "Worth a re-read of the Field Notes above before your next shift. The core move is simple: read fully, verify before promising, and echo details back.";
+  }
+  document.getElementById('tier').textContent = tier;
+  document.getElementById('tierMsg').textContent = msg;
+}
+
+document.getElementById('retakeBtn').addEventListener('click', ()=>{
+  current = 0; score = 0;
+  resultsEl.classList.remove('show');
+  document.getElementById('cert').style.display = 'none';
+  quizBody.style.display = 'block';
+  renderQuestion();
+});
+
+renderQuestion();
+</script>
+
+</body>
+</html>
