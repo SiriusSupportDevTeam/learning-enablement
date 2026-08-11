@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Keyword Pyramid: Blockbuster Support Search</title>
+    <style>
+        :root {
+            --bg-cinema: #0a0a0f;
+            --panel-bg: rgba(20, 20, 30, 0.85);
+            --panel-border: rgba(255, 215, 0, 0.25);
+            --gold-glow: #ffd700;
+            --neon-red: #ff2a5f;
+            --cyan-accent: #00e5ff;
+            --text-main: #f0f0f5;
+            --text-muted: #a0a0b5;
+            --correct-green: #00ff88;
+            --wrong-red: #ff4757;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-cinema);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Ambient Background Canvas */
+        canvas#cinema-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .studio-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 950px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.12), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: #fff;
+            text-shadow: 0 0 12px var(--gold-glow);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 6px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--panel-border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: var(--gold-glow);
+            color: #0a0a0f;
+            box-shadow: 0 0 15px var(--gold-glow);
+            border-color: var(--gold-glow);
+        }
+
+        /* Tab Content Containers */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TAB 1: Pyramid Explorer */
+        .pyramid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .pyramid-level {
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            background: rgba(10, 10, 15, 0.8);
+            border: 1px solid var(--panel-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pyramid-level:hover {
+            transform: scale(1.02);
+            border-color: var(--gold-glow);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .pyramid-level.l1 { width: 100%; border-left: 5px solid var(--neon-red); }
+        .pyramid-level.l2 { width: 85%; border-left: 5px solid var(--gold-glow); }
+        .pyramid-level.l3 { width: 70%; border-left: 5px solid var(--cyan-accent); }
+
+        .pyramid-level h3 {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .pyramid-level span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .details-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .details-title {
+            color: var(--gold-glow);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .example-tag {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold-glow);
+            color: var(--gold-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* TAB 2: Case Study Reel */
+        .script-box {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 4px solid var(--neon-red);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ffb8c6;
+        }
+
+        .progression-stepper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.weak {
+            border-left: 4px solid var(--wrong-red);
+        }
+
+        .step-item.good {
+            border-left: 4px solid var(--cyan-accent);
+        }
+
+        .step-item.best {
+            border-left: 4px solid var(--correct-green);
+        }
+
+        .step-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-weak { background: rgba(255, 71, 87, 0.2); color: var(--wrong-red); }
+        .badge-good { background: rgba(0, 229, 255, 0.2); color: var(--cyan-accent); }
+        .badge-best { background: rgba(0, 255, 136, 0.2); color: var(--correct-green); }
+
+        /* TAB 3: Director Pro-Tips */
+        .grid-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+
+        .tip-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            padding: 18px;
+            border-radius: 10px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold-glow);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
+        }
+
+        .tip-icon {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .tip-title {
+            font-weight: bold;
+            color: var(--gold-glow);
+            margin-bottom: 6px;
+        }
+
+        /* TAB 4: Quiz */
+        .quiz-card {
+            background: rgba(10, 10, 15, 0.7);
+            border: 1px solid var(--panel-border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text {
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover {
+            background: rgba(255, 215, 0, 0.08);
+            border-color: var(--gold-glow);
+        }
+
+        .opt-btn.correct {
+            background: rgba(0, 255, 136, 0.2) !important;
+            border-color: var(--correct-green) !important;
+            color: var(--correct-green) !important;
+        }
+
+        .opt-btn.wrong {
+            background: rgba(255, 71, 87, 0.2) !important;
+            border-color: var(--wrong-red) !important;
+            color: var(--wrong-red) !important;
+        }
+
+        .feedback-box {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .score-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid var(--gold-glow);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            color: var(--gold-glow);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="cinema-bg"></canvas>
+
+    <div class="studio-container">
+        <header>
+            <h1>🎬 Studio Search Command</h1>
+            <p>Mastering the Keyword Pyramid for Knowledge Base Navigation</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('pyramid')">The Pyramid Structure</button>
+            <button class="tab-btn" onclick="switchTab('casestudy')">Movie Case Study</button>
+            <button class="tab-btn" onclick="switchTab('tips')">Director Pro-Tips</button>
+            <button class="tab-btn" onclick="switchTab('quiz')">Box Office Knowledge Check</button>
+        </nav>
+
+        <!-- TAB 1: Pyramid Explorer -->
+        <section id="pyramid" class="tab-content active">
+            <p style="margin-bottom: 15px; color: var(--text-muted);">Click any pyramid tier below to inspect its core role and ideal keyword formulas:</p>
+            
+            <div class="pyramid-container">
+                <div class="pyramid-level l1" onclick="showLevelDetails(1)">
+                    <h3>Level 1 — Core Problem</h3>
+                    <span>"What is happening?"</span>
+                </div>
+                <div class="pyramid-level l2" onclick="showLevelDetails(2)">
+                    <h3>Level 2 — Product or Process</h3>
+                    <span>"What does it involve?"</span>
+                </div>
+                <div class="pyramid-level l3" onclick="showLevelDetails(3)">
+                    <h3>Level 3 — Specific Detail</h3>
+                    <span>"What makes this case unique?"</span>
+                </div>
+            </div>
+
+            <div id="details-card" class="details-card">
+                <div class="details-title" id="d-title">⚡ Level 1: Core Problem</div>
+                <p id="d-desc">Start broad to locate the correct knowledge area first. Identify the fundamental event before layering specific constraints.</p>
+                <div class="example-tag-group" id="d-tags">
+                    <span class="example-tag">Missing component</span>
+                    <span class="example-tag">Damaged product</span>
+                    <span class="example-tag">Refund</span>
+                    <span class="example-tag">Cancellation</span>
+                    <span class="example-tag">Replacement</span>
+                    <span class="example-tag">Login failure</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: Movie Case Study -->
+        <section id="casestudy" class="tab-content">
+            <div class="script-box">
+                <strong>🎥 Scene Script (Customer Ticket):</strong><br>
+                "I bought this at Walmart and one of the pieces wasn't in the box."
+            </div>
+
+            <div class="progression-stepper">
+                <div class="step-item weak">
+                    <div>
+                        <strong>Weak Full-Sentence Query:</strong><br>
+                        <code style="color: var(--neon-red);">"Customer bought product at Walmart and one piece wasn't in the box"</code>
+                    </div>
+                    <span class="step-badge badge-weak">Too Narrow / Noisy</span>
+                </div>
+
+                <div class="step-item good">
+                    <div>
+                        <strong>Level 1 — Broad Core Search:</strong><br>
+                        <code style="color: var(--gold-glow);">"missing component"</code>
+                    </div>
+                    <span class="step-badge badge-good">Level 1 Start</span>
+                </div>
+
+                <div class="step-item good">
+                    <div>
+                        <strong>Level 2 — Adding Retailer Context:</strong><br>
+                        <code style="color: var(--gold-glow);">"missing component Walmart"</code>
+                    </div>
+                    <span class="step-badge badge-good">Level 2 Refinement</span>
+                </div>
+
+                <div class="step-item best">
+                    <div>
+                        <strong>Level 3 — Process-Specific Targeted Search:</strong><br>
+                        <code style="color: var(--correct-green);">"missing component retailer purchase"</code>
+                    </div>
+                    <span class="step-badge badge-best">Level 3 Precision</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: Director Pro-Tips -->
+        <section id="tips" class="tab-content">
+            <div class="grid-tips">
+                <div class="tip-card">
+                    <div class="tip-icon">🛑</div>
+                    <div class="tip-title">Avoid Full-Sentence Clutter</div>
+                    <p>Search engines struggle when flooded with filler words like <em>"wasn't in the box"</em>. Strip queries down to action nouns and core concepts.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">📐</div>
+                    <div class="tip-title">Start Broad, Then Layer</div>
+                    <p>If you start too specific, you risk missing the primary article entirely. Locate the main policy area first, then refine.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">🔄</div>
+                    <div class="tip-title">Progressive Narrowing</div>
+                    <p>Observe the initial search results. Use the terminology found in top articles to build your Level 2 and Level 3 search terms.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: Quiz -->
+        <section id="quiz" class="tab-content">
+            <!-- Question 1 -->
+            <div class="quiz-card" id="qc-1">
+                <div class="q-text">1. A customer states: "I tried to log into my streaming account on my smart TV but it says password invalid." What is the best Level 1 core search term?</div>
+                <div class="options-group">
+                    <button class="opt-btn" onclick="checkAnswer(1, 'A', false, this)">A. customer tried to log into smart TV with invalid password</button>
+                    <button class="opt-btn" onclick="checkAnswer(1, 'B', true, this)">B. login failure</button>
+                    <button class="opt-btn" onclick="checkAnswer(1, 'C', false, this)">C. smart TV streaming account invalid password reset</button>
+                    <button class="opt-btn" onclick="checkAnswer(1, 'D', false, this)">D. password error on television screen</button>
+                </div>
+                <div class="feedback-box" id="fb-1"></div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="quiz-card" id="qc-2">
+                <div class="q-text">2. Why is searching "Customer bought product at Walmart and one piece wasn't in the box" considered a weak search?</div>
+                <div class="options-group">
+                    <button class="opt-btn" onclick="checkAnswer(2, 'A', false, this)">A. It does not mention the customer's name.</button>
+                    <button class="opt-btn" onclick="checkAnswer(2, 'B', false, this)">B. Walmart purchases cannot be searched in the KB.</button>
+                    <button class="opt-btn" onclick="checkAnswer(2, 'C', true, this)">C. It contains conversational filler and begins with too many details, cluttering search results.</button>
+                    <button class="opt-btn" onclick="checkAnswer(2, 'D', false, this)">D. It is too short to give meaningful results.</button>
+                </div>
+                <div class="feedback-box" id="fb-2"></div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="quiz-card" id="qc-3">
+                <div class="q-text">3. What is the main objective of Level 3 in the Keyword Pyramid?</div>
+                <div class="options-group">
+                    <button class="opt-btn" onclick="checkAnswer(3, 'A', false, this)">A. To start the search with maximum detail from the very beginning.</button>
+                    <button class="opt-btn" onclick="checkAnswer(3, 'B', true, this)">B. To add specific context (like online vs. retailer or discontinued items) to isolate unique process rules.</button>
+                    <button class="opt-btn" onclick="checkAnswer(3, 'C', false, this)">C. To replace Level 1 completely.</button>
+                    <button class="opt-btn" onclick="checkAnswer(3, 'D', false, this)">D. To generate external customer-facing FAQs.</button>
+                </div>
+                <div class="feedback-box" id="fb-3"></div>
+            </div>
+
+            <div class="score-banner">
+                <span>Box Office Certification Status:</span>
+                <span class="score-value" id="score-display">0 / 3 Correct</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Cinema Ambient Background Canvas Animation
+        const canvas = document.getElementById('cinema-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.floor((canvas.width * canvas.height) / 4000);
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    alpha: Math.random() * 0.5 + 0.1,
+                    speedY: -Math.random() * 0.3 - 0.1
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.speedY;
+                if (p.y < 0) p.y = canvas.height;
+                ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawParticles);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        drawParticles();
+
+        // Navigation Tabs Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Level Details Interactive Switcher
+        const levelData = {
+            1: {
+                title: '⚡ Level 1: Core Problem',
+                desc: 'Start broad enough to locate the correct general knowledge domain. Ask: "What fundamental event is occurring?"',
+                tags: ['Missing component', 'Damaged product', 'Refund', 'Cancellation', 'Replacement', 'Login failure']
+            },
+            2: {
+                title: '🔍 Level 2: Product or Process',
+                desc: 'Combine the core problem with the primary product type or purchase channel involved.',
+                tags: ['Missing component + product', 'Refund + retailer', 'Replacement + warranty', 'Login failure + mobile app']
+            },
+            3: {
+                title: '🎯 Level 3: Specific Detail',
+                desc: 'Narrow down to unique edge cases, special purchasing rules, or item lifecycle statuses.',
+                tags: ['Missing component + online order', 'Damaged product + retailer purchase', 'Replacement + discontinued product']
+            }
+        };
+
+        function showLevelDetails(lvl) {
+            const data = levelData[lvl];
+            document.getElementById('d-title').innerText = data.title;
+            document.getElementById('d-desc').innerText = data.desc;
+            
+            const tagContainer = document.getElementById('d-tags');
+            tagContainer.innerHTML = '';
+            data.tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'example-tag';
+                span.innerText = tag;
+                tagContainer.appendChild(span);
+            });
+        }
+
+        // Quiz Logic
+        let solved = { 1: false, 2: false, 3: false };
+        let score = 0;
+
+        function checkAnswer(qNum, option, isCorrect, btnElement) {
+            const parent = document.getElementById(`qc-${qNum}`);
+            const buttons = parent.querySelectorAll('.opt-btn');
+            const feedback = document.getElementById(`fb-${qNum}`);
+
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+
+            if (isCorrect) {
+                btnElement.classList.add('correct');
+                feedback.style.display = 'block';
+                feedback.style.color = 'var(--correct-green)';
+                feedback.style.border = '1px solid var(--correct-green)';
+                feedback.style.background = 'rgba(0, 255, 136, 0.05)';
+                feedback.innerHTML = '<strong>Target Hit!</strong> Perfect application of the Keyword Pyramid methodology.';
+                if (!solved[qNum]) {
+                    score++;
+                    solved[qNum] = true;
+                }
+            } else {
+                btnElement.classList.add('wrong');
+                feedback.style.display = 'block';
+                feedback.style.color = 'var(--wrong-red)';
+                feedback.style.border = '1px solid var(--wrong-red)';
+                feedback.style.background = 'rgba(255, 71, 87, 0.05)';
+                feedback.innerHTML = '<strong>Cut! Wrong Take.</strong> Remember to start with the core problem keyword before adding specific details.';
+            }
+
+            document.getElementById('score-display').innerText = `${score} / 3 Correct`;
+        }
+    </script>
+</body>
+</html>
