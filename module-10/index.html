@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)https://excellent-pink-xt8ckdvf.edgeone.dev/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Critical Thinking Quiz - Interactive 16:9</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: transparent;
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    /* Strict 16:9 Aspect Ratio Container */
+    .quiz-container {
+      width: 100%;
+      max-width: 850px;
+      aspect-ratio: 16 / 9;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Header Section */
+    .quiz-header {
+      flex-shrink: 0;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .quiz-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .q-counter {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0284c7;
+      background: #f0f9ff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid #bae6fd;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      background-color: #f1f5f9;
+      border-radius: 4px;
+      height: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: #0284c7;
+      width: 5%;
+      transition: width 0.25s ease;
+    }
+
+    /* Questions Wrapper (Flex-1 to take available height) */
+    .questions-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0;
+      overflow: hidden;
+    }
+
+    .question-card {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .question-card.active {
+      display: flex;
+    }
+
+    .question-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: #334155;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .option-label:hover {
+      background-color: #f0f9ff;
+      border-color: #bae6fd;
+    }
+
+    .option-label input {
+      accent-color: #0284c7;
+      cursor: pointer;
+      width: 13px;
+      height: 13px;
+    }
+
+    /* Feedback Overlay */
+    .option-label.correct {
+      background-color: #f0fdf4 !important;
+      border-color: #86efac !important;
+      color: #166534 !important;
+      font-weight: 600;
+    }
+
+    .option-label.incorrect {
+      background-color: #fef2f2 !important;
+      border-color: #fca5a5 !important;
+      color: #991b1b !important;
+    }
+
+    /* Final Results Screen */
+    .results-card {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      gap: 8px;
+    }
+
+    .results-card.active {
+      display: flex;
+    }
+
+    .results-card h3 {
+      font-size: 1.1rem;
+      color: #0f172a;
+    }
+
+    .score-badge {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #0284c7;
+      margin: 4px 0;
+    }
+
+    .score-subtext {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* Footer Controls */
+    .quiz-footer {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: #475569;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #e2e8f0;
+    }
+
+    .btn-primary {
+      background-color: #0284c7;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0369a1;
+    }
+
+    .btn-submit {
+      background-color: #16a34a;
+      color: #ffffff;
+    }
+
+    .btn-submit:hover {
+      background-color: #15803d;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    
+    <!-- Top Progress Header -->
+    <div class="quiz-header">
+      <div class="header-top">
+        <h2>🧠 Critical Thinking for Customer Service</h2>
+        <span class="q-counter" id="qCounter">Question 1 of 20</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- Questions Area -->
+    <div class="questions-wrapper">
+      <form id="quizForm" style="width: 100%;">
+
+        <!-- Q1 -->
+        <div class="question-card active" data-q="1">
+          <div class="question-title">1. What is the primary purpose of critical thinking in customer service?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q1" value="A"> A) Memorizing scripts faster to reduce handle time</label>
+            <label class="option-label"><input type="radio" name="q1" value="B"> B) Analyzing context and resolving root issues effectively</label>
+            <label class="option-label"><input type="radio" name="q1" value="C"> C) Escalating all non-standard calls immediately</label>
+            <label class="option-label"><input type="radio" name="q1" value="D"> D) Following company policy strictly without exceptions</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-card" data-q="2">
+          <div class="question-title">2. Why is relying solely on a script risky during customer interactions?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q2" value="A"> A) Scripts increase average call handling time</label>
+            <label class="option-label"><input type="radio" name="q2" value="B"> B) Scripts can ignore unique customer context and underlying problems</label>
+            <label class="option-label"><input type="radio" name="q2" value="C"> C) Customers dislike agents who sound polite</label>
+            <label class="option-label"><input type="radio" name="q2" value="D"> D) Scripts are prohibited in quality control evaluations</label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-card" data-q="3">
+          <div class="question-title">3. What does "moving from responding to resolving" mean?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q3" value="A"> A) Answering questions quickly to close tickets</label>
+            <label class="option-label"><input type="radio" name="q3" value="B"> B) Focusing on solving the underlying issue rather than offering superficial answers</label>
+            <label class="option-label"><input type="radio" name="q3" value="C"> C) Transferring the call to a specialist right away</label>
+            <label class="option-label"><input type="radio" name="q3" value="D"> D) Issuing refunds without verifying order details</label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question-card" data-q="4">
+          <div class="question-title">4. True or False: The initial problem a customer presents is always the actual root cause.</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q4" value="A"> A) True</label>
+            <label class="option-label"><input type="radio" name="q4" value="B"> B) False</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="question-card" data-q="5">
+          <div class="question-title">5. A customer states, "I want a refund," with no extra details. What is your best first action?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q5" value="A"> A) Issue the refund immediately to ensure high satisfaction</label>
+            <label class="option-label"><input type="radio" name="q5" value="B"> B) Decline the request because no reason was given</label>
+            <label class="option-label"><input type="radio" name="q5" value="C"> C) Ask clarifying questions to gather facts and context before deciding</label>
+            <label class="option-label"><input type="radio" name="q5" value="D"> D) Transfer the customer to the billing department</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="question-card" data-q="6">
+          <div class="question-title">6. What is the main goal of Root Cause Analysis?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q6" value="A"> A) To assign blame to a specific department</label>
+            <label class="option-label"><input type="radio" name="q6" value="B"> B) To identify why a problem occurred to fix it permanently</label>
+            <label class="option-label"><input type="radio" name="q6" value="C"> C) To document customer errors for company records</label>
+            <label class="option-label"><input type="radio" name="q6" value="D"> D) To speed up call wrap-up times</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question-card" data-q="7">
+          <div class="question-title">7. Why should agents gather facts before checking policy options?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q7" value="A"> A) Policies change depending on how polite the customer is</label>
+            <label class="option-label"><input type="radio" name="q7" value="B"> B) Fact gathering ensures the correct policy rule is applied accurately</label>
+            <label class="option-label"><input type="radio" name="q7" value="C"> C) Gathering facts fills time while looking up account notes</label>
+            <label class="option-label"><input type="radio" name="q7" value="D"> D) It allows agents to avoid checking company policy entirely</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="question-card" data-q="8">
+          <div class="question-title">8. Which of the following represents an assumption rather than a fact?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q8" value="A"> A) "The account records show three failed login attempts today."</label>
+            <label class="option-label"><input type="radio" name="q8" value="B"> B) "The package tracking shows delivered on Tuesday."</label>
+            <label class="option-label"><input type="radio" name="q8" value="C"> C) "The customer probably didn't read the manual correctly."</label>
+            <label class="option-label"><input type="radio" name="q8" value="D"> D) "The payment receipt shows a balance of $0.00."</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="question-card" data-q="9">
+          <div class="question-title">9. What should an agent do when a standard procedure doesn't fully fit a customer's situation?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q9" value="A"> A) Guess a workaround without consulting resources</label>
+            <label class="option-label"><input type="radio" name="q9" value="B"> B) Evaluate available options within guidelines to find a fair solution</label>
+            <label class="option-label"><input type="radio" name="q9" value="C"> C) Refuse assistance since the script doesn't cover it</label>
+            <label class="option-label"><input type="radio" name="q9" value="D"> D) Tell the customer that nothing can be done</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="question-card" data-q="10">
+          <div class="question-title">10. How does understanding customer context improve decision-making?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q10" value="A"> A) It enables personalized solutions suited to specific situations</label>
+            <label class="option-label"><input type="radio" name="q10" value="B"> B) It guarantees that all customer requests are approved</label>
+            <label class="option-label"><input type="radio" name="q10" value="C"> C) It allows agents to bypass quality assurance evaluations</label>
+            <label class="option-label"><input type="radio" name="q10" value="D"> D) It eliminates the need for documenting ticket notes</label>
+          </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="question-card" data-q="11">
+          <div class="question-title">11. A customer is frustrated about a delayed shipment. What is a critical thinking response?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q11" value="A"> A) Apologize and blame the courier service directly</label>
+            <label class="option-label"><input type="radio" name="q11" value="B"> B) Check order tracking, identify the delay cause, and communicate next steps</label>
+            <label class="option-label"><input type="radio" name="q11" value="C"> C) Offer a full refund immediately without reviewing tracking data</label>
+            <label class="option-label"><input type="radio" name="q11" value="D"> D) Ask the customer to call back in a few days if it hasn't arrived</label>
+          </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question-card" data-q="12">
+          <div class="question-title">12. Which indicator suggests an agent is making decisions based on assumptions?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q12" value="A"> A) Asking clarifying questions before offering solutions</label>
+            <label class="option-label"><input type="radio" name="q12" value="B"> B) Jumping to conclusions before reviewing account history</label>
+            <label class="option-label"><input type="radio" name="q12" value="C"> C) Checking company refund guidelines before deciding</label>
+            <label class="option-label"><input type="radio" name="q12" value="D"> D) Reviewing previous support interaction logs</label>
+          </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="question-card" data-q="13">
+          <div class="question-title">13. Why is it important to evaluate multiple solutions before making a final decision?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q13" value="A"> A) To prolong the interaction time</label>
+            <label class="option-label"><input type="radio" name="q13" value="B"> B) To choose the option that balances customer satisfaction and business policy</label>
+            <label class="option-label"><input type="radio" name="q13" value="C"> C) To force the customer to select their own solution</label>
+            <label class="option-label"><input type="radio" name="q13" value="D"> D) To ensure company policy is completely bypassed</label>
+          </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="question-card" data-q="14">
+          <div class="question-title">14. What step is essential before escalating or transferring a customer issue?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q14" value="A"> A) Telling the customer to repeat everything to the next agent</label>
+            <label class="option-label"><input type="radio" name="q14" value="B"> B) Gathering relevant facts and logging detailed notes on the ticket</label>
+            <label class="option-label"><input type="radio" name="q14" value="C"> C) Disconnecting the call if the issue is too complex</label>
+            <label class="option-label"><input type="radio" name="q14" value="D"> D) Closing the ticket prior to transferring</label>
+          </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="question-card" data-q="15">
+          <div class="question-title">15. How does critical thinking contribute to long-term customer loyalty?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q15" value="A"> A) By giving customers free products whenever they complain</label>
+            <label class="option-label"><input type="radio" name="q15" value="B"> B) By delivering consistent, accurate, and fair solutions based on facts</label>
+            <label class="option-label"><input type="radio" name="q15" value="C"> C) By ending customer conversations in under two minutes</label>
+            <label class="option-label"><input type="radio" name="q15" value="D"> D) By strictly repeating script statements</label>
+          </div>
+        </div>
+
+        <!-- Q16 -->
+        <div class="question-card" data-q="16">
+          <div class="question-title">16. Which key question reflects a critical thinking mindset during support calls?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q16" value="A"> A) "How fast can I end this interaction?"</label>
+            <label class="option-label"><input type="radio" name="q16" value="B"> B) "What do I need to know before making the right decision?"</label>
+            <label class="option-label"><input type="radio" name="q16" value="C"> C) "Which script line should I read next?"</label>
+            <label class="option-label"><input type="radio" name="q16" value="D"> D) "Why is the customer asking so many questions?"</label>
+          </div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="question-card" data-q="17">
+          <div class="question-title">17. A customer requests a policy exception. What should be evaluated first?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q17" value="A"> A) The customer's tone of voice</label>
+            <label class="option-label"><input type="radio" name="q17" value="B"> B) The facts, case history, and allowable policy flexibility guidelines</label>
+            <label class="option-label"><input type="radio" name="q17" value="C"> C) The current queue length</label>
+            <label class="option-label"><input type="radio" name="q17" value="D"> D) Personal feelings regarding the customer's request</label>
+          </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="question-card" data-q="18">
+          <div class="question-title">18. What is a primary risk of rushing to offer a quick solution without investigating?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q18" value="A"> A) The customer will ask for a supervisor</label>
+            <label class="option-label"><input type="radio" name="q18" value="B"> B) You may address the wrong issue, requiring repeat contacts</label>
+            <label class="option-label"><input type="radio" name="q18" value="C"> C) The interaction will take too long</label>
+            <label class="option-label"><input type="radio" name="q18" value="D"> D) Account notes will become too long</label>
+          </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="question-card" data-q="19">
+          <div class="question-title">19. What role do company guidelines play in critical thinking?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q19" value="A"> A) They completely replace the need for decision-making</label>
+            <label class="option-label"><input type="radio" name="q19" value="B"> B) They define boundaries within which agents evaluate choices</label>
+            <label class="option-label"><input type="radio" name="q19" value="C"> C) They prevent agents from asking open-ended questions</label>
+            <label class="option-label"><input type="radio" name="q19" value="D"> D) They are optional suggestions with no real importance</label>
+          </div>
+        </div>
+
+        <!-- Q20 -->
+        <div class="question-card" data-q="20">
+          <div class="question-title">20. What is a recommended post-resolution practice for complex cases?</div>
+          <div class="options-group">
+            <label class="option-label"><input type="radio" name="q20" value="A"> A) Delete ticket history to keep records clean</label>
+            <label class="option-label"><input type="radio" name="q20" value="B"> B) Log clear notes and reflect on preventive measures for similar cases</label>
+            <label class="option-label"><input type="radio" name="q20" value="C"> C) Avoid handling similar calls in the future</label>
+            <label class="option-label"><input type="radio" name="q20" value="D"> D) Transfer the ticket to quality assurance for review</label>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Results Card -->
+      <div class="results-card" id="resultsCard">
+        <h3>🎉 Assessment Complete!</h3>
+        <div class="score-badge" id="scoreText">0%</div>
+        <p class="score-subtext" id="scoreSubtext">You answered 0 out of 20 correctly.</p>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <button class="btn btn-secondary" onclick="reviewQuiz()">Review Answers</button>
+          <button class="btn btn-primary" onclick="restartQuiz()">Retake Quiz</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Footer Controls -->
+    <div class="quiz-footer" id="quizFooter">
+      <button class="btn btn-secondary" id="prevBtn" onclick="navigate(-1)" disabled="">Previous</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">Next Question</button>
+      <button class="btn btn-submit" id="submitBtn" onclick="gradeQuiz()" style="display: none;">Submit Quiz</button>
+    </div>
+
+  </div>
+
+  <script>
+    const totalQuestions = 20;
+    let currentQuestion = 1;
+    let isGraded = false;
+
+    const answers = {
+      q1: "B", q2: "B", q3: "B", q4: "B", q5: "C",
+      q6: "B", q7: "B", q8: "C", q9: "B", q10: "A",
+      q11: "B", q12: "B", q13: "B", q14: "B", q15: "B",
+      q16: "B", q17: "B", q18: "B", q19: "B", q20: "B"
+    };
+
+    function updateUI() {
+      // Toggle Question Visibility
+      document.querySelectorAll('.question-card').forEach(card => {
+        card.classList.remove('active');
+        if (parseInt(card.dataset.q) === currentQuestion) {
+          card.classList.add('active');
+        }
+      });
+
+      // Update Counter & Progress Bar
+      document.getElementById('qCounter').innerText = `Question ${currentQuestion} of ${totalQuestions}`;
+      const progressPercent = (currentQuestion / totalQuestions) * 100;
+      document.getElementById('progressBar').style.width = progressPercent + '%';
+
+      // Navigation Buttons State
+      document.getElementById('prevBtn').disabled = (currentQuestion === 1);
+
+      if (currentQuestion === totalQuestions) {
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'inline-block';
+      } else {
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        document.getElementById('submitBtn').style.display = 'none';
+      }
+    }
+
+    function navigate(direction) {
+      currentQuestion += direction;
+      if (currentQuestion < 1) currentQuestion = 1;
+      if (currentQuestion > totalQuestions) currentQuestion = totalQuestions;
+      updateUI();
+    }
+
+    function gradeQuiz() {
+      let score = 0;
+      isGraded = true;
+
+      for (let i = 1; i <= totalQuestions; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const qCard = document.querySelector(`.question-card[data-q="${i}"]`);
+        const labels = qCard.querySelectorAll('.option-label');
+
+        labels.forEach(lbl => lbl.classList.remove('correct', 'incorrect'));
+
+        if (selected) {
+          if (selected.value === answers[`q${i}`]) {
+            score++;
+            selected.parentElement.classList.add('correct');
+          } else {
+            selected.parentElement.classList.add('incorrect');
+            labels.forEach(lbl => {
+              const input = lbl.querySelector('input');
+              if (input && input.value === answers[`q${i}`]) {
+                lbl.classList.add('correct');
+              }
+            });
+          }
+        } else {
+          labels.forEach(lbl => {
+            const input = lbl.querySelector('input');
+            if (input && input.value === answers[`q${i}`]) {
+              lbl.classList.add('correct');
+            }
+          });
+        }
+      }
+
+      // Display Final Results Screen
+      document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('quizForm').style.display = 'none';
+      document.getElementById('resultsCard').classList.add('active');
+      document.getElementById('quizFooter').style.display = 'none';
+
+      const pct = Math.round((score / totalQuestions) * 100);
+      document.getElementById('scoreText').innerText = `${pct}%`;
+      document.getElementById('scoreSubtext').innerText = `You scored ${score} out of ${totalQuestions} correct.`;
+    }
+
+    function reviewQuiz() {
+      document.getElementById('resultsCard').classList.remove('active');
+      document.getElementById('quizForm').style.display = 'block';
+      document.getElementById('quizFooter').style.display = 'flex';
+      currentQuestion = 1;
+      updateUI();
+    }
+
+    function restartQuiz() {
+      document.getElementById('quizForm').reset();
+      isGraded = false;
+
+      // Clear highlights
+      document.querySelectorAll('.option-label').forEach(lbl => {
+        lbl.classList.remove('correct', 'incorrect');
+      });
+
+      document.getElementById('resultsCard').classList.remove('active');
+      document.getElementById('quizForm').style.display = 'block';
+      document.getElementById('quizFooter').style.display = 'flex';
+
+      currentQuestion = 1;
+      updateUI();
+    }
+  </script>
+
+
+<div><div style="display: none; position: fixed; top: 30px; width: auto; max-width: 100%; text-align: center; left: 50%; transform: translateX(-50%); z-index: 99999999;"><div style="display: inline-block; font-size: 14px; font-weight: bold; border: 1px solid rgb(240, 195, 109); background-color: rgb(249, 237, 190); padding: 0px 10px; border-radius: 2px; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;"></div></div></div><protonpass-root-ea66 data-protonpass-role="root" data-protonpass-theme="os"><template shadowrootmode="closed"></template></protonpass-root-ea66></body></html>
