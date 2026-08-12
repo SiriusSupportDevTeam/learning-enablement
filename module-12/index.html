@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://overwhelming-fuchsia-w3k8qcji.edgeone.dev/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflection Activity</title>
+    <style>
+        :root {
+            --primary-color: #5551ff;
+            --primary-hover: #4338ca;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --input-bg: #f9fafb;
+            --border-color: #e5e7eb;
+            --focus-ring: #c7d2fe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* STRICT 16:9 CONTAINER */
+        .widescreen-card {
+            width: 100%;
+            max-width: 960px; /* Max standard landscape width */
+            aspect-ratio: 16 / 9; /* Enforces strict 16:9 geometry */
+            max-height: 100vh;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: clamp(0.75rem, 2.5vw, 1.5rem);
+            overflow: hidden; /* Stops external scrollbars completely */
+        }
+
+        /* HEADER SECTION */
+        .header {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .header h2 {
+            color: var(--primary-color);
+            font-size: clamp(1rem, 2.2vw, 1.35rem);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            font-size: clamp(0.75rem, 1.4vw, 0.88rem);
+            margin-top: 0.2rem;
+        }
+
+        /* FORM / QUESTIONS CONTAINER */
+        .content-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0.25rem 0;
+        }
+
+        .question-group {
+            margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem);
+        }
+
+        .question-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+            font-size: clamp(0.75rem, 1.4vw, 0.88rem);
+            text-align: left;
+        }
+
+        .response-input {
+            width: 100%;
+            height: clamp(42px, 8vh, 60px); /* Scales dynamically with height to prevent scroll */
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+            color: var(--text-main);
+            background-color: var(--input-bg);
+            resize: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .response-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--focus-ring);
+            background-color: #ffffff;
+        }
+
+        /* FOOTER & BUTTON */
+        .footer {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: clamp(0.4rem, 1.2vw, 0.6rem) clamp(1.2rem, 3vw, 2rem);
+            font-size: clamp(0.8rem, 1.4vw, 0.9rem);
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 4px rgba(85, 81, 255, 0.2);
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widescreen-card">
+        <header class="header">
+            <h2>📌 Reflection Activity</h2>
+            <p class="intro-text">Think about your own customer interactions and answer the questions below:</p>
+        </header>
+
+        <form class="content-body" id="reflectionForm" onsubmit="event.preventDefault(); alert(&#39;Reflection saved successfully!&#39;);">
+            
+            <div class="question-group">
+                <label class="question-label" for="q1">
+                    1. Have I ever followed a script but later realized the customer needed something different?
+                </label>
+                <textarea id="q1" class="response-input" placeholder="Reflect on a past situation and describe what happened..."></textarea>
+            </div>
+
+            <div class="question-group">
+                <label class="question-label" for="q2">
+                    2. What questions could I ask before providing a solution?
+                </label>
+                <textarea id="q2" class="response-input" placeholder="List 2-3 open-ended questions you can ask..."></textarea>
+            </div>
+
+            <div class="question-group">
+                <label class="question-label" for="q3">
+                    3. How can I make a scripted response feel more personal?
+                </label>
+                <textarea id="q3" class="response-input" placeholder="Write down techniques to adapt your tone naturally..."></textarea>
+            </div>
+
+        </form>
+
+        <footer class="footer">
+            <button type="submit" form="reflectionForm" class="submit-btn">Save Reflection</button>
+        </footer>
+    </div>
+
+
+<div><div style="display: none; position: fixed; top: 30px; width: auto; max-width: 100%; text-align: center; left: 50%; transform: translateX(-50%); z-index: 99999999;"><div style="display: inline-block; font-size: 14px; font-weight: bold; border: 1px solid rgb(240, 195, 109); background-color: rgb(249, 237, 190); padding: 0px 10px; border-radius: 2px; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;"></div></div></div><protonpass-root-4a7c data-protonpass-role="root" data-protonpass-theme="os"><template shadowrootmode="closed"></template></protonpass-root-4a7c></body></html>
