@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)https://quickest-lavender-2bstzqan.edgeone.dev/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive QA Practice</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .interactive-module {
+      background-color: #ffffff;
+      max-width: 700px;
+      width: 100%;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .header {
+      color: #2c3e50;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 10px;
+      margin-top: 0;
+    }
+    .scenario-box {
+      background-color: #f8f9fa;
+      border-left: 5px solid #3498db;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .customer-label {
+      color: #e74c3c;
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .customer-quote {
+      font-style: italic;
+      color: #333;
+      font-size: 16px;
+      margin: 0;
+    }
+    .question-block {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #ecf0f1;
+    }
+    .question-block:last-child {
+      border-bottom: none;
+    }
+    .question-text {
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccd1d9;
+      border-radius: 6px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 60px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+    .btn-tip {
+      background-color: #f39c12;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    .btn-tip:hover {
+      background-color: #d68910;
+    }
+    .tip-content {
+      display: none;
+      background-color: #fdf2e9;
+      border: 1px solid #fdebd0;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+      color: #d35400;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="interactive-module">
+    <h2 class="header">📝 Quick Practice: Reading the Customer</h2>
+    
+    <p style="color: #7f8c8d; font-size: 15px;">Read the customer message below, type your thoughts, and check the QA tips to see how you did.</p>
+
+    <div class="scenario-box">
+      <span class="customer-label">🧠 Customer Message:</span>
+      <p class="customer-quote">"I've contacted support twice already, and no one has fixed this."</p>
+    </div>
+
+    <!-- Question 1 -->
+    <div class="question-block">
+      <div class="question-text">📌 1. What emotion is the customer expressing?</div>
+      <textarea placeholder="Type your answer here..."></textarea>
+      <button class="btn-tip" onclick="toggleTip(&#39;tip1&#39;)">💡 Show QA Tip</button>
+      <div id="tip1" class="tip-content">
+        <strong>QA Tip:</strong> The customer is expressing extreme frustration, impatience, and feeling ignored. They are losing trust in the support team.
+      </div>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="question-block">
+      <div class="question-text">📌 2. What information have they already shared?</div>
+      <textarea placeholder="Type your answer here..."></textarea>
+      <button class="btn-tip" onclick="toggleTip(&#39;tip2&#39;)">💡 Show QA Tip</button>
+      <div id="tip2" class="tip-content">
+        <strong>QA Tip:</strong> They have established a timeline: this is their third touchpoint ("twice already"). The core issue is still unresolved.
+      </div>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="question-block">
+      <div class="question-text">📌 3. What should you avoid repeating?</div>
+      <textarea placeholder="Type your answer here..."></textarea>
+      <button class="btn-tip" onclick="toggleTip(&#39;tip3&#39;)">💡 Show QA Tip</button>
+      <div id="tip3" class="tip-content">
+        <strong>QA Tip:</strong> Avoid asking them to repeat basic details they likely provided in the first two interactions. Do not offer basic Level 1 troubleshooting steps unless absolutely necessary.
+      </div>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="question-block">
+      <div class="question-text">📌 4. What additional information would help you solve the problem?</div>
+      <textarea placeholder="Type your answer here..."></textarea>
+      <button class="btn-tip" onclick="toggleTip(&#39;tip4&#39;)">💡 Show QA Tip</button>
+      <div id="tip4" class="tip-content">
+        <strong>QA Tip:</strong> You need to look up their previous ticket numbers to find out what was previously attempted, what the actual error/issue is, and why it failed to be resolved.
+      </div>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="question-block">
+      <div class="question-text">📌 5. How could you acknowledge their experience before offering a solution?</div>
+      <textarea placeholder="Type your answer here..."></textarea>
+      <button class="btn-tip" onclick="toggleTip(&#39;tip5&#39;)">💡 Show QA Tip</button>
+      <div id="tip5" class="tip-content">
+        <strong>QA Tip:</strong> Use strong empathy. Example: "I completely understand your frustration—having to reach out three times for the same issue is incredibly exhausting. I am pulling up your previous tickets right now to get this sorted out for you immediately."
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleTip(tipId) {
+      const tipElement = document.getElementById(tipId);
+      if (tipElement.style.display === "block") {
+        tipElement.style.display = "none";
+      } else {
+        tipElement.style.display = "block";
+      }
+    }
+  </script>
+
+
+<div><div style="display: none; position: fixed; top: 30px; width: auto; max-width: 100%; text-align: center; left: 50%; transform: translateX(-50%); z-index: 99999999;"><div style="display: inline-block; font-size: 14px; font-weight: bold; border: 1px solid rgb(240, 195, 109); background-color: rgb(249, 237, 190); padding: 0px 10px; border-radius: 2px; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;"></div></div></div><protonpass-root-6aa4 data-protonpass-role="root" data-protonpass-theme="os"><template shadowrootmode="closed"></template></protonpass-root-6aa4></body></html>
