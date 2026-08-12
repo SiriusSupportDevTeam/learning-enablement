@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://sticky-moccasin-fcgmjzfk.edgeone.dev/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity: Quick Reflection</title>
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --accent-blue: #0284c7;
+      --accent-red-bg: #fef2f2;
+      --accent-red-border: #fecaca;
+      --accent-red-text: #991b1b;
+      --accent-green-bg: #f0fdf4;
+      --accent-green-border: #bbf7d0;
+      --accent-green-text: #166534;
+      --accent-yellow-bg: #fffbeb;
+      --accent-yellow-border: #fde68a;
+      --accent-yellow-text: #92400e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px;
+      margin: 0;
+    }
+
+    .activity-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Header Section */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .title-group h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #0f172a;
+    }
+
+    .title-group p {
+      margin: 4px 0 0 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .scenario-box {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+    }
+
+    .scenario-box strong {
+      color: var(--accent-blue);
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Main Grid Layout */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fafafa;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      margin-top: 0;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 0.88rem;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .card-footer-text {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--accent-blue);
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    /* Warning & Approach Boxes */
+    .alert-box {
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+
+    .alert-warning {
+      background-color: var(--accent-yellow-bg);
+      border: 1px solid var(--accent-yellow-border);
+      color: var(--accent-yellow-text);
+    }
+
+    .alert-poor {
+      background-color: var(--accent-red-bg);
+      border: 1px solid var(--accent-red-border);
+      color: var(--accent-red-text);
+      margin-bottom: 10px;
+    }
+
+    .alert-better {
+      background-color: var(--accent-green-bg);
+      border: 1px solid var(--accent-green-border);
+      color: var(--accent-green-text);
+    }
+
+    /* Key Reflection Banner */
+    .reflection-banner {
+      grid-column: 1 / -1;
+      background: #f1f5f9;
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-top: 8px;
+    }
+
+    .reflection-banner strong {
+      font-size: 0.8rem;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .reflection-banner blockquote {
+      margin: 4px 0 0 0;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+
+    /* Interactive Quiz Checklist Section */
+    .quiz-section {
+      margin-top: 24px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .quiz-section h3 {
+      margin-top: 0;
+      font-size: 1.05rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .checkbox-label input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="activity-container">
+    
+    <!-- Top Header -->
+    <div class="header">
+      <div class="title-group">
+        <h2>📌 Activity: Quick Reflection</h2>
+        <p>Practice critical thinking: gather facts first before making decisions.</p>
+      </div>
+      <div class="scenario-box">
+        <strong>🏢 Scenario</strong>
+        "I want a refund." <em>(No reason provided)</em>
+      </div>
+    </div>
+
+    <!-- Main Content Cards -->
+    <div class="grid-container">
+      
+      <!-- Card 1 -->
+      <div class="card">
+        <div>
+          <h3>🧠 1. Questions to Ask?</h3>
+          <ul>
+            <li>Why are you requesting a refund?</li>
+            <li>Which booking/order is this for?</li>
+            <li>When did it occur? What happened?</li>
+            <li>Spoken with another support agent?</li>
+            <li>Problem with product or service?</li>
+          </ul>
+        </div>
+        <div class="card-footer-text">Goal: Gather facts to understand situation.</div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div>
+          <h3>📜 2. Info Needed First</h3>
+          <ul>
+            <li>Customer account info</li>
+            <li>Booking/order &amp; payment status</li>
+            <li>Company refund policy</li>
+            <li>Previous support notes</li>
+          </ul>
+        </div>
+        <div class="alert-box alert-warning">
+          ⚠️ Deciding without this leads to mistakes or inconsistent service.
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card">
+        <div>
+          <h3>💡 Example Breakdown</h3>
+          <div class="alert-box alert-poor">
+            <strong>❌ Poor Approach</strong><br>
+            Processes refund immediately with no questions.<br>
+            <em>Result: Ignores policy/real issue.</em>
+          </div>
+          <div class="alert-box alert-better">
+            <strong>✅ Better Approach</strong><br>
+            Asks questions &amp; reviews policy before deciding.<br>
+            <em>Result: Accurate, fair, and factual.</em>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card">
+        <div>
+          <h3>🛑 Think Before You Act</h3>
+          <div class="quiz-section" style="margin-top: 0; padding: 0; border: none;">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox"> Do I understand the problem?
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox"> Am I making assumptions?
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox"> Do I have enough facts?
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox"> Checked relevant policies?
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 / Banner -->
+      <div class="reflection-banner">
+        <strong>📝 Key Reflection</strong>
+        <blockquote>"What do I need to know before I can make the right decision?"</blockquote>
+      </div>
+
+    </div>
+  </div>
+
+
+<div><div style="display: none; position: fixed; top: 30px; width: auto; max-width: 100%; text-align: center; left: 50%; transform: translateX(-50%); z-index: 99999999;"><div style="display: inline-block; font-size: 14px; font-weight: bold; border: 1px solid rgb(240, 195, 109); background-color: rgb(249, 237, 190); padding: 0px 10px; border-radius: 2px; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;"></div></div></div><protonpass-root-bd9e data-protonpass-role="root" data-protonpass-theme="os"><template shadowrootmode="closed"></template></protonpass-root-bd9e></body></html>
