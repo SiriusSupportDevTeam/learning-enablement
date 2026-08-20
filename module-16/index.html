@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escape the "One More Task" Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#eaf1e8;
+    --bg-2:#dce9e6;
+    --panel:#fffdf8;
+    --ink:#1f3a34;
+    --ink-soft:#4d6660;
+    --marigold:#e2933f;
+    --marigold-dark:#c97a2b;
+    --teal:#5f9d97;
+    --teal-dark:#457a75;
+    --rose:#cf7f7f;
+    --leaf:#6fa06a;
+    --line:#d8e3d5;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-family:'Karla',sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 12% 8%, #f4e9d8 0%, transparent 42%),
+      radial-gradient(circle at 90% 85%, #dcebe5 0%, transparent 45%),
+      linear-gradient(160deg, var(--bg-1), var(--bg-2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px 14px;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+    background:var(--panel);
+    border-radius:28px;
+    box-shadow:0 20px 50px -20px rgba(31,58,52,0.35), 0 2px 8px rgba(31,58,52,0.08);
+    overflow:hidden;
+    position:relative;
+    border:1px solid #f1ebdd;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px 0 20px;
+  }
+  .dots{display:flex;gap:6px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:#dfe6dc;transition:all .3s;}
+  .dot.on{background:var(--marigold);width:18px;border-radius:5px;}
+  .mascot-wrap{
+    display:flex;align-items:center;gap:8px;
+    font-family:'Fredoka',sans-serif;font-size:12px;color:var(--ink-soft);
+  }
+  .energy-bar{
+    width:52px;height:8px;border-radius:6px;background:#e7e2d3;overflow:hidden;
+    border:1px solid #ded6c1;
+  }
+  .energy-fill{
+    height:100%;background:linear-gradient(90deg,var(--rose),var(--marigold),var(--leaf));
+    width:70%;transition:width .5s ease;
+  }
+  .stage{
+    display:none;
+    padding:22px 24px 26px 24px;
+    flex-direction:column;
+    min-height:430px;
+    animation:fadeIn .45s ease;
+  }
+  .stage.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .eyebrow{
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--teal-dark);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fredoka',sans-serif;font-weight:700;font-size:24px;
+    margin:0 0 10px 0;line-height:1.15;color:var(--ink);
+  }
+  h2{
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:19px;
+    margin:0 0 8px 0;color:var(--ink);
+  }
+  p{font-size:14.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 14px 0;}
+
+  .btn{
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:14.5px;
+    border:none;border-radius:14px;padding:13px 20px;cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s;
+  }
+  .btn:active{transform:scale(0.96);}
+  .btn-primary{
+    background:var(--marigold);color:#fff;
+    box-shadow:0 8px 18px -8px rgba(226,147,63,0.7);
+  }
+  .btn-primary:hover{background:var(--marigold-dark);}
+  .btn-ghost{
+    background:transparent;color:var(--teal-dark);
+    border:1.5px solid var(--teal);
+    font-size:13px;padding:9px 16px;
+  }
+  .btn-ghost:hover{background:#eef6f4;}
+  .btn-ghost.pulse{animation:pulse 1.1s infinite;}
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(95,157,151,0.45);}
+    50%{box-shadow:0 0 0 8px rgba(95,157,151,0);}
+  }
+
+  /* mascot plant */
+  .plant-stage{margin:6px 0;}
+  .plant-svg{transition:all .5s ease;}
+  .leaf{transform-origin:center bottom;transition:all .6s cubic-bezier(.34,1.56,.64,1);}
+
+  /* Screen 1: intro */
+  #stage-intro{align-items:flex-start;justify-content:center;text-align:left;}
+  .intro-plant{align-self:center;margin:6px 0 14px 0;}
+
+  /* Screen 2: loop game */
+  .loop-scene{
+    background:var(--bg-1);border-radius:16px;padding:16px;margin-bottom:14px;
+    border:1px solid var(--line);
+  }
+  .loop-line{
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;
+    color:var(--marigold-dark);min-height:26px;text-align:center;
+    transition:opacity .2s;
+  }
+  .task-pile{
+    display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+    min-height:34px;margin-top:10px;
+  }
+  .task-chip{
+    background:#fff;border:1.5px solid #ecd9bd;border-radius:8px;
+    padding:4px 9px;font-size:11.5px;color:var(--marigold-dark);
+    font-family:'Fredoka',sans-serif;
+    animation:pop .3s ease;
+  }
+  @keyframes pop{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .loop-actions{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:14px;}
+  .loop-note{
+    font-size:13px;color:var(--rose);text-align:center;background:#faf0ee;
+    border-radius:10px;padding:8px 12px;margin-top:10px;display:none;
+  }
+  .loop-note.show{display:block;animation:fadeIn .4s ease;}
+
+  /* Screen 3: checklist */
+  .chip-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:6px;}
+  .relate-chip{
+    text-align:left;background:#fff;border:1.5px solid var(--line);
+    border-radius:12px;padding:10px 14px;font-size:13.5px;color:var(--ink-soft);
+    cursor:pointer;transition:all .18s;font-family:'Karla',sans-serif;
+  }
+  .relate-chip:hover{border-color:var(--teal);}
+  .relate-chip.picked{
+    background:#eef6f4;border-color:var(--teal);color:var(--teal-dark);font-weight:700;
+  }
+  .relate-chip.picked::before{content:"✓ ";}
+
+  /* Screen 4: rhythm builder */
+  .slots{
+    display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+    background:var(--bg-1);border-radius:14px;padding:12px;margin-bottom:14px;
+    border:1px solid var(--line);
+  }
+  .slot{
+    width:70px;height:36px;border-radius:9px;border:1.5px dashed #c8d6c4;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-family:'Fredoka',sans-serif;color:#a9b8a4;
+    background:#fbfaf5;
+  }
+  .slot.filled{
+    border-style:solid;border-color:var(--leaf);background:#eef6ea;color:var(--ink);
+    font-weight:600;animation:pop .3s ease;
+  }
+  .pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:auto;}
+  .pool-chip{
+    background:var(--teal);color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;
+    font-size:13px;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;
+    transition:all .15s;
+  }
+  .pool-chip:hover{background:var(--teal-dark);}
+  .pool-chip.wrong{animation:shake .35s;}
+  .pool-chip.used{opacity:0;pointer-events:none;transform:scale(0.6);}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-5px);}
+    75%{transform:translateX(5px);}
+  }
+  .rhythm-hint{font-size:12.5px;color:var(--ink-soft);text-align:center;margin:-4px 0 12px 0;}
+
+  /* outro */
+  #stage-outro{align-items:center;text-align:center;justify-content:center;}
+  .keypoint-card{
+    background:linear-gradient(135deg,#f4ede0,#eaf1e8);
+    border-radius:16px;padding:18px;border:1px solid #ecd9bd;margin:10px 0 16px 0;
+  }
+  .keypoint-card p{color:var(--ink);font-weight:700;font-family:'Fredoka',sans-serif;
+    font-size:15.5px;margin:0;line-height:1.4;}
+
+  .spacer{flex:1;}
+  .row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;}
+  .petal{position:fixed;top:-20px;font-size:18px;pointer-events:none;animation:fall linear forwards;z-index:50;}
+  @keyframes fall{
+    to{transform:translateY(520px) rotate(340deg);opacity:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="topbar">
+    <div class="dots">
+      <div class="dot" data-dot="0"></div>
+      <div class="dot" data-dot="1"></div>
+      <div class="dot" data-dot="2"></div>
+      <div class="dot" data-dot="3"></div>
+      <div class="dot" data-dot="4"></div>
+    </div>
+    <div class="mascot-wrap">
+      <span id="energy-label">🌱 energy</span>
+      <div class="energy-bar"><div class="energy-fill" id="energy-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- STAGE 0: INTRO -->
+  <div class="stage active" id="stage-0">
+    <div class="eyebrow">A tiny interactive</div>
+    <h1>Escape the "One More Task" Loop</h1>
+    <p>You've got a desk plant. It thrives when you take real breaks — and wilts when you don't. Let's see what happens when work never has a natural stopping point.</p>
+    <div class="intro-plant">
+      <svg class="plant-svg" id="plant-intro" width="140" height="150" viewBox="0 0 140 150">
+        <ellipse cx="70" cy="138" rx="30" ry="6" fill="#00000012"/>
+        <path d="M40 100 L100 100 L92 140 L48 140 Z" fill="#c97a2b"/>
+        <path d="M40 100 L100 100 L97 110 L43 110 Z" fill="#e2933f"/>
+        <g id="leaves-intro">
+          <path class="leaf" d="M70 100 C 55 70, 40 65, 30 40 C 55 45, 70 65, 70 100" fill="#6fa06a"/>
+          <path class="leaf" d="M70 100 C 85 70, 100 65, 110 40 C 85 45, 70 65, 70 100" fill="#7fb37a"/>
+          <path class="leaf" d="M70 100 C 65 60, 70 40, 70 15 C 78 40, 78 65, 70 100" fill="#5f9d5a"/>
+        </g>
+      </svg>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="goTo(1)">Start ▸</button>
+  </div>
+
+  <!-- STAGE 1: THE LOOP GAME -->
+  <div class="stage" id="stage-1">
+    <div class="eyebrow">Part one</div>
+    <h2>The "I'll break after this" loop</h2>
+    <p>At home, nothing nudges you to stop. Tap through your to‑do list and watch what happens.</p>
+
+    <div class="loop-scene">
+      <div class="loop-line" id="loop-line">Your list is calm. For now.</div>
+      <div class="task-pile" id="task-pile"></div>
+    </div>
+
+    <div class="loop-note" id="loop-note">This is how a scheduled break quietly disappears — one "just one more" at a time.</div>
+
+    <div class="spacer"></div>
+    <div class="loop-actions">
+      <button class="btn btn-primary" id="btn-task" onclick="doTask()">✅ Do one more task</button>
+      <button class="btn btn-ghost" id="btn-break" onclick="takeBreak()">☕ Take a break</button>
+    </div>
+  </div>
+
+  <!-- STAGE 2: CHECKLIST -->
+  <div class="stage" id="stage-2">
+    <div class="eyebrow">Part two</div>
+    <h2>Sound familiar?</h2>
+    <p>Working from home can quietly turn into "always on." Tap anything you've caught yourself doing.</p>
+    <div class="chip-grid" id="chip-grid"></div>
+    <div class="spacer"></div>
+    <p style="font-size:12.5px;">The issue isn't one skipped break — it's when skipping becomes the routine.</p>
+    <button class="btn btn-primary" onclick="goTo(3)">Continue ▸</button>
+  </div>
+
+  <!-- STAGE 3: RHYTHM BUILDER -->
+  <div class="stage" id="stage-3">
+    <div class="eyebrow">Part three</div>
+    <h2>Build a sustainable rhythm</h2>
+    <p class="rhythm-hint">Tap the pieces in order to rebuild a healthy workday.</p>
+    <div class="slots" id="slots"></div>
+    <div class="pool" id="pool"></div>
+  </div>
+
+  <!-- STAGE 4: OUTRO -->
+  <div class="stage" id="stage-4">
+    <svg class="plant-svg" id="plant-outro" width="130" height="140" viewBox="0 0 140 150">
+        <ellipse cx="70" cy="138" rx="30" ry="6" fill="#00000012"/>
+        <path d="M40 100 L100 100 L92 140 L48 140 Z" fill="#c97a2b"/>
+        <path d="M40 100 L100 100 L97 110 L43 110 Z" fill="#e2933f"/>
+        <g id="leaves-outro">
+          <path class="leaf" d="M70 100 C 55 70, 40 65, 30 40 C 55 45, 70 65, 70 100" fill="#6fa06a"/>
+          <path class="leaf" d="M70 100 C 85 70, 100 65, 110 40 C 85 45, 70 65, 70 100" fill="#7fb37a"/>
+          <path class="leaf" d="M70 100 C 65 60, 70 40, 70 15 C 78 40, 78 65, 70 100" fill="#5f9d5a"/>
+        </g>
+    </svg>
+    <h2>Rhythm restored 🌿</h2>
+    <div class="keypoint-card">
+      <p>"Breaks are not interruptions to productivity — they help sustain it."</p>
+    </div>
+    <p>Prepare → focus → work → reset → repeat → recover → finish. That's the whole idea.</p>
+    <button class="btn btn-ghost" onclick="restart()">↺ Play again</button>
+  </div>
+
+</div>
+
+<script>
+  let energy = 65;
+  let stageIndex = 0;
+  let taskClicks = 0;
+  let brokeOnce = false;
+
+  const energyFill = document.getElementById('energy-fill');
+  const energyLabel = document.getElementById('energy-label');
+
+  function setEnergy(delta){
+    energy = Math.max(6, Math.min(100, energy + delta));
+    energyFill.style.width = energy + '%';
+    energyLabel.textContent = (energy > 70 ? '🌿 energy' : energy > 35 ? '🌱 energy' : '🥀 energy');
+    updatePlants();
+  }
+
+  function updatePlants(){
+    const droop = energy > 70 ? 0 : energy > 35 ? 10 : 28;
+    const scale = energy > 70 ? 1.08 : energy > 35 ? 1 : 0.85;
+    ['leaves-intro','leaves-outro'].forEach(id=>{
+      const g = document.getElementById(id);
+      if(g) g.style.transform = `rotate(${droop}deg) scale(${scale})`;
+    });
+  }
+
+  function setDots(n){
+    document.querySelectorAll('.dot').forEach((d,i)=>{
+      d.classList.toggle('on', i<=n);
+    });
+  }
+
+  function goTo(n){
+    document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+    document.getElementById('stage-'+n).classList.add('active');
+    stageIndex = n;
+    setDots(n);
+    if(n===2) buildChecklist();
+    if(n===3) buildRhythm();
+  }
+
+  /* ---------- STAGE 1: loop game ---------- */
+  const loopLines = [
+    "Just one more task.",
+    "I'll take my break after this.",
+    "Another task appears.",
+    "I'll do it after this one."
+  ];
+  const loopLine = document.getElementById('loop-line');
+  const taskPile = document.getElementById('task-pile');
+  const loopNote = document.getElementById('loop-note');
+  const btnBreak = document.getElementById('btn-break');
+
+  function doTask(){
+    taskClicks++;
+    const chip = document.createElement('div');
+    chip.className = 'task-chip';
+    chip.textContent = '📝 Task ' + taskClicks;
+    taskPile.appendChild(chip);
+    loopLine.style.opacity = 0;
+    setTimeout(()=>{
+      loopLine.textContent = loopLines[(taskClicks-1) % loopLines.length];
+      loopLine.style.opacity = 1;
+    }, 150);
+    setEnergy(-9);
+    if(taskClicks >= 3){
+      loopNote.classList.add('show');
+      btnBreak.classList.add('pulse');
+    }
+  }
+
+  function takeBreak(){
+    brokeOnce = true;
+    taskClicks = 0;
+    taskPile.innerHTML = '';
+    loopNote.classList.remove('show');
+    btnBreak.classList.remove('pulse');
+    loopLine.textContent = "☕ Break taken. Nice reset.";
+    setEnergy(+28);
+    if(!document.getElementById('btn-continue-1')){
+      const cont = document.createElement('button');
+      cont.className = 'btn btn-primary';
+      cont.id = 'btn-continue-1';
+      cont.style.marginTop = '4px';
+      cont.textContent = 'Continue ▸';
+      cont.onclick = ()=>goTo(2);
+      document.querySelector('#stage-1 .loop-actions').appendChild(cont);
+    }
+  }
+
+  /* ---------- STAGE 2: checklist ---------- */
+  const behaviors = [
+    "Eat lunch while answering messages",
+    "Keep working during a scheduled break",
+    "Check messages after your shift ends",
+    "Reply instantly, even when it's not urgent",
+    "Stay at your desk longer than needed",
+    "Feel guilty when you're not \"doing\" something"
+  ];
+  function buildChecklist(){
+    const grid = document.getElementById('chip-grid');
+    if(grid.childElementCount) return;
+    behaviors.forEach(b=>{
+      const el = document.createElement('button');
+      el.className = 'relate-chip';
+      el.textContent = b;
+      el.onclick = ()=> el.classList.toggle('picked');
+      grid.appendChild(el);
+    });
+  }
+
+  /* ---------- STAGE 3: rhythm builder ---------- */
+  const sequence = ['Prepare','Focus','Work','Reset','Focus','Work','Recover','Finish'];
+  let seqIndex = 0;
+  function shuffled(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  function buildRhythm(){
+    const slots = document.getElementById('slots');
+    const pool = document.getElementById('pool');
+    if(slots.childElementCount) return;
+    seqIndex = 0;
+    sequence.forEach((_,i)=>{
+      const s = document.createElement('div');
+      s.className = 'slot';
+      s.id = 'slot-'+i;
+      s.textContent = '·';
+      slots.appendChild(s);
+    });
+    const order = sequence.map((label,i)=>({label,i}));
+    shuffled(order).forEach(item=>{
+      const b = document.createElement('button');
+      b.className = 'pool-chip';
+      b.textContent = item.label;
+      b.dataset.label = item.label;
+      b.onclick = ()=>pickChip(b);
+      pool.appendChild(b);
+    });
+  }
+  function pickChip(btn){
+    if(btn.classList.contains('used')) return;
+    const label = btn.dataset.label;
+    if(label === sequence[seqIndex]){
+      const slot = document.getElementById('slot-'+seqIndex);
+      slot.textContent = label;
+      slot.classList.add('filled');
+      btn.classList.add('used');
+      setEnergy(+6);
+      seqIndex++;
+      if(seqIndex === sequence.length){
+        setTimeout(()=>{ launchPetals(); goTo(4); }, 500);
+      }
+    } else {
+      btn.classList.add('wrong');
+      setEnergy(-3);
+      setTimeout(()=>btn.classList.remove('wrong'), 350);
+    }
+  }
+
+  function launchPetals(){
+    const emojis = ['🌿','✨','🌸'];
+    for(let i=0;i<16;i++){
+      setTimeout(()=>{
+        const p = document.createElement('div');
+        p.className = 'petal';
+        p.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        p.style.left = Math.random()*100 + '%';
+        p.style.animationDuration = (1.6 + Math.random()*1.2) + 's';
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(), 3000);
+      }, i*70);
+    }
+  }
+
+  function restart(){
+    energy = 65;
+    taskClicks = 0;
+    brokeOnce = false;
+    document.getElementById('task-pile').innerHTML = '';
+    document.getElementById('loop-line').textContent = 'Your list is calm. For now.';
+    document.getElementById('loop-note').classList.remove('show');
+    document.getElementById('btn-break').classList.remove('pulse');
+    const contBtn = document.getElementById('btn-continue-1');
+    if(contBtn) contBtn.remove();
+    document.getElementById('chip-grid').innerHTML = '';
+    document.getElementById('slots').innerHTML = '';
+    document.getElementById('pool').innerHTML = '';
+    setEnergy(0);
+    goTo(0);
+  }
+
+  setEnergy(0);
+</script>
+
+</body>
+</html>
