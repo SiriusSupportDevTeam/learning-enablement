@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cozy Workspace Companion</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Karla:wght@400;700&display=swap');
+
+        :root {
+            /* Palette */
+            --bg-start: #eaf1e8;
+            --bg-end: #dce9e6;
+            --panel: #fffdf8;
+            --text-main: #1f3a34;
+            --text-muted: #4d6660;
+            --accent-primary: #e2933f;
+            --accent-calm: #5f9d97;
+            --accent-success: #6fa06a;
+            --accent-warn: #cf7f7f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Karla', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-muted);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle radial blooms in background */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(80px);
+            opacity: 0.6;
+        }
+        body::before {
+            top: -20%; left: -10%;
+            background: radial-gradient(circle, #fff 0%, transparent 70%);
+        }
+        body::after {
+            bottom: -20%; right: -10%;
+            background: radial-gradient(circle, var(--accent-calm) 0%, transparent 70%);
+            opacity: 0.2;
+        }
+
+        h1, h2, h3, .btn {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--text-main);
+        }
+
+        .eyebrow {
+            font-family: 'Karla', sans-serif;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-calm);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Main Card */
+        .card {
+            background: var(--panel);
+            width: 100%;
+            max-width: 460px;
+            border-radius: 26px;
+            box-shadow: 0 12px 32px rgba(31, 58, 52, 0.08);
+            border: 1px solid rgba(77, 102, 96, 0.1);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 520px;
+        }
+
+        /* Header (Dots & Status) */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 28px 12px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e2e8e6;
+            transition: all 0.4s ease;
+        }
+        .dot.active {
+            width: 20px;
+            border-radius: 12px;
+            background: var(--accent-primary);
+        }
+        .dot.passed {
+            background: var(--accent-success);
+        }
+
+        .status {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-calm);
+            background: rgba(95, 157, 151, 0.1);
+            padding: 4px 12px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        /* Mascot Container */
+        .mascot-container {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: -10px;
+        }
+
+        /* Stage Area */
+        .stage-container {
+            flex-grow: 1;
+            position: relative;
+            padding: 0 28px 32px;
+        }
+        
+        .stage {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            padding: 0 28px 32px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .stage.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            position: relative;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        /* Buttons & Interactions */
+        .btn {
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+            box-shadow: 0 4px 12px rgba(226, 147, 63, 0.3);
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--accent-calm);
+            border: 2px solid var(--accent-calm);
+            box-shadow: none;
+        }
+        .btn-ghost.pulse {
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(95, 157, 151, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(95, 157, 151, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(95, 157, 151, 0); }
+        }
+
+        /* Chips */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .chip {
+            padding: 8px 14px;
+            border: 1.5px solid #dce9e6;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            user-select: none;
+        }
+        .chip.selected {
+            background: var(--accent-calm);
+            color: #fff;
+            border-color: var(--accent-calm);
+        }
+
+        .role-details {
+            background: rgba(226, 147, 63, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            display: none;
+        }
+        .role-details.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        .role-details strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Click to Build Puzzle */
+        .slots-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .slot {
+            width: 100%;
+            height: 48px;
+            border: 2px dashed #dce9e6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-success);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: transparent;
+        }
+        .slot.filled {
+            border-style: solid;
+            border-color: var(--accent-success);
+            background: rgba(111, 160, 106, 0.1);
+            transform: scale(1.05);
+        }
+        .pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .pool .chip {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        .pool .chip.used {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+        .shake {
+            animation: shake 0.4s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            50% { transform: translateX(4px); }
+            75% { transform: translateX(-4px); }
+        }
+
+        /* Key Takeaway Box */
+        .key-takeaway {
+            background: linear-gradient(135deg, rgba(226, 147, 63, 0.1), rgba(111, 160, 106, 0.1));
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(226, 147, 63, 0.2);
+        }
+
+        /* Mascot SVG Styling */
+        #mascot {
+            width: 120px;
+            height: 120px;
+            overflow: visible;
+        }
+        #mascot-leaf-l, #mascot-leaf-r, #mascot-face, #mascot-sweat {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* States */
+        .m-droop #mascot-leaf-l { transform: rotate(-15deg) translate(-2px, 5px); }
+        .m-droop #mascot-leaf-r { transform: rotate(15deg) translate(2px, 5px); }
+        .m-droop #mascot-mouth { d: path("M 45 75 Q 50 72 55 75"); }
+        
+        .m-focus #mascot-leaf-l { transform: rotate(5deg) translate(0, 0); fill: var(--accent-calm); }
+        .m-focus #mascot-leaf-r { transform: rotate(-5deg) translate(0, 0); fill: var(--accent-calm); }
+        .m-focus #mascot-mouth { d: path("M 47 75 Q 50 75 53 75"); }
+        
+        .m-grow #mascot-leaf-l { transform: scale(1.1) rotate(-5deg); fill: var(--accent-success); }
+        .m-grow #mascot-leaf-r { transform: scale(1.1) rotate(5deg); fill: var(--accent-success); }
+        .m-grow #mascot-mouth { d: path("M 46 73 Q 50 78 54 73"); }
+        .m-grow #mascot-sparkles { opacity: 1; }
+
+        /* Confetti */
+        .petal {
+            position: absolute;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: fall 3s ease-in-out forwards;
+            z-index: 10;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(400px) rotate(360deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header">
+            <div class="progress-dots" id="dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="status" id="status-bar">Vibe: 🌱 Settling in</div>
+        </div>
+
+        <div class="mascot-container" id="mascot-wrapper">
+            <svg id="mascot" viewBox="0 0 100 100" class="m-droop">
+                <!-- Sparkles -->
+                <g id="mascot-sparkles" fill="var(--accent-primary)" opacity="0" style="transition: opacity 0.5s">
+                    <path d="M 20 20 L 23 28 L 31 31 L 23 34 L 20 42 L 17 34 L 9 31 L 17 28 Z" transform="scale(0.5) translate(0, -20)"/>
+                    <path d="M 80 30 L 82 35 L 87 37 L 82 39 L 80 44 L 78 39 L 73 37 L 78 35 Z" transform="scale(0.6) translate(20, 0)"/>
+                </g>
+                <!-- Pot -->
+                <path d="M 30 55 L 70 55 L 63 90 C 62 95 38 95 37 90 Z" fill="var(--accent-primary)"/>
+                <rect x="26" y="48" width="48" height="10" rx="4" fill="#c47a2d"/>
+                <!-- Stem -->
+                <path d="M 50 48 Q 48 30 50 15" stroke="var(--accent-success)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <!-- Leaves (Grouped for transforms around origin) -->
+                <g style="transform-origin: 50px 35px" id="mascot-leaf-l">
+                    <path d="M 50 35 C 20 45, 20 15, 50 15 Z" fill="var(--accent-success)"/>
+                </g>
+                <g style="transform-origin: 50px 30px" id="mascot-leaf-r">
+                    <path d="M 50 30 C 80 40, 80 10, 50 10 Z" fill="var(--accent-success)"/>
+                </g>
+                <!-- Face -->
+                <g id="mascot-face">
+                    <circle cx="43" cy="70" r="3" fill="#fffdf8"/>
+                    <circle cx="57" cy="70" r="3" fill="#fffdf8"/>
+                    <path id="mascot-mouth" d="M 45 75 Q 50 72 55 75" stroke="#fffdf8" stroke-width="2" fill="none" stroke-linecap="round"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="stage-container">
+            <!-- Stage 1 -->
+            <div class="stage active" id="stage-1">
+                <span class="eyebrow">Start Here</span>
+                <h2>Find Your Setup</h2>
+                <br>
+                <p>There is no single "correct" remote workspace. What works brilliantly for one person's job and personality might be completely wrong for someone else's.</p>
+                <p>Let's figure out what <strong>you</strong> actually need—not a generic template.</p>
+                <button class="btn btn-ghost pulse" onclick="nextStage(2)">Let's begin</button>
+            </div>
+
+            <!-- Stage 2 -->
+            <div class="stage" id="stage-2">
+                <span class="eyebrow">Your Role</span>
+                <h2>Different jobs, different setups.</h2>
+                <br>
+                <p style="margin-bottom: 12px; font-size: 14px;">Select the role closest to your day-to-day:</p>
+                
+                <div class="chips">
+                    <div class="chip" onclick="selectRole(this, 'cs')">🎧 Customer Service</div>
+                    <div class="chip" onclick="selectRole(this, 'acct')">📊 Accounting / QA</div>
+                    <div class="chip" onclick="selectRole(this, 'lead')">💼 Management</div>
+                </div>
+
+                <div class="role-details" id="role-desc">
+                    <!-- Injected via JS -->
+                </div>
+
+                <button class="btn" id="btn-stage2" style="display:none;" onclick="nextStage(3)">Factor in YOU</button>
+            </div>
+
+            <!-- Stage 3 -->
+            <div class="stage" id="stage-3">
+                <span class="eyebrow">Personal Priority</span>
+                <h2>What matters most to you?</h2>
+                <br>
+                <p style="font-size: 14px; margin-bottom: 12px;">Build your setup. Pick the <strong>two</strong> elements you are prioritizing right now:</p>
+                
+                <div class="slots-container">
+                    <div class="slot" id="slot-1">---</div>
+                    <div class="slot" id="slot-2">---</div>
+                </div>
+
+                <div class="pool" id="priority-pool">
+                    <div class="chip" onclick="pickPriority(this)">🪑 Comfort</div>
+                    <div class="chip" onclick="pickPriority(this)">🚀 Productivity</div>
+                    <div class="chip" onclick="pickPriority(this)">🎒 Portability</div>
+                    <div class="chip" onclick="pickPriority(this)">🎨 Personalization</div>
+                </div>
+
+                <button class="btn" id="btn-stage3" style="margin-top: 24px; opacity: 0; pointer-events: none; transition: opacity 0.3s;" onclick="nextStage(4)">Complete Setup</button>
+            </div>
+
+            <!-- Stage 4 -->
+            <div class="stage" id="stage-4">
+                <span class="eyebrow">Success</span>
+                <h2>Space perfected.</h2>
+                <br>
+                <div class="key-takeaway">
+                    <h3 style="margin-bottom: 8px;">The Key Takeaway</h3>
+                    <p style="margin-bottom: 0; font-weight: 600; color: var(--text-main);">
+                        Your ideal space actively helps you get things done and reflects how you work best, rather than just passively allowing it.
+                    </p>
+                </div>
+                <br>
+                <p style="text-align: center; font-size: 14px;">Keep these elements in mind the next time you sit down to work.</p>
+                <button class="btn btn-ghost" onclick="resetApp()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const roles = {
+            cs: {
+                title: "Customer Service",
+                needs: "Needs: a quiet, controlled environment for calls; reliable mic; quick access to knowledge bases; minimal visual clutter.",
+                priority: "Priority: consistency and low-distraction communication.",
+                vibe: "🎧 Tuned In",
+                color: "var(--accent-calm)"
+            },
+            acct: {
+                title: "Accounting / Focus Work",
+                needs: "Needs: often multiple monitors; a quiet space for deep, error-sensitive focus work; fewer interruptions during reporting periods.",
+                priority: "Priority: sustained, uninterrupted focus and accuracy.",
+                vibe: "📊 Deep Focus",
+                color: "var(--accent-primary)"
+            },
+            lead: {
+                title: "Management / Leadership",
+                needs: "Needs: a professional on-camera presence; flexible space for switching between deep work and back-to-back calls; good lighting.",
+                priority: "Priority: seamless transitions between focus and comms.",
+                vibe: "💼 Adapting",
+                color: "var(--accent-success)"
+            }
+        };
+
+        let filledSlots = 0;
+
+        function updateDots(stage) {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.className = 'dot';
+                if (index + 1 === stage) dot.classList.add('active');
+                else if (index + 1 < stage) dot.classList.add('passed');
+            });
+        }
+
+        function setMascotState(stateClass) {
+            const mascot = document.getElementById('mascot');
+            mascot.className = stateClass;
+        }
+
+        function nextStage(stageNum) {
+            document.querySelectorAll('.stage').forEach(el => el.classList.remove('active'));
+            document.getElementById('stage-' + stageNum).classList.add('active');
+            updateDots(stageNum);
+
+            const status = document.getElementById('status-bar');
+
+            if (stageNum === 2) {
+                status.innerText = "Vibe: 🔍 Exploring";
+                setMascotState('m-focus');
+            } else if (stageNum === 3) {
+                status.innerText = "Vibe: 🛠️ Building";
+                setMascotState('m-focus');
+            } else if (stageNum === 4) {
+                status.innerText = "Vibe: ✨ Perfected";
+                setMascotState('m-grow');
+                celebrate();
+            }
+        }
+
+        function selectRole(element, roleKey) {
+            // Update chips
+            document.querySelectorAll('#stage-2 .chip').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+
+            // Show description
+            const role = roles[roleKey];
+            const desc = document.getElementById('role-desc');
+            desc.innerHTML = `<strong>${role.title}</strong><p style="margin-bottom: 8px;">${role.needs}</p><strong>${role.priority}</strong>`;
+            desc.classList.add('show');
+            desc.style.background = `color-mix(in srgb, ${role.color} 15%, transparent)`;
+
+            // Update status & Mascot
+            document.getElementById('status-bar').innerText = `Vibe: ${role.vibe}`;
+            document.getElementById('mascot-leaf-l').style.fill = role.color;
+            document.getElementById('mascot-leaf-r').style.fill = role.color;
+
+            // Show button
+            document.getElementById('btn-stage2').style.display = 'block';
+        }
+
+        function pickPriority(element) {
+            if (filledSlots >= 2) {
+                element.classList.add('shake');
+                setTimeout(() => element.classList.remove('shake'), 400);
+                return;
+            }
+
+            const slot = document.getElementById(`slot-${filledSlots + 1}`);
+            slot.innerText = element.innerText;
+            slot.classList.add('filled');
+            element.classList.add('used');
+            
+            filledSlots++;
+
+            // Pulse mascot slightly
+            const mascot = document.getElementById('mascot');
+            mascot.style.transform = "scale(1.05)";
+            setTimeout(() => mascot.style.transform = "scale(1)", 300);
+
+            if (filledSlots === 2) {
+                const btn = document.getElementById('btn-stage3');
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            }
+        }
+
+        function celebrate() {
+            const emojis = ['✨', '🌱', '💡', '🌟', '🌿'];
+            const container = document.querySelector('.card');
+            
+            for (let i = 0; i < 20; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDelay = (Math.random() * 0.5) + 's';
+                container.appendChild(petal);
+                
+                // Cleanup
+                setTimeout(() => petal.remove(), 3500);
+            }
+        }
+
+        function resetApp() {
+            filledSlots = 0;
+            
+            // Reset Role selection
+            document.querySelectorAll('#stage-2 .chip').forEach(el => el.classList.remove('selected'));
+            document.getElementById('role-desc').classList.remove('show');
+            document.getElementById('btn-stage2').style.display = 'none';
+            
+            // Reset Slots
+            document.querySelectorAll('.slot').forEach(el => {
+                el.innerText = '---';
+                el.classList.remove('filled');
+            });
+            document.querySelectorAll('.pool .chip').forEach(el => el.classList.remove('used'));
+            
+            // Reset Btn Stage 3
+            const btn3 = document.getElementById('btn-stage3');
+            btn3.style.opacity = '0';
+            btn3.style.pointerEvents = 'none';
+
+            // Reset Mascot & Status
+            document.getElementById('status-bar').innerText = "Vibe: 🌱 Settling in";
+            document.getElementById('mascot-leaf-l').style.fill = "var(--accent-success)";
+            document.getElementById('mascot-leaf-r').style.fill = "var(--accent-success)";
+            setMascotState('m-droop');
+
+            nextStage(1);
+        }
+    </script>
+</body>
+</html>
