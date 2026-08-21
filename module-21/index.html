@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preparation Creates Confidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1F2A3D;
+    --ink-soft:#5B6B7A;
+    --bg:#EFF6F1;
+    --card:#FFFFFF;
+    --sage:#7FAF9E;
+    --sage-dark:#4F8672;
+    --sage-pale:#DCEEE5;
+    --coral:#FF8A65;
+    --coral-dark:#E96F49;
+    --coral-pale:#FFE4D9;
+    --gold:#FFC857;
+    --line:#DCE8E1;
+    --radius:22px;
+    --shadow: 0 10px 30px -12px rgba(31,42,61,0.15);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 8% 8%, rgba(127,175,158,0.16), transparent 45%),
+      radial-gradient(circle at 92% 15%, rgba(255,138,101,0.14), transparent 40%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    line-height:1.5;
+    padding:clamp(20px, 5vw, 64px);
+  }
+
+  .wrap{max-width:920px; margin:0 auto;}
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--sage-dark);
+    background:var(--sage-pale);
+    padding:6px 14px;
+    border-radius:999px;
+  }
+  .eyebrow::before{content:"●"; color:var(--coral); font-size:9px;}
+
+  header.hero{
+    margin-bottom:44px;
+  }
+  h1{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:clamp(32px, 5.2vw, 52px);
+    line-height:1.08;
+    margin:18px 0 14px;
+    letter-spacing:-0.01em;
+  }
+  h1 .accent{color:var(--coral-dark);}
+  .lede{
+    font-size:clamp(16px, 2vw, 18.5px);
+    color:var(--ink-soft);
+    max-width:56ch;
+    margin:0;
+  }
+
+  section{margin-bottom:40px;}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    border:1px solid rgba(31,42,61,0.05);
+    padding:clamp(22px, 4vw, 38px);
+  }
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:clamp(21px, 2.6vw, 26px);
+    margin:0;
+  }
+  .section-head p{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:14.5px;
+  }
+
+  /* ---------- CHECKLIST + GAUGE ---------- */
+  .prep-grid{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap:32px;
+    align-items:center;
+  }
+  @media (max-width:700px){
+    .prep-grid{grid-template-columns:1fr; }
+  }
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .checklist li{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:background .18s ease, border-color .18s ease, transform .12s ease;
+    user-select:none;
+  }
+  .checklist li:hover{transform:translateX(2px);}
+  .checklist li.done{
+    background:var(--sage-pale);
+    border-color:var(--sage);
+  }
+  .box{
+    flex:0 0 24px;
+    height:24px;
+    border-radius:8px;
+    border:2px solid var(--sage);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    color:transparent;
+    background:var(--card);
+    transition:all .18s ease;
+  }
+  .checklist li.done .box{
+    background:var(--sage-dark);
+    border-color:var(--sage-dark);
+    color:#fff;
+  }
+  .checklist li span.label{font-size:15px; font-weight:500;}
+  .checklist li.done span.label{color:var(--sage-dark);}
+
+  .gauge-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .gauge-pct{
+    font-family:'Fredoka', sans-serif;
+    font-size:38px;
+    font-weight:600;
+    margin-top:-58px;
+  }
+  .gauge-status{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    transition:color .2s ease;
+  }
+  .gauge-status.ready{color:var(--coral-dark);}
+
+  /* ---------- SCENARIO ---------- */
+  .toggle-row{
+    display:flex;
+    gap:8px;
+    background:var(--bg);
+    border-radius:999px;
+    padding:5px;
+    width:fit-content;
+    margin-bottom:22px;
+  }
+  .toggle-row button{
+    border:none;
+    background:transparent;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:9px 20px;
+    border-radius:999px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:all .18s ease;
+  }
+  .toggle-row button.active{
+    background:var(--card);
+    color:var(--ink);
+    box-shadow:0 4px 10px -4px rgba(31,42,61,0.25);
+  }
+
+  .agent-panel{
+    display:none;
+    animation:fadeIn .3s ease;
+  }
+  .agent-panel.visible{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .agent-top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .avatar{
+    width:46px; height:46px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:18px;
+    color:#fff;
+    flex:0 0 auto;
+  }
+  #panel-a .avatar{background:var(--coral);}
+  #panel-b .avatar{background:var(--sage-dark);}
+
+  .agent-name{font-family:'Fredoka', sans-serif; font-weight:600; font-size:17px;}
+  .agent-sub{font-size:13px; color:var(--ink-soft);}
+
+  .noise-line{
+    display:flex; align-items:center; gap:3px; height:20px; margin-left:auto;
+  }
+  .noise-line span{
+    width:3px; background:var(--coral); border-radius:2px;
+    animation:noise 0.9s ease-in-out infinite;
+  }
+  #panel-b .noise-line span{background:var(--sage); animation:none; height:4px;}
+  .noise-line span:nth-child(1){animation-delay:0s;}
+  .noise-line span:nth-child(2){animation-delay:.15s;}
+  .noise-line span:nth-child(3){animation-delay:.3s;}
+  .noise-line span:nth-child(4){animation-delay:.45s;}
+  @keyframes noise{
+    0%,100%{height:5px;}
+    50%{height:20px;}
+  }
+
+  .agent-facts{list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .agent-facts li{
+    font-size:14.5px;
+    display:flex;
+    gap:9px;
+    color:var(--ink-soft);
+  }
+  .agent-facts li::before{content:"–"; color:var(--ink-soft); flex:0 0 auto;}
+
+  .quote{
+    background:var(--bg);
+    border-left:3px solid var(--coral);
+    border-radius:10px;
+    padding:12px 16px;
+    font-style:italic;
+    font-size:14.5px;
+    color:var(--ink);
+  }
+  #panel-b .quote{border-left-color:var(--sage-dark);}
+
+  .trust-block{
+    margin-top:26px;
+    padding-top:22px;
+    border-top:1px dashed var(--line);
+  }
+  .trust-block p.q{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:16.5px;
+    margin:0 0 14px;
+  }
+  .trust-btns{display:flex; gap:10px; flex-wrap:wrap;}
+  .trust-btns button{
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:10px 18px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background:var(--card);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .trust-btns button:hover{border-color:var(--sage);}
+  .trust-btns button.picked{
+    background:var(--sage-pale);
+    border-color:var(--sage-dark);
+  }
+  .trust-reveal{
+    display:none;
+    margin-top:16px;
+    background:var(--sage-pale);
+    border-radius:14px;
+    padding:16px 18px;
+    font-size:14.5px;
+    color:var(--ink);
+  }
+  .trust-reveal.show{display:block; animation:fadeIn .3s ease;}
+  .trust-reveal strong{color:var(--sage-dark);}
+
+  /* ---------- KEY POINT ---------- */
+  .keypoint{
+    display:flex;
+    gap:18px;
+    background:linear-gradient(135deg, var(--coral-pale), #fff 60%);
+    border:1px solid var(--coral-pale);
+  }
+  .keypoint .icon{
+    flex:0 0 auto;
+    width:44px;height:44px;
+    border-radius:12px;
+    background:var(--coral);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+  }
+  .keypoint h3{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:17px;
+    margin:0 0 6px;
+  }
+  .keypoint p{margin:0; color:var(--ink-soft); font-size:15px;}
+
+  footer{
+    text-align:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    opacity:.6;
+    margin-top:20px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">Remote Communication · Module 1</span>
+    <h1>Preparation creates <span class="accent">confidence.</span></h1>
+    <p class="lede">Professional communication starts before the call begins. A few quiet minutes of setup change how you sound, think, and connect — every time.</p>
+  </header>
+
+  <!-- PREP CHECKLIST + GAUGE -->
+  <section>
+    <div class="card">
+      <div class="section-head">
+        <div>
+          <h2>Before your shift</h2>
+          <p>Check off each step and watch your readiness build.</p>
+        </div>
+      </div>
+
+      <div class="prep-grid">
+        <ul class="checklist" id="checklist">
+          <li data-item><div class="box">✓</div><span class="label">Check your headset and microphone</span></li>
+          <li data-item><div class="box">✓</div><span class="label">Open the systems and apps you'll need</span></li>
+          <li data-item><div class="box">✓</div><span class="label">Review updates or announcements</span></li>
+          <li data-item><div class="box">✓</div><span class="label">Have your notes or knowledge base ready</span></li>
+          <li data-item><div class="box">✓</div><span class="label">Check your workspace and background</span></li>
+          <li data-item><div class="box">✓</div><span class="label">Put your phone and distractions away</span></li>
+        </ul>
+
+        <div class="gauge-wrap">
+          <svg width="220" height="130" viewBox="0 0 220 130">
+            <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#DCE8E1" stroke-width="16" stroke-linecap="round"/>
+            <path id="gaugeArc" d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#7FAF9E" stroke-width="16" stroke-linecap="round"
+                  stroke-dasharray="283" stroke-dashoffset="283" style="transition:stroke-dashoffset .5s ease, stroke .3s ease;"/>
+          </svg>
+          <div class="gauge-pct" id="gaugePct">0%</div>
+          <div class="gauge-status" id="gaugeStatus">not started</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENARIO -->
+  <section>
+    <div class="card">
+      <div class="section-head">
+        <div>
+          <h2>💡 Quick scenario</h2>
+          <p>Two agents. Same call. Very different setup.</p>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <button id="btnA" class="active" onclick="showAgent('a')">Agent A</button>
+        <button id="btnB" onclick="showAgent('b')">Agent B</button>
+      </div>
+
+      <div class="agent-panel visible" id="panel-a">
+        <div class="agent-top">
+          <div class="avatar">A</div>
+          <div>
+            <div class="agent-name">Agent A</div>
+            <div class="agent-sub">Unprepared workspace</div>
+          </div>
+          <div class="noise-line"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <ul class="agent-facts">
+          <li>Surrounded by background noise</li>
+          <li>Knowledge base still isn't open</li>
+          <li>Keeps asking the customer to repeat things</li>
+        </ul>
+        <div class="quote">"Sorry — can you say that one more time?"</div>
+      </div>
+
+      <div class="agent-panel" id="panel-b">
+        <div class="agent-top">
+          <div class="avatar">B</div>
+          <div>
+            <div class="agent-name">Agent B</div>
+            <div class="agent-sub">Prepared workspace</div>
+          </div>
+          <div class="noise-line"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <ul class="agent-facts">
+          <li>Quiet, organized space</li>
+          <li>Headset ready, systems already open</li>
+          <li>Notes on hand before the call even starts</li>
+        </ul>
+        <div class="quote">"I can see that on your account — here's what's happening."</div>
+      </div>
+
+      <div class="trust-block">
+        <p class="q">Even with the same final answer — who would you trust more?</p>
+        <div class="trust-btns">
+          <button onclick="reveal('a')">Agent A</button>
+          <button onclick="reveal('b')">Agent B</button>
+        </div>
+        <div class="trust-reveal" id="trustReveal">
+          Most people pick <strong>Agent B</strong> — and it's rarely about knowledge. Both agents could solve the exact same issue. The difference is <strong>preparation and presentation</strong>, and it comes through in every word.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY POINT -->
+  <section>
+    <div class="card keypoint">
+      <div class="icon">🎧</div>
+      <div>
+        <h3>Key point</h3>
+        <p>Professional remote communication starts with your environment. A quiet, organized, prepared workspace helps you sound confident, stay focused, and build trust with customers and coworkers.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>module 1 · preparation &amp; confidence</footer>
+</div>
+
+<script>
+  const items = document.querySelectorAll('#checklist li');
+  const total = items.length;
+  const arc = document.getElementById('gaugeArc');
+  const pctLabel = document.getElementById('gaugePct');
+  const statusLabel = document.getElementById('gaugeStatus');
+  const CIRC = 283;
+
+  const statusWords = ["not started","warming up","getting there","on track","almost ready","nearly there","ready to go!"];
+
+  function updateGauge(){
+    const done = document.querySelectorAll('#checklist li.done').length;
+    const pct = Math.round((done/total)*100);
+    const offset = CIRC - (CIRC * pct/100);
+    arc.style.strokeDashoffset = offset;
+    pctLabel.textContent = pct + '%';
+    statusLabel.textContent = statusWords[done];
+    if(done === total){
+      arc.style.stroke = '#FF8A65';
+      statusLabel.classList.add('ready');
+    } else {
+      arc.style.stroke = '#7FAF9E';
+      statusLabel.classList.remove('ready');
+    }
+  }
+
+  items.forEach(li => {
+    li.addEventListener('click', () => {
+      li.classList.toggle('done');
+      updateGauge();
+    });
+  });
+
+  function showAgent(which){
+    document.getElementById('panel-a').classList.toggle('visible', which === 'a');
+    document.getElementById('panel-b').classList.toggle('visible', which === 'b');
+    document.getElementById('btnA').classList.toggle('active', which === 'a');
+    document.getElementById('btnB').classList.toggle('active', which === 'b');
+  }
+
+  function reveal(choice){
+    document.querySelectorAll('.trust-btns button').forEach(b => b.classList.remove('picked'));
+    event.target.classList.add('picked');
+    document.getElementById('trustReveal').classList.add('show');
+  }
+
+  updateGauge();
+</script>
+</body>
+</html>
