@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protect the Thread — Managing Distractions Remotely</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16262A;
+    --ink-soft:#2E4247;
+    --paper:#EFF3F1;
+    --paper-raised:#FBFCFA;
+    --focus:#1E7A6C;
+    --focus-deep:#144F46;
+    --distract:#E39A3B;
+    --distract-deep:#B9701F;
+    --line:rgba(22,38,42,0.14);
+    --line-soft:rgba(22,38,42,0.08);
+    --shadow: 0 6px 20px rgba(22,38,42,0.08);
+    --radius: 14px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Public Sans', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--distract); color:var(--ink);}
+  a{color:inherit;}
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--focus);
+    font-weight:600;
+  }
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+  section{padding:78px 0;}
+  button{font-family:inherit;}
+  :focus-visible{outline:3px solid var(--focus); outline-offset:3px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:var(--ink);
+    color:var(--paper);
+    padding:88px 0 72px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--distract);}
+  .hero h1{
+    font-size:clamp(2.1rem, 5vw, 3.3rem);
+    color:var(--paper-raised);
+    margin:14px 0 20px;
+    max-width:14ch;
+  }
+  .hero p.lede{
+    max-width:52ch;
+    font-size:1.08rem;
+    color:rgba(251,252,250,0.78);
+    margin-bottom:44px;
+  }
+
+  /* Cord/thread stepper */
+  .thread-demo{
+    background:rgba(251,252,250,0.04);
+    border:1px solid rgba(251,252,250,0.14);
+    border-radius:var(--radius);
+    padding:26px 24px 22px;
+  }
+  .thread-demo-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:20px;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .thread-demo-head span.label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:rgba(251,252,250,0.55);
+  }
+  .thread-rail{
+    position:relative;
+    height:64px;
+    margin:0 4px 18px;
+  }
+  .thread-rail svg{position:absolute; top:0; left:0; width:100%; height:100%;}
+  .thread-rail .rail-line{
+    stroke:rgba(251,252,250,0.22);
+    stroke-width:2;
+    fill:none;
+    transition:stroke 0.4s ease;
+  }
+  .thread-rail .rail-line.frayed{stroke:var(--distract);}
+  .bead-row{
+    display:flex;
+    justify-content:space-between;
+    position:relative;
+    z-index:2;
+  }
+  .bead{
+    width:15px;height:15px;border-radius:50%;
+    background:rgba(251,252,250,0.28);
+    border:2px solid var(--ink);
+    transition:all 0.35s ease;
+    margin-top:24px;
+  }
+  .bead.lit{background:var(--distract); box-shadow:0 0 0 5px rgba(227,154,59,0.22); transform:scale(1.15);}
+  .bead.done{background:rgba(227,154,59,0.55);}
+  #threadCaption{
+    min-height:1.5em;
+    font-size:0.95rem;
+    color:rgba(251,252,250,0.9);
+  }
+  .thread-controls{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:16px;
+  }
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.74rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    font-weight:600;
+    padding:10px 18px;
+    border-radius:100px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform 0.15s ease, background 0.2s ease;
+  }
+  .btn:active{transform:scale(0.96);}
+  .btn-light{
+    background:var(--distract);
+    color:var(--ink);
+  }
+  .btn-light:hover{background:#eeab55;}
+  .btn-ghost{
+    background:transparent;
+    border-color:rgba(251,252,250,0.3);
+    color:rgba(251,252,250,0.85);
+  }
+  .btn-ghost:hover{border-color:rgba(251,252,250,0.6);}
+
+  /* ---------- INTRO / WHY IT MATTERS ---------- */
+  .why h2{font-size:1.7rem; margin:10px 0 18px; max-width:20ch;}
+  .why p{max-width:62ch; color:var(--ink-soft);}
+  .impact-list{
+    list-style:none;
+    margin:28px 0 0;
+    padding:0;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px 22px;
+  }
+  .impact-list li{
+    font-size:0.95rem;
+    padding:12px 0;
+    border-top:1px solid var(--line-soft);
+    color:var(--ink-soft);
+    display:flex;
+    gap:10px;
+  }
+  .impact-list li::before{
+    content:"";
+    width:6px;height:6px;border-radius:50%;
+    background:var(--distract);
+    margin-top:9px;
+    flex:none;
+  }
+
+  /* ---------- DISTRACTIONS GRID ---------- */
+  .distractions{background:var(--paper-raised); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .distractions h2{font-size:1.7rem; margin:10px 0 8px;}
+  .distractions > .wrap > p{color:var(--ink-soft); max-width:56ch; margin-bottom:36px;}
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:14px;
+  }
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 18px 16px;
+    cursor:pointer;
+    transition:box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .card:hover, .card[aria-expanded="true"]{
+    box-shadow:var(--shadow);
+    border-color:var(--focus);
+  }
+  .card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .card-icon{
+    width:34px;height:34px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:9px;
+    background:rgba(30,122,108,0.1);
+    color:var(--focus-deep);
+    flex:none;
+  }
+  .card-icon svg{width:18px;height:18px;}
+  .card h3{
+    font-family:'Public Sans', sans-serif;
+    font-weight:700;
+    font-size:0.98rem;
+    margin:0;
+    flex:1;
+  }
+  .card .chev{
+    font-size:0.9rem;
+    color:var(--ink-soft);
+    transition:transform 0.25s ease;
+  }
+  .card[aria-expanded="true"] .chev{transform:rotate(45deg);}
+  .card-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.28s ease;
+  }
+  .card[aria-expanded="true"] .card-body{max-height:160px;}
+  .card-body p{
+    margin:14px 0 2px;
+    font-size:0.88rem;
+    color:var(--ink-soft);
+    border-top:1px dashed var(--line);
+    padding-top:12px;
+  }
+
+  /* ---------- HIDDEN COST ---------- */
+  .cost h2{font-size:1.7rem; margin:10px 0 10px;}
+  .cost > .wrap > p{color:var(--ink-soft); max-width:58ch; margin-bottom:40px;}
+  .paths{
+    display:grid;
+    gap:34px;
+  }
+  .path-block .path-label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .path-label .dot{width:9px;height:9px;border-radius:50%;}
+  .path-label.focused .dot{background:var(--focus);}
+  .path-label.distracted .dot{background:var(--distract-deep);}
+  .path-label span.name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.74rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .path-svg-wrap{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 22px 16px;
+    overflow-x:auto;
+  }
+  .path-svg-wrap svg{display:block; min-width:560px; width:100%; height:auto;}
+  .path-node-label{font-family:'Public Sans',sans-serif; font-size:11.5px; fill:var(--ink-soft);}
+  .path-caption{font-size:0.85rem; color:var(--ink-soft); margin-top:12px;}
+
+  /* ---------- GOAL / REASSURANCE ---------- */
+  .goal{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .goal .eyebrow{color:var(--distract);}
+  .goal h2{
+    font-size:clamp(1.6rem,3.5vw,2.2rem);
+    color:var(--paper-raised);
+    max-width:16ch;
+    margin:10px 0 24px;
+  }
+  .goal-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin:22px 0 30px;
+  }
+  .goal-card{
+    border-radius:var(--radius);
+    padding:20px;
+    font-size:0.95rem;
+  }
+  .goal-card.no{
+    background:rgba(227,154,59,0.1);
+    border:1px solid rgba(227,154,59,0.35);
+    color:rgba(251,252,250,0.9);
+  }
+  .goal-card.yes{
+    background:rgba(30,122,108,0.16);
+    border:1px solid rgba(30,122,108,0.5);
+    color:rgba(251,252,250,0.95);
+  }
+  .goal-card b{display:block; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;}
+  .goal-card.no b{color:var(--distract);}
+  .goal-card.yes b{color:#5fd3bd;}
+  .goal p.close{max-width:56ch; color:rgba(251,252,250,0.75);}
+
+  /* ---------- ASSESSMENT ---------- */
+  .assess{background:var(--paper-raised); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .assess h2{font-size:1.7rem; margin:10px 0 8px;}
+  .assess > .wrap > p.intro-line{color:var(--ink-soft); max-width:56ch; margin-bottom:30px;}
+  .chip-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:26px;
+  }
+  .chip{
+    font-size:0.88rem;
+    font-family:'Public Sans', sans-serif;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:100px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:all 0.18s ease;
+    color:var(--ink);
+  }
+  .chip:hover{border-color:var(--focus);}
+  .chip.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+  .chip .mark{
+    width:14px;height:14px;
+    border-radius:4px;
+    border:1.5px solid currentColor;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;
+    flex:none;
+  }
+  .chip.active .mark{background:var(--distract); border-color:var(--distract); color:var(--ink);}
+
+  .assess-result{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:4px solid var(--focus);
+    border-radius:10px;
+    padding:18px 20px;
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    transition:border-color 0.3s ease;
+  }
+  .assess-result strong{color:var(--ink); font-weight:700;}
+  .assess-result.warm{border-left-color:var(--distract-deep);}
+
+  /* ---------- TAKEAWAY ---------- */
+  .takeaway h2{font-size:1.7rem; margin:10px 0 30px;}
+  .flow{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:12px;
+  }
+  .flow-step{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 16px;
+    position:relative;
+    text-align:left;
+  }
+  .flow-step .fnum{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    color:var(--focus);
+    font-weight:600;
+    letter-spacing:0.08em;
+  }
+  .flow-step h4{
+    font-family:'Fraunces', serif;
+    font-size:1.08rem;
+    font-weight:600;
+    margin:8px 0 6px;
+  }
+  .flow-step p{font-size:0.82rem; color:var(--ink-soft); margin:0;}
+  .flow-arrow{
+    display:none;
+  }
+  .key-line{
+    margin-top:44px;
+    padding-top:28px;
+    border-top:1px solid var(--line);
+    font-family:'Fraunces', serif;
+    font-size:clamp(1.2rem,2.6vw,1.5rem);
+    font-weight:500;
+    max-width:26ch;
+    color:var(--ink);
+  }
+  .key-line em{
+    font-style:normal;
+    color:var(--focus-deep);
+    border-bottom:2px solid var(--distract);
+  }
+
+  footer{
+    padding:36px 0 50px;
+    text-align:center;
+  }
+  footer p{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:720px){
+    section{padding:56px 0;}
+    .impact-list{grid-template-columns:1fr;}
+    .goal-row{grid-template-columns:1fr;}
+    .flow{grid-template-columns:1fr 1fr;}
+    .thread-rail{height:56px;}
+  }
+  @media (max-width:480px){
+    .flow{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">For remote CS agents</p>
+    <h1>A distraction doesn't need thirty minutes to hurt you.</h1>
+    <p class="lede">One glance at your phone is enough to fray your attention — and it takes longer to rebuild focus than it took to lose it. Watch it happen below.</p>
+
+    <div class="thread-demo">
+      <div class="thread-demo-head">
+        <span class="label">Attention thread — live walkthrough</span>
+        <span class="label" id="stepCounter">Step 0 / 5</span>
+      </div>
+
+      <div class="thread-rail">
+        <svg viewBox="0 0 600 64" preserveAspectRatio="none">
+          <path id="railPath" class="rail-line" d="M10,32 L590,32"/>
+        </svg>
+        <div class="bead-row" id="beadRow">
+          <div class="bead" data-i="0"></div>
+          <div class="bead" data-i="1"></div>
+          <div class="bead" data-i="2"></div>
+          <div class="bead" data-i="3"></div>
+          <div class="bead" data-i="4"></div>
+        </div>
+      </div>
+
+      <p id="threadCaption">Press play to follow one agent's next 30 seconds.</p>
+
+      <div class="thread-controls">
+        <button class="btn btn-light" id="playBtn">▸ Play it out</button>
+        <button class="btn btn-ghost" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="why">
+  <div class="wrap">
+    <p class="eyebrow">Why it matters here</p>
+    <h2>Most of your work needs unbroken attention.</h2>
+    <p>Listening carefully, navigating systems, reading past interactions, following procedure, documenting accurately — none of it forgives a gap. When your focus snaps, even briefly, the risk isn't just the seconds you were away.</p>
+    <ul class="impact-list">
+      <li>Missing something the customer said</li>
+      <li>Entering incorrect information</li>
+      <li>Forgetting a step in a process</li>
+      <li>Taking longer to complete a task</li>
+      <li>Losing track of the conversation</li>
+      <li>Needing to repeat work</li>
+    </ul>
+  </div>
+</section>
+
+<section class="distractions">
+  <div class="wrap">
+    <p class="eyebrow">Know your triggers</p>
+    <h2>Seven distractions, seven small rules</h2>
+    <p>Tap a card for the fix. Most of these aren't about willpower — they're about removing the opportunity.</p>
+    <div class="card-grid" id="cardGrid"></div>
+  </div>
+</section>
+
+<section class="cost">
+  <div class="wrap">
+    <p class="eyebrow">The hidden cost</p>
+    <h2>It's not the minutes — it's the switching</h2>
+    <p>Every jump between tasks costs mental effort to reload. A focused path stays on one thread. A distracted path keeps cutting and re-tying it.</p>
+
+    <div class="paths">
+      <div class="path-block">
+        <div class="path-label focused"><span class="dot"></span><span class="name">Focused path</span></div>
+        <div class="path-svg-wrap">
+          <svg viewBox="0 0 560 90" preserveAspectRatio="xMinYMid meet">
+            <path d="M20,45 L540,45" stroke="#1E7A6C" stroke-width="3" fill="none"/>
+            <g id="focusNodes"></g>
+          </svg>
+        </div>
+        <p class="path-caption">Customer → System → Knowledge base → Customer → Documentation. One line, no knots.</p>
+      </div>
+
+      <div class="path-block">
+        <div class="path-label distracted"><span class="dot"></span><span class="name">Distracted path</span></div>
+        <div class="path-svg-wrap">
+          <svg viewBox="0 0 560 90" preserveAspectRatio="xMinYMid meet">
+            <path d="M20,45 Q80,15 140,45 T260,45 T380,45 T500,45 L540,45" stroke="#B9701F" stroke-width="3" fill="none" stroke-dasharray="1 7" stroke-linecap="round"/>
+            <g id="distractNodes"></g>
+          </svg>
+        </div>
+        <p class="path-caption">Customer → Phone → Customer → Social media → Message → System → TV → Customer. Same task, nine reloads.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="goal">
+  <div class="wrap">
+    <p class="eyebrow">Reset expectations</p>
+    <h2>The goal isn't zero distractions.</h2>
+    <div class="goal-row">
+      <div class="goal-card no">
+        <b>Not this</b>
+        "Nothing can ever pull my attention away."
+      </div>
+      <div class="goal-card yes">
+        <b>This instead</b>
+        "I know what usually distracts me, and I already have a plan for it."
+      </div>
+    </div>
+    <p class="close">Your phone will ring. The dog will bark. A delivery will show up mid-call. That's not a failure of focus — it's a normal home. The difference is whether you're reacting in the moment or working from a rule you set in advance.</p>
+  </div>
+</section>
+
+<section class="assess">
+  <div class="wrap">
+    <p class="eyebrow">Quick self-check</p>
+    <h2>What usually breaks your concentration?</h2>
+    <p class="intro-line">Tap everything that applies. There's no wrong answer — this is just the first step toward a plan.</p>
+    <div class="chip-grid" id="chipGrid"></div>
+    <div class="assess-result" id="assessResult">Select a few — your read-out will build here.</div>
+  </div>
+</section>
+
+<section class="takeaway">
+  <div class="wrap">
+    <p class="eyebrow">Key takeaway</p>
+    <h2>Distractions are predictable. Predictable things can be planned for.</h2>
+    <div class="flow">
+      <div class="flow-step"><span class="fnum">01</span><h4>Identify</h4><p>Name what actually pulls you off task — not distractions in general, yours specifically.</p></div>
+      <div class="flow-step"><span class="fnum">02</span><h4>Reduce</h4><p>Cut the opportunity. Phone out of reach, one tab open, TV off during focused blocks.</p></div>
+      <div class="flow-step"><span class="fnum">03</span><h4>Create a rule</h4><p>Make it simple and repeatable, so you're not deciding in the moment. "Headset on = at work."</p></div>
+      <div class="flow-step"><span class="fnum">04</span><h4>Protect</h4><p>Hold the rule the way you'd protect a live call — because to your focus, it is one.</p></div>
+    </div>
+    <p class="key-line">Remote productivity isn't perfect self-control — it's <em>designing the day</em> so focus is the easy choice.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Protect the thread · a quick reference for remote CS agents</p>
+</footer>
+
+<script>
+  // ---------- Hero thread stepper ----------
+  const steps = [
+    {caption: "You're reviewing a customer's account.", lit:-1},
+    {caption: "Your phone lights up. You glance at it.", lit:0},
+    {caption: "You check the message.", lit:1},
+    {caption: "Another notification appears.", lit:2},
+    {caption: "You open social media for \u201cjust a second.\u201d", lit:3},
+    {caption: "Five minutes later, you're back — but you've lost the thread, not just the time.", lit:4}
+  ];
+  const beadRow = document.getElementById('beadRow');
+  const beads = [...beadRow.children];
+  const caption = document.getElementById('threadCaption');
+  const counter = document.getElementById('stepCounter');
+  const railPath = document.getElementById('railPath');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  let idx = 0;
+  let playing = false;
+  let timer = null;
+
+  function renderStep(i){
+    caption.textContent = steps[i].caption;
+    counter.textContent = `Step ${i} / ${steps.length - 1}`;
+    beads.forEach((b, bi) => {
+      b.classList.remove('lit','done');
+      if(bi < steps[i].lit) b.classList.add('done');
+      if(bi === steps[i].lit) b.classList.add('lit');
+    });
+    if(i === steps.length - 1){
+      railPath.classList.add('frayed');
+    } else {
+      railPath.classList.remove('frayed');
+    }
+  }
+
+  function advance(){
+    if(idx >= steps.length - 1){
+      clearInterval(timer);
+      playing = false;
+      playBtn.textContent = '▸ Play it out';
+      return;
+    }
+    idx++;
+    renderStep(idx);
+  }
+
+  playBtn.addEventListener('click', () => {
+    if(playing){
+      clearInterval(timer);
+      playing = false;
+      playBtn.textContent = '▸ Play it out';
+      return;
+    }
+    if(idx >= steps.length - 1){ idx = 0; renderStep(0); }
+    playing = true;
+    playBtn.textContent = '❚❚ Playing…';
+    timer = setInterval(advance, 950);
+  });
+
+  resetBtn.addEventListener('click', () => {
+    clearInterval(timer);
+    playing = false;
+    playBtn.textContent = '▸ Play it out';
+    idx = 0;
+    renderStep(0);
+  });
+
+  renderStep(0);
+
+  // ---------- Distraction cards ----------
+  const cardData = [
+    {icon:'phone', title:'Phone notifications', tip:'Even without replying, a buzz plants "who messaged me?" in your head. Use Do Not Disturb and keep it out of arm\'s reach.'},
+    {icon:'social', title:'Social media', tip:'Built to hold attention past your intention. Set specific times to check it, and keep it closed during focused work.'},
+    {icon:'tv', title:'TV & streaming', tip:'A background show pulls harder than it seems the moment something interesting happens on screen. Simplest fix: keep it off.'},
+    {icon:'home', title:'Household activity', tip:'Family, pets, deliveries, chores. Set one clear signal: "headset on means treat me as at work unless it\'s important."'},
+    {icon:'noise', title:'Noise', tip:'Traffic, construction, chatter. Choose a quieter spot, close the door, or use a noise-reducing headset.'},
+    {icon:'clutter', title:'Clutter', tip:'A messy desk is a visual distraction. Keep the surface clear enough that your work is the obvious thing in front of you.'},
+    {icon:'tabs', title:'Too many browser tabs', tip:'Every open tab is a possible exit ramp. Keep only what the current task needs, and close the rest.'}
+  ];
+
+  const icons = {
+    phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>',
+    social: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>',
+    tv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="12" y1="19" x2="12" y2="22"/></svg>',
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+    noise: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M17 8a5 5 0 010 8"/></svg>',
+    clutter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="15" width="7" height="5" rx="1"/><rect x="14" y="14" width="7" height="6" rx="1"/></svg>',
+    tabs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 7V5a2 2 0 012-2h9a2 2 0 012 2v9a2 2 0 01-2 2h-2"/></svg>'
+  };
+
+  const cardGrid = document.getElementById('cardGrid');
+  cardData.forEach((c) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('role','button');
+    card.setAttribute('tabindex','0');
+    card.setAttribute('aria-expanded','false');
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-icon">${icons[c.icon]}</div>
+        <h3>${c.title}</h3>
+        <span class="chev">+</span>
+      </div>
+      <div class="card-body"><p>${c.tip}</p></div>
+    `;
+    function toggle(){
+      const open = card.getAttribute('aria-expanded') === 'true';
+      card.setAttribute('aria-expanded', open ? 'false' : 'true');
+    }
+    card.addEventListener('click', toggle);
+    card.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }});
+    cardGrid.appendChild(card);
+  });
+
+  // ---------- Path node dots (SVG) ----------
+  function buildNodes(id, count, color, curved){
+    const g = document.getElementById(id);
+    const svgWidth = 560, margin = 20, usable = svgWidth - margin*2;
+    for(let i=0;i<count;i++){
+      const x = margin + (usable * i/(count-1));
+      const y = 45 + (curved ? (i % 2 === 0 ? 0 : -14) : 0);
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx', x);
+      circle.setAttribute('cy', curved ? 45 - (i%2===0?0:20)*Math.sin(1) : y);
+      circle.setAttribute('r', 6);
+      circle.setAttribute('fill', color);
+      g.appendChild(circle);
+    }
+  }
+  buildNodes('focusNodes', 5, '#1E7A6C', false);
+  buildNodes('distractNodes', 9, '#B9701F', true);
+
+  // ---------- Self-assessment chips ----------
+  const chipData = [
+    'Phone', 'Social media', 'Television', 'Family / roommates', 'Pets',
+    'Noise', 'Household chores', 'Too many tabs', 'Being near my bed', 'Errands / online shopping'
+  ];
+  const chipGrid = document.getElementById('chipGrid');
+  const resultBox = document.getElementById('assessResult');
+  const selected = new Set();
+
+  chipData.forEach((label) => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.type = 'button';
+    chip.innerHTML = `<span class="mark"></span>${label}`;
+    chip.addEventListener('click', () => {
+      if(selected.has(label)){
+        selected.delete(label);
+        chip.classList.remove('active');
+      } else {
+        selected.add(label);
+        chip.classList.add('active');
+      }
+      updateResult();
+    });
+    chipGrid.appendChild(chip);
+  });
+
+  function updateResult(){
+    const n = selected.size;
+    resultBox.classList.toggle('warm', n >= 3);
+    if(n === 0){
+      resultBox.innerHTML = 'Select a few — your read-out will build here.';
+      return;
+    }
+    const list = [...selected].join(', ');
+    let msg;
+    if(n <= 2){
+      msg = `Just ${n === 1 ? 'one' : 'two'} main trigger${n>1?'s':''}: <strong>${list}</strong>. Pick one simple rule for it this week — that's usually enough to feel the difference.`;
+    } else if(n <= 4){
+      msg = `A handful of triggers: <strong>${list}</strong>. Rather than tackling all at once, start with whichever costs you the most minutes today.`;
+    } else {
+      msg = `That's quite a few: <strong>${list}</strong>. Don't aim to fix them all — pick the single biggest one and design one rule around it first.`;
+    }
+    resultBox.innerHTML = msg;
+  }
+</script>
+
+</body>
+</html>
