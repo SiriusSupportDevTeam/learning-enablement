@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate Your Zone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --card:#FFFFFF;
+    --ink:#24322C;
+    --ink-soft:#5B6960;
+    --pine:#2B6E64;
+    --pine-deep:#1D4D45;
+    --amber:#E8A33D;
+    --amber-deep:#C5811F;
+    --sage:#E1E8DA;
+    --line:#DDD8C8;
+    --radius-lg:20px;
+    --radius-sm:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:-1px -1px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    padding:32px 18px 80px;
+    min-height:100vh;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header{text-align:left;margin-bottom:36px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Space Mono',monospace;
+    font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--pine-deep);
+    background:var(--sage);
+    border:1px solid #c9d6c1;
+    padding:5px 12px;border-radius:999px;
+    margin-bottom:16px;
+  }
+  .eyebrow svg{width:13px;height:13px;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(34px,5.5vw,54px);
+    line-height:1.05;
+    margin:0 0 12px;
+    letter-spacing:-.01em;
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--pine);
+  }
+  header p{
+    max-width:600px;
+    color:var(--ink-soft);
+    font-size:16px;
+    margin:0;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:22px;
+    align-items:start;
+  }
+  @media (max-width:820px){
+    .layout{grid-template-columns:1fr;}
+    .radar-panel{order:-1; position:static;}
+  }
+
+  /* ---------- Rating cards ---------- */
+  .cards{display:flex;flex-direction:column;gap:12px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:18px 20px;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .card.rated{
+    border-color:var(--pine);
+    box-shadow:0 2px 0 0 var(--pine);
+  }
+  .card-top{
+    display:flex;align-items:flex-start;gap:12px;
+    margin-bottom:14px;
+  }
+  .icon{
+    flex:0 0 auto;
+    width:38px;height:38px;
+    border-radius:10px;
+    background:var(--sage);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--pine-deep);
+  }
+  .icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .card-title{font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin:0 0 2px;}
+  .card-desc{font-size:13.5px;color:var(--ink-soft);margin:0;}
+
+  .scale{display:flex;align-items:center;gap:8px;}
+  .dots{display:flex;gap:6px;flex:1;}
+  .dot{
+    flex:1;
+    height:38px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:transparent;
+    cursor:pointer;
+    font-family:'Space Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s ease;
+  }
+  .dot:hover{border-color:var(--pine);color:var(--pine-deep);}
+  .dot.filled{
+    background:var(--sage);
+    border-color:var(--pine);
+    color:var(--pine-deep);
+  }
+  .dot.selected{
+    background:var(--pine);
+    border-color:var(--pine);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  .scale-labels{
+    display:flex;justify-content:space-between;
+    font-size:11px;color:var(--ink-soft);
+    margin-top:6px;
+    font-family:'Space Mono',monospace;
+    letter-spacing:.02em;
+  }
+
+  /* ---------- Radar panel ---------- */
+  .radar-panel{
+    position:sticky;top:24px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:22px;
+    text-align:center;
+  }
+  .radar-panel h2{
+    font-family:'Fraunces',serif;
+    font-size:19px;font-weight:600;
+    margin:0 0 4px;
+  }
+  .radar-sub{font-size:12.5px;color:var(--ink-soft);margin:0 0 14px;}
+
+  .badge-row{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    margin-top:14px;
+  }
+  .score-badge{
+    font-family:'Space Mono',monospace;
+    font-size:26px;font-weight:700;
+    color:var(--pine-deep);
+    background:var(--sage);
+    border-radius:12px;
+    padding:6px 14px;
+  }
+  .score-badge span{font-size:14px;color:var(--ink-soft);}
+  .zone-tag{
+    font-family:'Inter',sans-serif;
+    font-weight:600;font-size:13.5px;
+    color:var(--amber-deep);
+    background:#FBEED9;
+    border:1px solid #F0D6A3;
+    border-radius:999px;
+    padding:6px 12px;
+    margin-top:12px;
+    display:inline-block;
+  }
+  .growth-edge{
+    margin-top:14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border-top:1px dashed var(--line);
+    padding-top:12px;
+  }
+  .growth-edge strong{color:var(--ink);}
+
+  /* ---------- Mini Challenge ---------- */
+  .challenge{
+    margin-top:34px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:26px 26px 24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .challenge::before{
+    content:"";
+    position:absolute; top:0; left:0; height:100%; width:6px;
+    background:var(--amber);
+  }
+  .challenge-eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--amber-deep);
+    margin-bottom:8px;
+    display:block;
+  }
+  .challenge h3{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:22px;margin:0 0 8px;
+  }
+  .challenge p{color:var(--ink-soft);font-size:14.5px;margin:0 0 6px;max-width:640px;}
+  .example{
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--sage);
+    border-radius:var(--radius-sm);
+    padding:10px 14px;
+    margin:14px 0 16px;
+    display:flex;gap:8px;align-items:flex-start;
+  }
+  .example b{color:var(--pine-deep);font-weight:600;}
+  textarea{
+    width:100%;
+    min-height:96px;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:14px;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+    resize:vertical;
+    background:#FDFCF8;
+    transition:border-color .15s ease;
+  }
+  textarea:focus{outline:none;border-color:var(--pine);}
+  .challenge-foot{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:12px;flex-wrap:wrap;gap:10px;
+  }
+  .char-count{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .lock-btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    color:#fff;background:var(--pine);
+    border:none;border-radius:999px;
+    padding:11px 22px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .lock-btn:hover{background:var(--pine-deep);}
+  .lock-btn:active{transform:scale(.97);}
+  .lock-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  .saved-note{
+    margin-top:16px;
+    background:#FFF9E9;
+    border:1px solid #F0D6A3;
+    border-radius:var(--radius-sm);
+    padding:14px 16px;
+    font-size:13.5px;
+    display:none;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .saved-note.show{display:flex;}
+  .saved-note svg{flex:0 0 auto;width:16px;height:16px;stroke:var(--amber-deep);fill:none;stroke-width:2;margin-top:1px;}
+  .saved-note .label{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--amber-deep);display:block;margin-bottom:3px;}
+
+  footer{
+    text-align:center;margin-top:38px;
+    font-size:13px;color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      Module 1 · Interactive Activity
+    </span>
+    <h1>Rate <em>your</em> zone.</h1>
+    <p>Score your current workspace across six dimensions. Watch your zone map take shape as you go — then find the one thing worth fixing first.</p>
+  </header>
+
+  <div class="layout">
+
+    <div class="cards" id="cards"></div>
+
+    <div class="radar-panel">
+      <h2>Your Zone Map</h2>
+      <p class="radar-sub">Fills in live as you rate each dimension</p>
+      <svg id="radarChart" viewBox="0 0 260 260" width="100%" style="max-width:280px;"></svg>
+      <div class="badge-row">
+        <div class="score-badge" id="avgScore">– <span>/ 5</span></div>
+      </div>
+      <div class="zone-tag" id="zoneTag" style="display:none;"></div>
+      <div class="growth-edge" id="growthEdge" style="display:none;"></div>
+    </div>
+
+  </div>
+
+  <div class="challenge">
+    <span class="challenge-eyebrow">Mini Challenge</span>
+    <h3>What's making this harder than it needs to be?</h3>
+    <p>Before you move on to Module 2, name <strong>one</strong> specific thing about your current workspace that's working against you. You'll come back to this when we start building solutions — so be precise.</p>
+    <div class="example">
+      <span>💡</span>
+      <span>Instead of <b>"my desk"</b>, try <b>"my desk doesn't have anywhere to put my second monitor, so I'm always twisting my neck."</b></span>
+    </div>
+    <textarea id="challengeInput" placeholder="The one thing making my workspace harder than it needs to be is..." maxlength="400"></textarea>
+    <div class="challenge-foot">
+      <span class="char-count"><span id="charCount">0</span>/400</span>
+      <button class="lock-btn" id="lockBtn">
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Lock it in
+      </button>
+    </div>
+    <div class="saved-note" id="savedNote">
+      <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      <div>
+        <span class="label">Saved for Module 2</span>
+        <span id="savedText"></span>
+      </div>
+    </div>
+  </div>
+
+  <footer>Six dimensions rated, one problem named — that's your starting line for the module ahead.</footer>
+
+</div>
+
+<script>
+  const dims = [
+    { key:"comfort", title:"Comfort", desc:"Physical comfort over a full workday", icon:'<path d="M6 10V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4"/><path d="M4 10h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6z"/><path d="M6 18v2M18 18v2"/>' },
+    { key:"organization", title:"Organization", desc:"Physical and digital tidiness", icon:'<path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>' },
+    { key:"technology", title:"Technology", desc:"Reliability of hardware, software, and connection", icon:'<path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8 15.5a6 6 0 0 1 8 0"/><path d="M11 18.5a2 2 0 0 1 2 0"/>' },
+    { key:"focus", title:"Focus", desc:"How easily you get into and stay in a concentrated state", icon:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.5"/>' },
+    { key:"communication", title:"Communication", desc:"How well your space supports calls, video, and messaging", icon:'<path d="M21 11.5a7.5 7.5 0 0 1-11.4 6.4L4 19l1.1-5.6A7.5 7.5 0 1 1 21 11.5z"/>' },
+    { key:"worklife", title:"Work-life separation", desc:"How clearly your workspace is separated from home life", icon:'<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 12h.01"/>' }
+  ];
+
+  const ratings = {};
+  dims.forEach(d => ratings[d.key] = 0);
+
+  const cardsEl = document.getElementById('cards');
+
+  dims.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = 'card-' + d.key;
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="icon"><svg viewBox="0 0 24 24">${d.icon}</svg></div>
+        <div>
+          <p class="card-title">${d.title}</p>
+          <p class="card-desc">${d.desc}</p>
+        </div>
+      </div>
+      <div class="scale">
+        <div class="dots">
+          ${[1,2,3,4,5].map(n => `<button class="dot" data-key="${d.key}" data-val="${n}">${n}</button>`).join('')}
+        </div>
+      </div>
+      <div class="scale-labels"><span>Needs work</span><span>Excellent</span></div>
+    `;
+    cardsEl.appendChild(card);
+  });
+
+  cardsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.dot');
+    if (!btn) return;
+    const key = btn.dataset.key;
+    const val = parseInt(btn.dataset.val, 10);
+    ratings[key] = ratings[key] === val ? 0 : val; // click again to clear
+    refreshCard(key);
+    updateRadar();
+  });
+
+  function refreshCard(key) {
+    const val = ratings[key];
+    const card = document.getElementById('card-' + key);
+    card.classList.toggle('rated', val > 0);
+    card.querySelectorAll('.dot').forEach(dot => {
+      const n = parseInt(dot.dataset.val, 10);
+      dot.classList.toggle('filled', n <= val && val > 0);
+      dot.classList.toggle('selected', n === val);
+    });
+  }
+
+  // ---------- Radar chart ----------
+  const svgNS = "http://www.w3.org/2000/svg";
+  const radarSvg = document.getElementById('radarChart');
+  const CX = 130, CY = 130, R = 95;
+  const N = dims.length;
+
+  function pointFor(i, value) {
+    const angle = (Math.PI * 2 * i) / N - Math.PI / 2;
+    const r = (value / 5) * R;
+    return [CX + r * Math.cos(angle), CY + r * Math.sin(angle)];
+  }
+
+  function buildStaticGrid() {
+    let svg = '';
+    for (let level = 1; level <= 5; level++) {
+      const r = (level / 5) * R;
+      let pts = [];
+      for (let i = 0; i < N; i++) {
+        const angle = (Math.PI * 2 * i) / N - Math.PI / 2;
+        pts.push(`${CX + r*Math.cos(angle)},${CY + r*Math.sin(angle)}`);
+      }
+      svg += `<polygon points="${pts.join(' ')}" fill="none" stroke="#DDD8C8" stroke-width="${level===5?1.3:1}"/>`;
+    }
+    for (let i = 0; i < N; i++) {
+      const [x,y] = pointFor(i, 5);
+      svg += `<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="#DDD8C8" stroke-width="1"/>`;
+      const lx = CX + (R+22) * Math.cos((Math.PI*2*i)/N - Math.PI/2);
+      const ly = CY + (R+22) * Math.sin((Math.PI*2*i)/N - Math.PI/2);
+      svg += `<text x="${lx}" y="${ly}" font-family="Space Mono, monospace" font-size="9" fill="#5B6960" text-anchor="middle" dominant-baseline="middle">${dims[i].title.split(' ')[0]}</text>`;
+    }
+    return svg;
+  }
+
+  function updateRadar() {
+    const anyRated = dims.some(d => ratings[d.key] > 0);
+    let pts = [];
+    for (let i = 0; i < N; i++) {
+      const v = ratings[dims[i].key] || 0;
+      pts.push(pointFor(i, v));
+    }
+    const polyPts = pts.map(p => p.join(',')).join(' ');
+    const dotsSvg = pts.map((p, i) => ratings[dims[i].key] > 0
+      ? `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#2B6E64"/>` : '').join('');
+
+    radarSvg.innerHTML = buildStaticGrid() +
+      `<polygon points="${polyPts}" fill="${anyRated ? 'rgba(43,110,100,0.28)' : 'none'}" stroke="#2B6E64" stroke-width="2" stroke-linejoin="round"/>` +
+      dotsSvg;
+
+    // score + tag
+    const rated = dims.filter(d => ratings[d.key] > 0);
+    const avgEl = document.getElementById('avgScore');
+    const tagEl = document.getElementById('zoneTag');
+    const growthEl = document.getElementById('growthEdge');
+
+    if (rated.length === 0) {
+      avgEl.innerHTML = '– <span>/ 5</span>';
+      tagEl.style.display = 'none';
+      growthEl.style.display = 'none';
+      return;
+    }
+
+    const avg = rated.reduce((s,d) => s + ratings[d.key], 0) / rated.length;
+    avgEl.innerHTML = avg.toFixed(1) + ' <span>/ 5</span>';
+
+    if (rated.length === dims.length) {
+      let tag = 'Solid Ground';
+      if (avg < 2.5) tag = 'Zone in Progress';
+      else if (avg >= 4.2) tag = 'Dream Zone';
+      else if (avg >= 3.4) tag = 'Well-Rounded Zone';
+      tagEl.textContent = tag;
+      tagEl.style.display = 'inline-block';
+
+      const weakest = rated.reduce((a,b) => ratings[a.key] <= ratings[b.key] ? a : b);
+      growthEl.innerHTML = `Growth edge: <strong>${weakest.title}</strong> scored lowest — that's a strong candidate for your Mini Challenge below.`;
+      growthEl.style.display = 'block';
+    } else {
+      tagEl.style.display = 'none';
+      growthEl.style.display = 'none';
+    }
+  }
+
+  updateRadar();
+
+  // ---------- Mini Challenge ----------
+  const input = document.getElementById('challengeInput');
+  const charCount = document.getElementById('charCount');
+  const lockBtn = document.getElementById('lockBtn');
+  const savedNote = document.getElementById('savedNote');
+  const savedText = document.getElementById('savedText');
+
+  input.addEventListener('input', () => {
+    charCount.textContent = input.value.length;
+  });
+
+  lockBtn.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) {
+      input.focus();
+      input.style.borderColor = '#C5811F';
+      setTimeout(() => input.style.borderColor = '', 800);
+      return;
+    }
+    savedText.textContent = '"' + text + '"';
+    savedNote.classList.add('show');
+  });
+</script>
+</body>
+</html>
