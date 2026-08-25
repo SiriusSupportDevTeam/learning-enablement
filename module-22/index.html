@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behind Every Problem Is a Person</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream: #FFF8F0;
+    --blush: #FDEDE4;
+    --plum: #3A2E39;
+    --coral: #F0805C;
+    --coral-deep: #D9633F;
+    --sage: #7FA48C;
+    --sage-deep: #5C8268;
+    --gold: #E3A857;
+    --paper: #FFFFFF;
+    --line: #EBD9CC;
+    --shadow: 0 6px 18px rgba(58,46,57,0.08);
+    --shadow-lift: 0 14px 30px rgba(58,46,57,0.14);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--plum);
+    font-family:'Nunito', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    line-height:1.15;
+    letter-spacing:-0.01em;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  ::selection{background:var(--coral);color:white;}
+
+  a{color:var(--coral-deep);}
+
+  /* ---------- Background ambience ---------- */
+  .bg-blob{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(60px);
+    opacity:0.35;
+    z-index:-1;
+    pointer-events:none;
+  }
+  .blob1{width:420px;height:420px;background:var(--blush);top:-120px;right:-140px;}
+  .blob2{width:360px;height:360px;background:#E7F0E9;bottom:10%;left:-160px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:120px 24px 90px;
+    text-align:center;
+    position:relative;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:8px 18px;
+    border-radius:999px;
+    font-size:0.85rem;
+    font-weight:700;
+    color:var(--coral-deep);
+    box-shadow:var(--shadow);
+    margin-bottom:28px;
+  }
+  .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0.5;}}
+
+  .hero h1{
+    font-size:clamp(2.3rem, 5.5vw, 3.6rem);
+    margin:0 0 22px;
+    color:var(--plum);
+  }
+  .hero h1 span{color:var(--coral-deep);}
+  .hero p.lede{
+    max-width:640px;
+    margin:0 auto;
+    font-size:1.15rem;
+    color:#6b5a63;
+  }
+
+  /* speech bubble illustration */
+  .bubble-scene{
+    position:relative;
+    max-width:480px;
+    margin:56px auto 0;
+    height:150px;
+  }
+  .bubble{
+    position:absolute;
+    background:var(--paper);
+    border:2px solid var(--line);
+    border-radius:22px;
+    padding:14px 20px;
+    font-weight:700;
+    font-family:'Baloo 2',sans-serif;
+    box-shadow:var(--shadow);
+    opacity:0;
+    animation:floatIn 0.7s ease forwards;
+  }
+  .bubble::after{
+    content:"";
+    position:absolute;
+    width:16px;height:16px;
+    background:inherit;
+    border-right:2px solid var(--line);
+    border-bottom:2px solid var(--line);
+    bottom:-9px;
+    border-radius:0 0 4px 0;
+  }
+  .b1{left:0;top:0;color:var(--coral-deep);animation-delay:0.2s;}
+  .b1::after{left:28px;transform:rotate(45deg);}
+  .b2{right:0;top:40px;color:var(--sage-deep);animation-delay:0.6s;}
+  .b2::after{right:28px;transform:rotate(45deg);}
+  .b3{left:30%;top:100px;color:var(--gold);animation-delay:1s;font-size:0.9rem;}
+  .b3::after{left:24px;transform:rotate(45deg);}
+  @keyframes floatIn{
+    from{opacity:0;transform:translateY(14px) scale(0.92);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+
+  /* ---------- Section shell ---------- */
+  section{padding:70px 0;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 44px;}
+  .section-head .tag{
+    font-size:0.8rem;
+    font-weight:800;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--sage-deep);
+    margin-bottom:10px;
+    display:block;
+  }
+  .section-head h2{font-size:clamp(1.6rem,3.4vw,2.2rem);margin:0 0 12px;}
+  .section-head p{color:#6b5a63;margin:0;}
+
+  /* ---------- Feelings chips (interactive) ---------- */
+  .hint{
+    text-align:center;
+    font-size:0.9rem;
+    color:#9a8790;
+    font-style:italic;
+    margin-bottom:22px;
+  }
+  .chip-field{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:center;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .chip{
+    background:var(--paper);
+    border:2px solid var(--line);
+    border-radius:999px;
+    padding:12px 20px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    cursor:pointer;
+    transition:all 0.25s ease;
+    color:var(--plum);
+    box-shadow:var(--shadow);
+    user-select:none;
+  }
+  .chip:hover{transform:translateY(-3px);border-color:var(--coral);box-shadow:var(--shadow-lift);}
+  .chip.active{background:var(--coral);border-color:var(--coral);color:white;}
+  .chip-detail{
+    max-width:640px;
+    margin:22px auto 0;
+    background:var(--blush);
+    border:1px dashed var(--coral);
+    border-radius:16px;
+    padding:20px 24px;
+    display:none;
+    font-size:0.98rem;
+    color:#5a4650;
+  }
+  .chip-detail.show{display:block;animation:floatIn 0.4s ease;}
+  .chip-detail b{color:var(--coral-deep);}
+
+  /* ---------- Trust chain ---------- */
+  .chain{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:0;
+    max-width:800px;
+    margin:0 auto;
+  }
+  .chain-node{
+    background:var(--paper);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:20px 22px;
+    text-align:center;
+    min-width:150px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    box-shadow:var(--shadow);
+    opacity:0;
+    transform:translateY(16px);
+    transition:opacity 0.6s ease, transform 0.6s ease, box-shadow .25s ease;
+  }
+  .chain-node.in-view{opacity:1;transform:translateY(0);}
+  .chain-node:hover{box-shadow:var(--shadow-lift);}
+  .chain-node .num{
+    display:block;
+    font-family:'Nunito',sans-serif;
+    font-weight:700;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--sage-deep);
+    margin-bottom:6px;
+  }
+  .chain-arrow{
+    font-size:1.6rem;
+    color:var(--coral);
+    margin:0 10px;
+    opacity:0;
+    transition:opacity 0.6s ease;
+  }
+  .chain-arrow.in-view{opacity:1;}
+  .chain-note{
+    text-align:center;
+    max-width:520px;
+    margin:26px auto 0;
+    color:#6b5a63;
+    font-size:0.95rem;
+  }
+
+  /* ---------- Flip cards: situation -> emotion ---------- */
+  .grid-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:18px;
+    max-width:880px;
+    margin:0 auto;
+  }
+  .flip-card{
+    perspective:1200px;
+    height:150px;
+    cursor:pointer;
+  }
+  .flip-inner{
+    position:relative;
+    width:100%;height:100%;
+    transition:transform 0.55s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;
+    border-radius:16px;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    box-shadow:var(--shadow);
+    border:2px solid var(--line);
+  }
+  .flip-front{
+    background:var(--paper);
+  }
+  .flip-front .label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:#a3939a;font-weight:700;margin-bottom:6px;}
+  .flip-front .situation{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.02rem;color:var(--plum);}
+  .flip-front .flip-hint{margin-top:auto;font-size:0.75rem;color:var(--coral-deep);font-weight:700;}
+  .flip-back{
+    background:var(--sage);
+    color:white;
+    transform:rotateY(180deg);
+    text-align:center;
+    align-items:center;
+  }
+  .flip-back .label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;font-weight:700;margin-bottom:6px;}
+  .flip-back .emotion{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.25rem;}
+
+  /* ---------- callout quotes ---------- */
+  .quote-stack{
+    max-width:620px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .quote{
+    background:var(--paper);
+    border-left:4px solid var(--gold);
+    border-radius:0 14px 14px 0;
+    padding:16px 20px;
+    box-shadow:var(--shadow);
+    font-style:italic;
+    color:#5a4650;
+  }
+  .ask-box{
+    max-width:620px;
+    margin:34px auto 0;
+    background:var(--plum);
+    color:var(--cream);
+    border-radius:20px;
+    padding:28px 30px;
+    text-align:center;
+    font-family:'Baloo 2',sans-serif;
+    font-size:1.2rem;
+    font-weight:600;
+    box-shadow:var(--shadow-lift);
+    position:relative;
+  }
+  .ask-box::before{
+    content:"💬";
+    position:absolute;
+    top:-18px;left:50%;
+    transform:translateX(-50%);
+    background:var(--coral);
+    width:36px;height:36px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- checklist (cooperation needs) ---------- */
+  .check-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  .check-item{
+    background:var(--paper);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+    transition:all .2s ease;
+    box-shadow:var(--shadow);
+    user-select:none;
+  }
+  .check-item:hover{border-color:var(--sage);}
+  .check-item .box{
+    width:24px;height:24px;
+    border-radius:8px;
+    border:2px solid var(--sage);
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .2s ease;
+    font-size:0.85rem;
+    color:white;
+  }
+  .check-item.done .box{background:var(--sage);}
+  .check-item.done{opacity:0.6;}
+  .check-item.done span.text{text-decoration:line-through;}
+
+  /* ---------- benefits list ---------- */
+  .benefit-list{
+    max-width:680px;
+    margin:0 auto;
+    display:grid;
+    gap:12px;
+  }
+  .benefit-row{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+  }
+  .benefit-row .ico{
+    flex:0 0 auto;
+    width:38px;height:38px;
+    border-radius:10px;
+    background:var(--blush);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;
+  }
+  .benefit-row b{font-family:'Baloo 2',sans-serif;}
+
+  .outcome-pills{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+    max-width:760px;margin:30px auto 0;
+  }
+  .pill{
+    background:var(--blush);
+    border:1px solid var(--coral);
+    color:var(--coral-deep);
+    padding:8px 16px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.88rem;
+  }
+
+  /* ---------- closing ---------- */
+  .closing{
+    text-align:center;
+    padding:90px 24px 110px;
+  }
+  .closing .card{
+    max-width:640px;
+    margin:0 auto;
+    background:linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    color:white;
+    border-radius:26px;
+    padding:46px 40px;
+    box-shadow:var(--shadow-lift);
+  }
+  .closing h2{font-size:clamp(1.6rem,3.6vw,2.1rem);margin:0 0 14px;}
+  .closing p{margin:0;opacity:0.95;font-size:1.05rem;}
+  footer{
+    text-align:center;
+    padding-bottom:50px;
+    font-size:0.85rem;
+    color:#a3939a;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blob blob1"></div>
+<div class="bg-blob blob2"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> A CUSTOMER SERVICE ESSENTIAL</span>
+    <h1>Behind every problem<br>is a <span>person.</span></h1>
+    <p class="lede">Customers don't only remember what you did. They remember how the interaction made them feel — and that feeling shapes everything that happens next.</p>
+
+    <div class="bubble-scene">
+      <div class="bubble b1">"I've asked this twice already..."</div>
+      <div class="bubble b2">"Am I being heard?"</div>
+      <div class="bubble b3">just another ticket?</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEELINGS TO AVOID -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="tag">Even when the fix is right</span>
+      <h2>A technically correct answer can still feel wrong</h2>
+      <p>If, along the way, the customer feels any of these — the experience suffers, no matter how correct the resolution was.</p>
+    </div>
+    <p class="hint">tap a feeling to see why it matters</p>
+    <div class="chip-field" id="chipField"></div>
+    <div class="chip-detail" id="chipDetail"></div>
+  </div>
+</section>
+
+<!-- TRUST CHAIN -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="tag">Why it matters</span>
+      <h2>Human connection builds a chain reaction</h2>
+      <p>Most support interactions require the customer's cooperation. That cooperation flows from trust.</p>
+    </div>
+    <div class="chain" id="chain"></div>
+    <p class="chain-note">When customers believe the representative is listening and acting in good faith, cooperation gets easier — and everything downstream improves.</p>
+  </div>
+</section>
+
+<!-- SITUATION -> EMOTION FLIP CARDS -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="tag">Look closer</span>
+      <h2>Every situation has an emotion underneath</h2>
+      <p>The words describe the problem. The feeling is what the customer is actually carrying.</p>
+    </div>
+    <p class="hint">tap a card to reveal the emotion</p>
+    <div class="grid-cards" id="flipGrid"></div>
+  </div>
+</section>
+
+<!-- DON'T LABEL / ASK INSTEAD -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="tag">A gentle warning</span>
+      <h2>The emotion isn't always obvious</h2>
+    </div>
+    <div class="quote-stack">
+      <div class="quote">A customer who sounds angry may actually be worried.</div>
+      <div class="quote">A customer who asks the same question repeatedly may be confused.</div>
+      <div class="quote">A customer who appears impatient may be under a time constraint.</div>
+    </div>
+    <div class="ask-box">"What might this customer need from me right now?"</div>
+  </div>
+</section>
+
+<!-- COOPERATION CHECKLIST -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="tag">What trust unlocks</span>
+      <h2>Things you may need the customer to do</h2>
+      <p>Trust makes each of these easier to ask for — and easier to receive.</p>
+    </div>
+    <div class="check-grid" id="checkGrid"></div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="tag">It's not just "being nice"</span>
+      <h2>Connection improves the resolution itself</h2>
+    </div>
+    <div class="benefit-list" id="benefitList"></div>
+    <div class="outcome-pills" id="outcomePills"></div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="closing">
+  <div class="card">
+    <h2>Being human is a professional skill.</h2>
+    <p>Not a soft extra — a core competency that makes every resolution faster, clearer, and more trustworthy.</p>
+  </div>
+</section>
+
+<footer>Made with care, for people who talk to people. 💛</footer>
+
+<script>
+  // ---------- Feelings chips ----------
+  const feelings = [
+    ["Ignored", "When a customer feels unheard, they stop believing the details they share will matter — so they stop sharing them."],
+    ["Rushed", "Feeling rushed signals that their problem is an inconvenience, not a priority — even if it's being solved quickly."],
+    ["Dismissed", "Dismissal makes a customer feel their concern wasn't taken seriously, even if the outcome was correct."],
+    ["Unimportant", "Every customer wants to know their issue — and their time — matters to someone."],
+    ["Confused", "Confusion left unaddressed turns into distrust of the whole process, not just one step."],
+    ["Judged", "Feeling judged makes people defensive, which makes cooperation much harder to get."],
+    ["Blamed", "Blame shuts down honesty — customers under-share when they fear being faulted."],
+    ["Just a ticket", "No one wants to feel like a number. It erases the fact that a real problem is affecting a real day."],
+    ["Repeating themselves", "Having to repeat information signals that no one is truly connected to their case."],
+    ["Passed around", "Without ownership, customers feel like the problem belongs to no one — including them."]
+  ];
+  const chipField = document.getElementById('chipField');
+  const chipDetail = document.getElementById('chipDetail');
+  feelings.forEach(([label, detail]) => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.textContent = label;
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      chipDetail.innerHTML = `<b>${label}:</b> ${detail}`;
+      chipDetail.classList.add('show');
+    });
+    chipField.appendChild(chip);
+  });
+
+  // ---------- Trust chain ----------
+  const chainSteps = ["Trust", "Cooperation", "Better Communication", "Better Experience"];
+  const chainEl = document.getElementById('chain');
+  chainSteps.forEach((step, i) => {
+    const node = document.createElement('div');
+    node.className = 'chain-node';
+    node.innerHTML = `<span class="num">Step ${i+1}</span>${step}`;
+    chainEl.appendChild(node);
+    if (i < chainSteps.length - 1) {
+      const arrow = document.createElement('div');
+      arrow.className = 'chain-arrow';
+      arrow.textContent = '→';
+      chainEl.appendChild(arrow);
+    }
+  });
+
+  // ---------- Flip cards ----------
+  const pairs = [
+    ["Account is locked", "Anxiety"],
+    ["Payment has failed", "Frustration"],
+    ["Product is not working", "Confusion"],
+    ["Order is late", "Disappointment"],
+    ["Unexpected charge appears", "Concern"],
+    ["Service is unavailable", "Irritation"],
+    ["Contacted support multiple times", "Exhaustion"],
+    ["Doesn't understand a process", "Uncertainty"],
+    ["Believes they were treated unfairly", "Anger"],
+    ["Has an urgent deadline", "Stress"]
+  ];
+  const flipGrid = document.getElementById('flipGrid');
+  pairs.forEach(([situation, emotion]) => {
+    const card = document.createElement('div');
+    card.className = 'flip-card';
+    card.innerHTML = `
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <span class="label">Situation</span>
+          <span class="situation">${situation}</span>
+          <span class="flip-hint">tap to reveal →</span>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="label">Likely feeling</span>
+          <span class="emotion">${emotion}</span>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    flipGrid.appendChild(card);
+  });
+
+  // ---------- Checklist ----------
+  const needs = [
+    "Provide information",
+    "Verify details",
+    "Follow instructions",
+    "Wait for processing",
+    "Submit documentation",
+    "Complete a specific step",
+    "Accept an explanation",
+    "Understand a limitation",
+    "Participate in troubleshooting"
+  ];
+  const checkGrid = document.getElementById('checkGrid');
+  needs.forEach(need => {
+    const item = document.createElement('div');
+    item.className = 'check-item';
+    item.innerHTML = `<span class="box">✓</span><span class="text">${need}</span>`;
+    item.addEventListener('click', () => item.classList.toggle('done'));
+    checkGrid.appendChild(item);
+  });
+
+  // ---------- Benefits ----------
+  const benefits = [
+    ["👂", "Listen carefully", "You're more likely to identify the actual issue."],
+    ["🔍", "Ask relevant questions", "You're more likely to collect accurate information."],
+    ["🤝", "Acknowledge concerns", "Customers become more willing to cooperate."],
+    ["📋", "Explain processes clearly", "Customers are less likely to misunderstand instructions."],
+    ["🎯", "Set realistic expectations", "Customers are less likely to feel misled."]
+  ];
+  const benefitList = document.getElementById('benefitList');
+  benefits.forEach(([ico, title, desc]) => {
+    const row = document.createElement('div');
+    row.className = 'benefit-row';
+    row.innerHTML = `<span class="ico">${ico}</span><div><b>${title}.</b> ${desc}</div>`;
+    benefitList.appendChild(row);
+  });
+
+  const outcomes = ["Accurate information gathering", "Effective troubleshooting", "Customer cooperation", "Reduced misunderstandings", "Clearer expectations", "Greater confidence", "Effective resolution"];
+  const outcomePills = document.getElementById('outcomePills');
+  outcomes.forEach(o => {
+    const pill = document.createElement('span');
+    pill.className = 'pill';
+    pill.textContent = o;
+    outcomePills.appendChild(pill);
+  });
+
+  // ---------- Scroll reveal for chain ----------
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, idx) => {
+      if (entry.isIntersecting) {
+        const items = Array.from(chainEl.children);
+        items.forEach((el, i) => {
+          setTimeout(() => el.classList.add('in-view'), i * 150);
+        });
+        observer.disconnect();
+      }
+    });
+  }, {threshold: 0.4});
+  observer.observe(chainEl);
+</script>
+
+</body>
+</html>
