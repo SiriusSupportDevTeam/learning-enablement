@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Detective: The Listening Academy 🕵️‍♀️✨</title>
+    <style>
+        :root {
+            --bg-color: #FFF5F7;
+            --card-bg: #FFFFFF;
+            --primary: #FF85A1;
+            --primary-hover: #FF6B8B;
+            --secondary: #B5EAD7;
+            --text-color: #4A4A4A;
+            --accent: #FFDAC1;
+            --border-radius: 20px;
+            --shadow: 0 8px 20px rgba(255, 133, 161, 0.15);
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-sizing: border-box;
+            border: 4px solid #FFE5EC;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            color: #FF5C8D;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        .mascot {
+            text-align: center;
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(255, 133, 161, 0.3);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .customer-bubble {
+            background-color: #E2F0CB;
+            border-radius: 18px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            position: relative;
+            font-size: 15px;
+            font-weight: bold;
+            border: 2px dashed #B5EAD7;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background-color: #FFF;
+            border: 2px solid #FFE5EC;
+            padding: 12px 15px;
+            border-radius: 15px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background-color: #FFF9FA;
+        }
+
+        .option-btn.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #FFE5EC;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .sequence-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .seq-item {
+            background: #FFF;
+            border: 2px solid #E2F0CB;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .seq-btns button {
+            background: #B5EAD7;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            background-color: #E2F0CB;
+            display: none;
+            font-size: 14px;
+        }
+
+        .teaching-point {
+            background-color: #E8E7FF;
+            border-left: 5px solid #9C8ADE;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+    <!-- Intro Screen -->
+    <div class="screen active" id="screen-intro">
+        <div class="mascot">🕵️‍♀️🎀</div>
+        <h1>CS Detective Academy</h1>
+        <p>Welcome, Recruit! Are you ready to escape the dangerous <strong>Solution-First Trap</strong>?</p>
+        <p>📌 <strong>The Trap:</strong> Trying to fix a problem before fully understanding what happened.</p>
+        <p>Learn the secret flow to turn frustrated customers into happy campers! 🌸</p>
+        <button class="btn" onclick="nextScreen('screen-scenario1')">Start Academy! ✨</button>
+    </div>
+
+    <!-- Level 1: Spot the Mistake -->
+    <div class="screen" id="screen-scenario1">
+        <div class="mascot">💬</div>
+        <h2>Level 1: Spot the Assumption</h2>
+        <div class="customer-bubble">
+            "My payment was taken from my account, but my order still says pending!"
+        </div>
+        <p>⚡ Quick! What is the <em>solution-first</em> mistake here?</p>
+        <div class="options-grid">
+            <button class="option-btn" onclick="checkL1(this, false)">A) Asking for their order number right away.</button>
+            <button class="option-btn" onclick="checkL1(this, true)">B) Telling them "You'll probably need to wait for it to process."</button>
+            <button class="option-btn" onclick="checkL1(this, false)">C) Saying "Let me make sure I understand what happened."</button>
+        </div>
+        <div class="feedback" id="fb-l1"></div>
+        <button class="btn" id="btn-l1" style="display:none;" onclick="nextScreen('screen-sequence')">Next Level! 🐾</button>
+    </div>
+
+    <!-- Level 2: Fix the Sequence -->
+    <div class="screen" id="screen-sequence">
+        <div class="mascot">🧩</div>
+        <h2>Level 2: Build the Better Sequence</h2>
+        <p>Put the optimal customer service steps in order!</p>
+        <div class="sequence-container" id="seq-list">
+            <!-- Populated by JS -->
+        </div>
+        <button class="btn" onclick="checkSequence()">Check Sequence ✨</button>
+        <div class="feedback" id="fb-seq"></div>
+        <button class="btn" id="btn-seq" style="display:none;" onclick="nextScreen('screen-interactive')">Final Challenge! 🏆</button>
+    </div>
+
+    <!-- Level 3: What Did You Actually Hear? -->
+    <div class="screen" id="screen-interactive">
+        <div class="mascot">🎧</div>
+        <h2>Final Level: Listening Practice</h2>
+        <div class="customer-bubble">
+            "I've already contacted support twice about this and nobody seems to know what's happening."
+        </div>
+        
+        <p><strong>1. The Fact (What happened?):</strong></p>
+        <div class="options-grid" id="q-fact">
+            <button class="option-btn" onclick="selectOpt('fact', this, true)">They contacted support twice with no fix yet.</button>
+            <button class="option-btn" onclick="selectOpt('fact', this, false)">The agent they spoke to earlier quit.</button>
+        </div>
+
+        <p><strong>2. The Emotion (How might they feel?):</strong></p>
+        <div class="options-grid" id="q-emotion">
+            <button class="option-btn" onclick="selectOpt('emotion', this, true)">Frustrated, unheard, and losing confidence.</button>
+            <button class="option-btn" onclick="selectOpt('emotion', this, false)">Furious and planning to cancel everything immediately.</button>
+        </div>
+
+        <p><strong>3. The Core Need (What do they need most right now?):</strong></p>
+        <div class="options-grid" id="q-need">
+            <button class="option-btn" onclick="selectOpt('need', this, false)">Just fix the issue as fast as possible without talking.</button>
+            <button class="option-btn" onclick="selectOpt('need', this, true)">Someone to take ownership and reassure them they won't repeat themselves.</button>
+        </div>
+
+        <button class="btn" onclick="checkL3()" style="margin-top:20px;">Submit Findings 📝</button>
+    </div>
+
+    <!-- Outro / Certificate -->
+    <div class="screen" id="screen-outro">
+        <div class="mascot">🎉🎓</div>
+        <h2>Academy Graduate!</h2>
+        <p>You have mastered the art of listening over assuming!</p>
+        
+        <div class="teaching-point">
+            🧠 <strong>Facilitator Teaching Point:</strong><br>
+            The customer needs a resolution, but at this stage, they also need <strong>confidence</strong> that someone understands the situation and is taking personal ownership to move it forward!
+        </div>
+
+        <p style="text-align:center; margin-top:20px;">✨ <em>Listen → Understand → Clarify → Confirm → Solve</em> ✨</p>
+
+        <button class="btn" onclick="location.reload()">Play Again 🔄</button>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function updateProgress(step) {
+        document.getElementById('progress').style.width = ((step / totalSteps) * 100) + '%';
+    }
+
+    function nextScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        currentStep++;
+        updateProgress(currentStep - 1);
+    }
+
+    // Level 1 logic
+    function checkL1(btn, isCorrect) {
+        const fb = document.getElementById('fb-l1');
+        fb.style.display = 'block';
+        if(isCorrect) {
+            fb.innerHTML = "🎯 <strong>Correct!</strong> Jumping to 'Wait for it to process' assumes we know the issue without asking! The customer could actually be wondering if the payment failed, refunded, or cancelled.";
+            document.getElementById('btn-l1').style.display = 'block';
+        } else {
+            fb.innerHTML = "⚠️ Try again! Remember, a solution-first mistake is giving an answer/assumption before gathering facts.";
+        }
+    }
+
+    // Level 2 Sequence Logic
+    let currentSeq = ["Confirm", "Listen", "Solve", "Understand", "Clarify"];
+    const targetSeq = ["Listen", "Understand", "Clarify", "Confirm", "Solve"];
+
+    function renderSeq() {
+        const container = document.getElementById('seq-list');
+        container.innerHTML = "";
+        currentSeq.forEach((item, index) => {
+            container.innerHTML += `
+                <div class="seq-item">
+                    <span>${index + 1}. <strong>${item}</strong></span>
+                    <div class="seq-btns">
+                        <button onclick="moveSeq(${index}, -1)">▲</button>
+                        <button onclick="moveSeq(${index}, 1)">▼</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function moveSeq(index, direction) {
+        const newIndex = index + direction;
+        if (newIndex >= 0 && newIndex < currentSeq.length) {
+            const temp = currentSeq[index];
+            currentSeq[index] = currentSeq[newIndex];
+            currentSeq[newIndex] = temp;
+            renderSeq();
+        }
+    }
+
+    function checkSequence() {
+        const fb = document.getElementById('fb-seq');
+        fb.style.display = 'block';
+        if(JSON.stringify(currentSeq) === JSON.stringify(targetSeq)) {
+            fb.innerHTML = "💖 <strong>Perfect Flow!</strong> Listen → Understand → Clarify → Confirm → Solve. Never Hear → Assume → Solve!";
+            document.getElementById('btn-seq').style.display = 'block';
+        } else {
+            fb.innerHTML = "⚠️ Not quite right! Remember: Don't feel pressured to rush. A professional pause is okay!";
+        }
+    }
+
+    // Level 3 Logic
+    let l3Answers = { fact: null, emotion: null, need: null };
+
+    function selectOpt(category, btn, isCorrect) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        l3Answers[category] = isCorrect;
+    }
+
+    function checkL3() {
+        if (l3Answers.fact && l3Answers.emotion && l3Answers.need) {
+            nextScreen('screen-outro');
+        } else {
+            alert("Please select the best answers for all 3 areas to complete your investigation! 🕵️‍♀️");
+        }
+    }
+
+    // Initialize Level 2 Sequence
+    renderSeq();
+</script>
+</body>
+</html>
