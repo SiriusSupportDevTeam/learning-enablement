@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Did You Actually Hear?</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Karla:wght@400;700&display=swap');
+
+    :root {
+      /* Cozy Palette */
+      --bg-gradient: linear-gradient(135deg, #eaf1e8, #dce9e6);
+      --card-bg: #fffdf8;
+      --text-dark: #1f3a34;
+      --text-light: #4d6660;
+      --accent-primary: #e2933f;
+      --accent-secondary: #5f9d97;
+      --success: #6fa06a;
+      --warning: #cf7f7f;
+      
+      /* Structural */
+      --radius: 26px;
+      --shadow: 0 12px 36px rgba(31, 58, 52, 0.08);
+      --border: 1px solid rgba(31, 58, 52, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      font-family: 'Karla', sans-serif;
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* Headings & Typography */
+    h1, h2, h3 {
+      font-family: 'Fredoka', sans-serif;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-secondary);
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    /* Card Container */
+    .app-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 440px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: var(--border);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
+      background: rgba(31, 58, 52, 0.1);
+      transition: all 0.4s ease;
+    }
+
+    .dot.active {
+      width: 20px;
+      background: var(--accent-secondary);
+    }
+
+    .dot.passed {
+      background: var(--success);
+    }
+
+    .status-meter {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dark);
+      background: rgba(31, 58, 52, 0.04);
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .status-meter span {
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    /* Mascot */
+    .mascot-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0 20px 0;
+      transition: transform 0.4s ease;
+    }
+
+    #mascot {
+      width: 80px;
+      height: 80px;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #mascot path.body {
+      transition: fill 0.5s ease;
+    }
+
+    #mascot path.mouth {
+      transition: d 0.4s ease;
+    }
+
+    /* Stages */
+    .stage-container {
+      flex: 1;
+      position: relative;
+      padding: 0 24px 24px;
+    }
+
+    .stage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0 24px 32px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .stage.active {
+      display: flex;
+      opacity: 1;
+      pointer-events: auto;
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Content styling */
+    .quote-box {
+      background: rgba(95, 157, 151, 0.1);
+      border-left: 4px solid var(--accent-secondary);
+      padding: 16px;
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: var(--text-dark);
+      margin: 12px 0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .description {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Chips */
+    .chip-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .chip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      background: white;
+      border: 1px solid rgba(31, 58, 52, 0.1);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-family: 'Karla', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .chip:hover {
+      border-color: var(--accent-secondary);
+      background: rgba(95, 157, 151, 0.05);
+    }
+
+    .chip.selected {
+      background: var(--accent-secondary);
+      color: white;
+      border-color: var(--accent-secondary);
+    }
+
+    .chip.correct {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+      animation: pop 0.3s ease;
+    }
+
+    /* Puzzle Slots */
+    .puzzle-area {
+      margin-bottom: 24px;
+    }
+    
+    .slot {
+      border: 2px dashed rgba(31, 58, 52, 0.2);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(31, 58, 52, 0.4);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .slot.filled {
+      border-style: solid;
+      border-color: var(--success);
+      background: rgba(111, 160, 106, 0.1);
+      color: var(--text-dark);
+      animation: pop 0.3s ease;
+    }
+
+    .chip-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-pool .chip {
+      flex: 1 1 auto;
+      text-align: center;
+      justify-content: center;
+    }
+
+    /* Buttons */
+    .btn {
+      margin-top: auto;
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 14px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(226, 147, 63, 0.3);
+      width: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(226, 147, 63, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn:disabled {
+      background: #e2e8e7;
+      color: #9aa8a5;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Animations */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    .shake {
+      animation: shake 0.3s ease;
+      border-color: var(--warning) !important;
+      color: var(--warning) !important;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.95); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(200px) rotate(360deg); opacity: 0; }
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 20;
+      animation: fall 2s ease-in forwards;
+    }
+
+    .final-box {
+      background: linear-gradient(to right, rgba(95, 157, 151, 0.1), rgba(111, 160, 106, 0.1));
+      padding: 20px;
+      border-radius: 16px;
+      margin-top: 10px;
+      border: 1px solid rgba(95, 157, 151, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-card">
+    <header>
+      <div class="progress-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="status-meter">
+        Trust: <span id="trust-emoji">😶</span>
+      </div>
+    </header>
+
+    <div class="mascot-container">
+      <svg id="mascot" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Chat Bubble Mascot -->
+        <path class="body" d="M15 45 C15 20, 85 20, 85 45 C85 70, 60 75, 45 85 C40 88, 30 75, 30 72 C20 70, 15 60, 15 45 Z" fill="#5f9d97"/>
+        <circle cx="38" cy="42" r="5" fill="#fff" />
+        <circle cx="62" cy="42" r="5" fill="#fff" />
+        <!-- Default Neutral Mouth -->
+        <path class="mouth" d="M 45 54 Q 50 54 55 54" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="stage-container">
+      
+      <!-- Stage 0: Intro -->
+      <div class="stage active" id="stage-0">
+        <span class="eyebrow">The Situation</span>
+        <h2>Listen Closely</h2>
+        <p class="description">A customer just opened a chat and sent this message:</p>
+        <div class="quote-box">
+          "I've already contacted support twice about this and nobody seems to know what's happening."
+        </div>
+        <p class="description">As an agent, it's easy to jump straight to fixing the technical issue. But let's break down what they are <em>actually</em> saying first.</p>
+        <button class="btn" onclick="nextStage()">Analyze the Message</button>
+      </div>
+
+      <!-- Stage 1: The Fact -->
+      <div class="stage" id="stage-1">
+        <span class="eyebrow">Step 1: The Fact</span>
+        <h2>What actually happened?</h2>
+        <p class="description">Strip away the emotion. What is the core, objective fact here?</p>
+        
+        <div class="chip-group" id="fact-chips">
+          <div class="chip" onclick="checkFact(this, false)">The customer is extremely angry.</div>
+          <div class="chip" onclick="checkFact(this, true)">They contacted support twice with no resolution.</div>
+          <div class="chip" onclick="checkFact(this, false)">Our technical system is completely broken.</div>
+        </div>
+
+        <button class="btn" id="btn-stage-1" disabled onclick="nextStage()">Continue</button>
+      </div>
+
+      <!-- Stage 2: The Emotion -->
+      <div class="stage" id="stage-2">
+        <span class="eyebrow">Step 2: The Emotion</span>
+        <h2>How might they feel?</h2>
+        <p class="description">We can't know for certain, but we can recognize the signals. Pick <strong>two</strong> likely emotions.</p>
+        
+        <div class="chip-grid" id="emotion-chips">
+          <div class="chip" onclick="toggleEmotion(this, true)">Frustrated</div>
+          <div class="chip" onclick="toggleEmotion(this, false)">Grateful</div>
+          <div class="chip" onclick="toggleEmotion(this, false)">Curious</div>
+          <div class="chip" onclick="toggleEmotion(this, true)">Unheard</div>
+        </div>
+
+        <button class="btn" id="btn-stage-2" disabled onclick="nextStage()">Continue</button>
+      </div>
+
+      <!-- Stage 3: The Need -->
+      <div class="stage" id="stage-3">
+        <span class="eyebrow">Step 3: The Need</span>
+        <h2>What do they need from you?</h2>
+        <p class="description">Fill in the missing pieces. Besides a fix, what else does the customer need right now?</p>
+        
+        <div class="puzzle-area">
+          <div class="slot" id="slot-1">Need 1...</div>
+          <div class="slot" id="slot-2">Need 2...</div>
+        </div>
+
+        <div class="chip-pool" id="need-chips">
+          <div class="chip" onclick="checkNeed(this, false)">A generic apology</div>
+          <div class="chip" onclick="checkNeed(this, true)">Someone to take ownership</div>
+          <div class="chip" onclick="checkNeed(this, true)">A clear explanation</div>
+          <div class="chip" onclick="checkNeed(this, false)">An immediate refund</div>
+        </div>
+
+        <button class="btn" id="btn-stage-3" disabled onclick="nextStage()">Continue</button>
+      </div>
+
+      <!-- Stage 4: Conclusion -->
+      <div class="stage" id="stage-4">
+        <span class="eyebrow">Takeaway</span>
+        <h2>You heard them!</h2>
+        <div class="final-box">
+          <p class="description" style="margin-bottom: 0;">
+            <strong>The teaching point:</strong> The strongest answer is not simply "the customer needs the problem fixed." 
+            <br><br>
+            The customer may certainly need a resolution, but at this point they also need confidence that someone understands the situation and is taking responsibility for moving it forward.[cite: 1]
+          </p>
+        </div>
+        <button class="btn" style="margin-top: 24px;" onclick="resetGame()">Start Over</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentStage = 0;
+    const totalStages = 5;
+    
+    // Emotion tracking
+    let emotionsSelected = 0;
+    
+    // Puzzle tracking
+    let needsFound = 0;
+
+    // Mascot Elements
+    const mascotPath = document.querySelector('.body');
+    const mouthPath = document.querySelector('.mouth');
+    const trustEmoji = document.getElementById('trust-emoji');
+
+    // Color Variables
+    const colorTeal = '#5f9d97';
+    const colorGreen = '#6fa06a';
+    const colorGold = '#e2933f';
+
+    function updateMascot(emotion) {
+      if (emotion === 'happy') {
+        mascotPath.setAttribute('fill', colorGreen);
+        mouthPath.setAttribute('d', 'M 45 51 Q 50 58 55 51'); // Smile
+        trustEmoji.innerText = '😊';
+        trustEmoji.style.transform = 'scale(1.2)';
+        setTimeout(() => trustEmoji.style.transform = 'scale(1)', 300);
+      } else if (emotion === 'glowing') {
+        mascotPath.setAttribute('fill', colorGold);
+        mouthPath.setAttribute('d', 'M 42 49 Q 50 62 58 49'); // Big smile
+        trustEmoji.innerText = '💖';
+        document.getElementById('mascot').style.transform = 'translateY(-10px) scale(1.05)';
+      } else if (emotion === 'neutral') {
+        mascotPath.setAttribute('fill', colorTeal);
+        mouthPath.setAttribute('d', 'M 45 54 Q 50 54 55 54'); // Flat
+        trustEmoji.innerText = '😶';
+        document.getElementById('mascot').style.transform = 'none';
+      }
+    }
+
+    function nextStage() {
+      const current = document.getElementById(`stage-${currentStage}`);
+      current.classList.remove('active');
+      
+      currentStage++;
+      
+      const next = document.getElementById(`stage-${currentStage}`);
+      next.classList.add('active');
+      
+      updateDots();
+
+      // Final stage celebration
+      if (currentStage === 4) {
+        updateMascot('glowing');
+        createSparkles();
+      }
+    }
+
+    function updateDots() {
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach((dot, index) => {
+        dot.classList.remove('active');
+        if (index < currentStage) dot.classList.add('passed');
+        if (index === currentStage) dot.classList.add('active');
+      });
+    }
+
+    // Stage 1 Logic
+    function checkFact(element, isCorrect) {
+      if (isCorrect) {
+        element.classList.add('correct');
+        element.innerHTML += ' ✓';
+        document.getElementById('btn-stage-1').disabled = false;
+        
+        // Disable other chips
+        const siblings = element.parentElement.children;
+        for (let sibling of siblings) {
+          sibling.style.pointerEvents = 'none';
+          if (sibling !== element) sibling.style.opacity = '0.5';
+        }
+        updateMascot('happy');
+      } else {
+        element.classList.add('shake');
+        setTimeout(() => element.classList.remove('shake'), 300);
+      }
+    }
+
+    // Stage 2 Logic
+    function toggleEmotion(element, isCorrect) {
+      if (element.classList.contains('selected') || element.classList.contains('correct')) return;
+
+      if (isCorrect) {
+        element.classList.add('correct');
+        emotionsSelected++;
+        
+        if (emotionsSelected === 1) {
+           trustEmoji.innerText = '😌';
+        }
+
+        if (emotionsSelected === 2) {
+          document.getElementById('btn-stage-2').disabled = false;
+          updateMascot('happy');
+          // Disable remaining
+          const siblings = element.parentElement.children;
+          for (let sibling of siblings) {
+            if (!sibling.classList.contains('correct')) {
+              sibling.style.pointerEvents = 'none';
+              sibling.style.opacity = '0.5';
+            }
+          }
+        }
+      } else {
+        element.classList.add('shake');
+        setTimeout(() => element.classList.remove('shake'), 300);
+      }
+    }
+
+    // Stage 3 Logic
+    function checkNeed(element, isCorrect) {
+      if (element.style.display === 'none') return;
+
+      if (isCorrect) {
+        needsFound++;
+        const slot = document.getElementById(`slot-${needsFound}`);
+        slot.innerText = element.innerText;
+        slot.classList.add('filled');
+        element.style.display = 'none';
+
+        if (needsFound === 2) {
+          document.getElementById('btn-stage-3').disabled = false;
+          updateMascot('happy');
+        }
+      } else {
+        element.classList.add('shake');
+        setTimeout(() => element.classList.remove('shake'), 300);
+      }
+    }
+
+    // Confetti / Sparkles for end
+    function createSparkles() {
+      const container = document.querySelector('.app-card');
+      const emojis = ['✨', '🌱', '🌟', '💡'];
+      
+      for (let i = 0; i < 15; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        sparkle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        
+        const startX = Math.random() * 400;
+        const delay = Math.random() * 0.5;
+        
+        sparkle.style.left = `${startX}px`;
+        sparkle.style.top = '100px';
+        sparkle.style.animationDelay = `${delay}s`;
+        
+        container.appendChild(sparkle);
+        
+        setTimeout(() => sparkle.remove(), 2500);
+      }
+    }
+
+    // Reset Game
+    function resetGame() {
+      // Reset State
+      currentStage = 0;
+      emotionsSelected = 0;
+      needsFound = 0;
+
+      // Reset DOM
+      document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+      document.getElementById('stage-0').classList.add('active');
+      
+      document.querySelectorAll('.dot').forEach(d => {
+        d.classList.remove('active', 'passed');
+      });
+      document.querySelector('.dot').classList.add('active');
+
+      document.querySelectorAll('.btn').forEach(b => {
+        if (b.id) b.disabled = true;
+      });
+
+      // Reset Stage 1
+      const factChips = document.getElementById('fact-chips').children;
+      for (let chip of factChips) {
+        chip.className = 'chip';
+        chip.style.pointerEvents = 'auto';
+        chip.style.opacity = '1';
+        chip.innerHTML = chip.innerHTML.replace(' ✓', '');
+      }
+
+      // Reset Stage 2
+      const emotionChips = document.getElementById('emotion-chips').children;
+      for (let chip of emotionChips) {
+        chip.className = 'chip';
+        chip.style.pointerEvents = 'auto';
+        chip.style.opacity = '1';
+      }
+
+      // Reset Stage 3
+      document.getElementById('slot-1').className = 'slot';
+      document.getElementById('slot-1').innerText = 'Need 1...';
+      document.getElementById('slot-2').className = 'slot';
+      document.getElementById('slot-2').innerText = 'Need 2...';
+      
+      const needChips = document.getElementById('need-chips').children;
+      for (let chip of needChips) {
+        chip.style.display = 'flex';
+      }
+
+      updateMascot('neutral');
+    }
+  </script>
+</body>
+</html>
