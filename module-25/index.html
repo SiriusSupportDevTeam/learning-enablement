@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Empathy Phrases</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .instruction {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 2rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 140px;
+            text-align: center;
+            border-left: 6px solid #ef4444; /* Red border */
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .card.revealed {
+            border-left: 6px solid #10b981; /* Green border */
+            background-color: #ecfdf5;
+        }
+
+        .label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            color: #ef4444;
+        }
+
+        .card.revealed .label {
+            color: #10b981;
+        }
+
+        .phrase {
+            font-size: 1.15rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            background-color: #fffbeb;
+            border-left: 6px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Customer Communication Training</h2>
+        <p class="instruction">Click on a card to reveal the better alternative.</p>
+    </div>
+
+    <div class="grid">
+        <!-- Card 1 -->
+        <div class="card" onclick="toggleCard(this, '⚠️ Instead of:', 'Okay, I understand.', '🧠 Try:', 'I can see why that would be frustrating.')">
+            <div class="label">⚠️ Instead of:</div>
+            <div class="phrase">"Okay, I understand."</div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card" onclick="toggleCard(this, '⚠️ Instead of:', 'That\'s our policy.', '🧠 Try:', 'I understand why you\'re asking. Let me explain what the policy means for your situation.')">
+            <div class="label">⚠️ Instead of:</div>
+            <div class="phrase">"That's our policy."</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card" onclick="toggleCard(this, '⚠️ Instead of:', 'You\'ll have to wait.', '🧠 Try:', 'I know waiting longer than expected is frustrating. Let me check where things currently stand.')">
+            <div class="label">⚠️ Instead of:</div>
+            <div class="phrase">"You'll have to wait."</div>
+        </div>
+    </div>
+
+    <!-- Takeaway Note -->
+    <div class="footer-note">
+        <strong>📌 Key Takeaway:</strong> The goal is not to create a perfect phrase. The goal is to make the customer feel heard before being handled.
+    </div>
+
+    <script>
+        function toggleCard(element, label1, text1, label2, text2) {
+            const labelEl = element.querySelector('.label');
+            const phraseEl = element.querySelector('.phrase');
+            
+            // Toggle between states based on the class 'revealed'
+            if (element.classList.contains('revealed')) {
+                element.classList.remove('revealed');
+                labelEl.textContent = label1;
+                phraseEl.textContent = '"' + text1 + '"';
+            } else {
+                element.classList.add('revealed');
+                labelEl.textContent = label2;
+                phraseEl.textContent = '"' + text2 + '"';
+            }
+        }
+    </script>
+
+</body>
+</html>
