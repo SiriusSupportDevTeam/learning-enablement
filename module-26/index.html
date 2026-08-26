@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validate the Customer — Section 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFF8EF;
+    --bg-soft: #FFF1E0;
+    --ink: #3D2F33;
+    --ink-soft: #6E5A5F;
+    --coral: #FF8C6B;
+    --coral-deep: #F2673F;
+    --mint: #7FCBA4;
+    --mint-deep: #4FA97C;
+    --lavender: #B7A6F5;
+    --lavender-deep: #8B72E8;
+    --sun: #FFC857;
+    --card: #FFFFFF;
+    --line: #F0DFC9;
+    --shadow: 0 10px 30px rgba(61, 47, 51, 0.08);
+    --radius: 26px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 8% 8%, #FFE9CE 0%, transparent 45%),
+      radial-gradient(circle at 95% 15%, #E4F6EC 0%, transparent 40%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Quicksand', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .display { font-family: 'Baloo 2', sans-serif; }
+
+  a { color: inherit; }
+
+  .wrap{
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding: 72px 24px 40px;
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--coral-deep);
+    box-shadow: var(--shadow);
+    animation: floatIn 0.7s ease both;
+  }
+  .hero h1{
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 22px 0 16px;
+    animation: floatIn 0.7s ease 0.08s both;
+  }
+  .hero h1 span{ color: var(--coral-deep); }
+  .hero p{
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto;
+    animation: floatIn 0.7s ease 0.16s both;
+  }
+
+  @keyframes floatIn{
+    from{ opacity:0; transform: translateY(14px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* little bubble mascot made of pure CSS */
+  .mascot{
+    width: 92px; height: 92px;
+    margin: 8px auto 0;
+    position: relative;
+    animation: bob 3.2s ease-in-out infinite;
+  }
+  .mascot .face{
+    width:100%; height:100%;
+    background: var(--coral);
+    border-radius: 50% 50% 50% 8px;
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+  .mascot .eye{
+    position:absolute; top:38px; width:10px; height:10px; background:var(--ink); border-radius:50%;
+    animation: blink 4s infinite;
+  }
+  .mascot .eye.l{ left:26px; }
+  .mascot .eye.r{ left:52px; }
+  .mascot .cheek{
+    position:absolute; top:52px; width:12px; height:7px; background:#FFC2AC; border-radius:50%; opacity:.8;
+  }
+  .mascot .cheek.l{ left:16px; }
+  .mascot .cheek.r{ right:16px; }
+  @keyframes bob{ 0%,100%{ transform: translateY(0) rotate(-2deg);} 50%{ transform: translateY(-8px) rotate(2deg);} }
+  @keyframes blink{ 0%,92%,100%{ transform: scaleY(1);} 96%{ transform: scaleY(0.1);} }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section-title{
+    text-align:center;
+    margin: 64px 0 8px;
+  }
+  .section-title h2{
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+  .section-title p{
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto;
+    font-size: 1rem;
+  }
+
+  .intro-card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    box-shadow: var(--shadow);
+    margin-top: 28px;
+    font-size: 1.02rem;
+  }
+  .intro-card b{ color: var(--coral-deep); }
+
+  /* ---------- SEQUENCE / PATH ---------- */
+  .sequence{
+    position: relative;
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .sequence::before{
+    content:"";
+    position:absolute;
+    top: 34px; left: 8%; right: 8%;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, var(--line) 0 10px, transparent 10px 18px);
+    z-index:0;
+  }
+  .step{
+    position: relative;
+    z-index: 1;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 20px;
+    padding: 18px 14px 16px;
+    text-align:center;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .step:hover{ transform: translateY(-4px); box-shadow: var(--shadow); }
+  .step.active{
+    border-color: var(--coral);
+    box-shadow: var(--shadow);
+    transform: translateY(-4px);
+  }
+  .step .num{
+    width: 44px; height:44px;
+    border-radius:50%;
+    background: var(--bg-soft);
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 10px;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.1rem;
+    color: var(--coral-deep);
+    transition: background .25s ease, color .25s ease, transform .25s ease;
+  }
+  .step.active .num{
+    background: var(--coral);
+    color: #fff;
+    transform: scale(1.08);
+  }
+  .step .label{
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+  .step .sub{
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  .step-detail{
+    margin-top: 22px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 30px;
+    display: none;
+  }
+  .step-detail.show{ display:block; animation: floatIn .4s ease both; }
+  .step-detail h3{
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+  }
+  .step-detail .tag{
+    display:inline-block;
+    font-size: 0.75rem;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .tag.recognize{ background:#EFE9FF; color: var(--lavender-deep); }
+  .tag.acknowledge{ background:#FFE9DE; color: var(--coral-deep); }
+  .tag.explain{ background:#FFF3D2; color:#B8860B; }
+  .tag.act{ background:#E1F6EA; color: var(--mint-deep); }
+
+  .step-detail p{ margin: 8px 0; }
+
+  .quote-bubble{
+    margin-top: 14px;
+    background: var(--bg-soft);
+    border-radius: 16px;
+    padding: 14px 18px;
+    font-style: italic;
+    position: relative;
+    border: 1px dashed var(--line);
+  }
+
+  /* feeling chips for step 1 */
+  .chips{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-top: 14px;
+  }
+  .chip{
+    background: #F4EEFF;
+    color: var(--lavender-deep);
+    border: 1px solid #E1D6FF;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: transform .15s ease, background .15s ease;
+    user-select: none;
+  }
+  .chip:hover{ transform: translateY(-2px); }
+  .chip.picked{
+    background: var(--lavender);
+    color: #fff;
+  }
+  .chip-example{
+    margin-top: 12px;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    min-height: 1.4em;
+  }
+  .chip-example b{ color: var(--ink); }
+
+  /* ---------- SPOT THE DIFFERENCE ---------- */
+  .compare{
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 640px){
+    .compare{ grid-template-columns: 1fr; }
+    .sequence{ grid-template-columns: 1fr 1fr; }
+    .sequence::before{ display:none; }
+  }
+  .response-card{
+    border-radius: var(--radius);
+    padding: 22px 22px 20px;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    transition: border-color .3s ease, transform .3s ease;
+    background: var(--card);
+  }
+  .response-card .who{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display:flex; align-items:center; gap:8px;
+    margin-bottom: 10px;
+  }
+  .response-card .who .dot{
+    width: 10px; height:10px; border-radius:50%;
+  }
+  .response-card.a .who .dot{ background: var(--coral); }
+  .response-card.b .who .dot{ background: var(--mint-deep); }
+
+  .bubble{
+    border-radius: 18px;
+    padding: 16px 18px;
+    font-size: 1.02rem;
+    position: relative;
+  }
+  .response-card.a .bubble{ background: #FFEDE3; }
+  .response-card.b .bubble{ background: #E4F7EC; }
+
+  .verdict{
+    margin-top: 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .response-card.a .verdict{ color: var(--coral-deep); }
+  .response-card.b .verdict{ color: var(--mint-deep); }
+
+  .reveal-btn{
+    display:block;
+    margin: 26px auto 0;
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 999px;
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255,140,107,0.35);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .reveal-btn:hover{ transform: translateY(-2px); }
+  .reveal-btn:active{ transform: translateY(0); }
+
+  .why-panel{
+    max-width: 720px;
+    margin: 20px auto 0;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px 26px;
+    display:none;
+  }
+  .why-panel.show{ display:block; animation: floatIn .4s ease both; }
+  .why-panel h4{
+    margin: 0 0 8px;
+    font-family:'Baloo 2', sans-serif;
+    color: var(--mint-deep);
+    font-size: 1.05rem;
+  }
+  .why-panel .highlight{
+    background: linear-gradient(180deg, transparent 60%, #FFE199 60%);
+    font-weight: 700;
+    padding: 0 2px;
+  }
+
+  /* ---------- footer recap ---------- */
+  .recap{
+    margin-top: 60px;
+    text-align:center;
+    background: linear-gradient(135deg, #FFE9DE, #E9F7EF);
+    border-radius: var(--radius);
+    padding: 30px 24px;
+    box-shadow: var(--shadow);
+  }
+  .recap .flow{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+    margin-top: 8px;
+  }
+  .recap .flow span{
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .recap .flow .arrow{
+    background: none; box-shadow:none; color: var(--coral-deep); padding: 8px 0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="mascot">
+      <div class="face">
+        <div class="eye l"></div>
+        <div class="eye r"></div>
+        <div class="cheek l"></div>
+        <div class="cheek r"></div>
+      </div>
+    </div>
+    <span class="eyebrow">Section 3</span>
+    <h1>Validate the customer <span>before</span> you explain or resolve</h1>
+    <p>People don't just want the right answer — they want to feel heard first. Here's the sequence that makes both possible.</p>
+  </div>
+
+  <div class="intro-card">
+    A common customer-service mistake is jumping to the solution too quickly. An employee may know exactly what needs to happen — but if the customer feels emotionally ignored, even the correct explanation can land badly. <b>Empathy should generally come before explanation or resolution.</b>
+  </div>
+
+  <div class="section-title">
+    <h2>🧭 The four-step path</h2>
+    <p>Tap each stop to see what it sounds like in practice.</p>
+  </div>
+
+  <div class="sequence" id="sequence">
+    <div class="step" data-step="0">
+      <div class="num">1</div>
+      <div class="label">Recognize</div>
+      <div class="sub">Name the feeling</div>
+    </div>
+    <div class="step" data-step="1">
+      <div class="num">2</div>
+      <div class="label">Acknowledge</div>
+      <div class="sub">Say it out loud</div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="num">3</div>
+      <div class="label">Explain</div>
+      <div class="sub">Give the "why"</div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="num">4</div>
+      <div class="label">Act</div>
+      <div class="sub">Show what's next</div>
+    </div>
+  </div>
+
+  <div class="step-detail" id="stepDetail"></div>
+
+  <div class="section-title">
+    <h2>🔍 Spot the difference</h2>
+    <p>Same situation, two responses. Which one actually helps?</p>
+  </div>
+
+  <div class="compare">
+    <div class="response-card a">
+      <div class="who"><span class="dot"></span>Response A</div>
+      <div class="bubble">"I understand. Unfortunately, that's our policy."</div>
+      <div class="verdict">😕 Feels like a dead end</div>
+    </div>
+    <div class="response-card b">
+      <div class="who"><span class="dot"></span>Response B</div>
+      <div class="bubble">"I can see why that would be frustrating. Let me explain what I can do from here."</div>
+      <div class="verdict">🙂 Feels like forward movement</div>
+    </div>
+  </div>
+
+  <button class="reveal-btn" id="revealBtn">Why does B work better? →</button>
+
+  <div class="why-panel" id="whyPanel">
+    <h4>Same policy. Very different landing.</h4>
+    <p>Response A moves straight from a generic "I understand" into a policy statement. What the customer often hears is: <em>"I heard you, but there's nothing you can do."</em></p>
+    <p>Response B recognizes the customer's emotional experience <strong>first</strong>, then establishes forward movement. The phrase <span class="highlight">"Let me explain what I can do from here"</span> is doing the real work — it bridges empathy into action.</p>
+    <p>Notice what it doesn't do: it doesn't promise an outcome the employee can't guarantee. It just communicates genuine willingness to help.</p>
+  </div>
+
+  <div class="recap">
+    <div class="display" style="font-weight:700; font-size:1.05rem;">Remember the path:</div>
+    <div class="flow">
+      <span>Recognize</span><span class="arrow">→</span>
+      <span>Acknowledge</span><span class="arrow">→</span>
+      <span>Explain</span><span class="arrow">→</span>
+      <span>Act</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const stepData = [
+    {
+      tag: "recognize",
+      title: "1. Recognize",
+      body: "<p>Before saying anything, identify what the customer may actually be experiencing under the surface of their words.</p>",
+      chips: true
+    },
+    {
+      tag: "acknowledge",
+      title: "2. Acknowledge",
+      body: "<p>Verbally recognize that experience — out loud, before moving on to anything else.</p>",
+      quote: `"I can see why waiting that long would be frustrating."`
+    },
+    {
+      tag: "explain",
+      title: "3. Explain",
+      body: "<p>Once the customer has been acknowledged, now provide the relevant information.</p>",
+      quote: `"The delay occurred because the request requires an additional review."`
+    },
+    {
+      tag: "act",
+      title: "4. Act",
+      body: "<p>Clearly lay out what you can do next. This is where empathy turns into momentum.</p>",
+      quote: `"What I can do now is check the status and identify the next available step."`
+    }
+  ];
+
+  const feelings = [
+    { label: "Frustrated", example: "about a delay that's dragged on too long." },
+    { label: "Confused", example: "about a process that isn't clearly explained." },
+    { label: "Disappointed", example: "with an outcome they were hoping would go differently." },
+    { label: "Concerned", example: "about a charge they didn't expect." },
+    { label: "Upset", example: "about having to repeat information they already gave." },
+    { label: "Anxious", example: "about whether the issue will actually get resolved." }
+  ];
+
+  const sequence = document.getElementById('sequence');
+  const detail = document.getElementById('stepDetail');
+  const steps = document.querySelectorAll('.step');
+
+  function renderStep(i){
+    const d = stepData[i];
+    let html = `<span class="tag ${d.tag}">${d.tag}</span><h3>${d.title}</h3>${d.body}`;
+    if(d.quote){
+      html += `<div class="quote-bubble">${d.quote}</div>`;
+    }
+    if(d.chips){
+      html += `<div class="chips">` + feelings.map(f =>
+        `<div class="chip" data-example="${f.example}">${f.label}</div>`
+      ).join('') + `</div><div class="chip-example" id="chipExample">Tap a feeling to see an example.</div>`;
+    }
+    detail.innerHTML = html;
+    detail.classList.add('show');
+
+    if(d.chips){
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.chip').forEach(c => c.classList.remove('picked'));
+          chip.classList.add('picked');
+          document.getElementById('chipExample').innerHTML =
+            `<b>${chip.textContent}:</b> the customer might be ${chip.textContent.toLowerCase()} ${chip.dataset.example}`;
+        });
+      });
+    }
+  }
+
+  steps.forEach(step => {
+    step.addEventListener('click', () => {
+      steps.forEach(s => s.classList.remove('active'));
+      step.classList.add('active');
+      renderStep(Number(step.dataset.step));
+      detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+  });
+
+  // open first step by default
+  steps[0].classList.add('active');
+  renderStep(0);
+
+  const revealBtn = document.getElementById('revealBtn');
+  const whyPanel = document.getElementById('whyPanel');
+  revealBtn.addEventListener('click', () => {
+    const showing = whyPanel.classList.toggle('show');
+    revealBtn.textContent = showing ? "Hide the breakdown ↑" : "Why does B work better? →";
+    if(showing){ whyPanel.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  });
+</script>
+
+</body>
+</html>
