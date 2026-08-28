@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adapt, Don't Mirror</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-a: #eaf1e8;
+    --bg-b: #dce9e6;
+    --panel: #fffdf8;
+    --ink: #1f3a34;
+    --ink-soft: #4d6660;
+    --amber: #e2933f;
+    --amber-shadow: rgba(226, 147, 63, 0.35);
+    --teal: #5f9d97;
+    --teal-shadow: rgba(95, 157, 151, 0.3);
+    --green: #6fa06a;
+    --rose: #cf7f7f;
+    --cream-bloom: #fff3df;
+    --teal-bloom: #dcf0ee;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Karla', sans-serif;
+    background:
+      radial-gradient(circle at 15% 15%, var(--cream-bloom) 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, var(--teal-bloom) 0%, transparent 45%),
+      linear-gradient(160deg, var(--bg-a), var(--bg-b));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    background: var(--panel);
+    border-radius: 26px;
+    border: 1px solid rgba(31, 58, 52, 0.08);
+    box-shadow: 0 20px 45px rgba(31, 58, 52, 0.14);
+    padding: 24px 24px 28px;
+    overflow: hidden;
+  }
+
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .dots { display: flex; gap: 6px; }
+  .dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background: #e3e8e2;
+    transition: all 0.3s ease;
+  }
+  .dot.passed { width: 18px; border-radius: 5px; background: var(--teal); }
+  .dot.active { width: 18px; border-radius: 5px; background: var(--amber); }
+
+  .status {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f3f6f0;
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+  .status .bar {
+    width: 44px;
+    height: 6px;
+    border-radius: 4px;
+    background: #e3e8e2;
+    overflow: hidden;
+  }
+  .status .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--green));
+    width: 60%;
+    transition: width 0.5s ease;
+  }
+
+  .mascot-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 6px 0 14px;
+  }
+  .mascot-wrap svg { transition: transform 0.5s ease; }
+
+  .stage { display: none; animation: enter 0.4s ease; }
+  .stage.visible { display: block; }
+
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-family: 'Karla', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin: 0 0 6px;
+    text-align: center;
+  }
+
+  h1, h2 {
+    font-family: 'Fredoka', sans-serif;
+    color: var(--ink);
+    text-align: center;
+    margin: 0 0 10px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  h1 { font-size: 21px; }
+  h2 { font-size: 18px; }
+
+  p.body-text {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0 0 16px;
+  }
+
+  .quote-bubble {
+    background: #f6f2ea;
+    border-left: 3px solid var(--rose);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--ink);
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    background: var(--amber);
+    border: none;
+    border-radius: 14px;
+    padding: 13px;
+    box-shadow: 0 8px 18px var(--amber-shadow);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-top: 6px;
+  }
+  .btn-primary:active { transform: scale(0.97); box-shadow: 0 4px 10px var(--amber-shadow); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-ghost {
+    display: block;
+    width: 100%;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--teal);
+    background: transparent;
+    border: 1.5px solid var(--teal);
+    border-radius: 14px;
+    padding: 11px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.15s ease;
+  }
+  .btn-ghost:active { transform: scale(0.97); }
+  .btn-ghost.pulse { animation: pulseGlow 1.8s ease-in-out infinite; }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 rgba(95, 157, 151, 0); }
+    50% { box-shadow: 0 0 0 6px var(--teal-shadow); }
+  }
+
+  .choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #f6f7f4;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-family: 'Karla', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.5;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+  }
+  .choice:hover { border-color: var(--teal); }
+  .choice.correct {
+    background: #ecf5eb;
+    border-color: var(--green);
+    font-weight: 700;
+  }
+  .choice.wrong {
+    animation: shake 0.4s ease;
+    border-color: var(--rose);
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .feedback {
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: #f3f6f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 4px;
+    display: none;
+  }
+  .feedback.show { display: block; animation: enter 0.3s ease; }
+
+  .chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .chip {
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #f3f6f0;
+    border: 1.5px solid transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .chip.match {
+    background: #ecf5eb;
+    border-color: var(--green);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .chip.mirror {
+    background: #f7ecec;
+    border-color: var(--rose);
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: line-through;
+    text-decoration-color: var(--rose);
+  }
+
+  .bins {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .bin {
+    flex: 1;
+    border: 1.5px dashed #c9d3c6;
+    border-radius: 14px;
+    padding: 10px;
+    min-height: 46px;
+    text-align: center;
+  }
+  .bin-label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .bin.match-bin .bin-label { color: var(--green); }
+  .bin.mirror-bin .bin-label { color: var(--rose); }
+
+  .slots {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .slot {
+    min-height: 40px;
+    border: 1.5px dashed #c9d3c6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: #fafbf9;
+    transition: all 0.2s ease;
+  }
+  .slot.filled {
+    border-style: solid;
+    border-color: var(--teal);
+    background: #f0f7f6;
+    color: var(--ink);
+    font-weight: 600;
+    animation: pop 0.3s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    60% { transform: scale(1.03); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .key-message {
+    background: linear-gradient(135deg, #f6f2ea, var(--teal-bloom));
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.5;
+    margin: 14px 0;
+  }
+
+  .sparkle {
+    position: absolute;
+    font-size: 16px;
+    animation: fall 1.8s ease-in forwards;
+    opacity: 0;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(220px) rotate(180deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="top-row">
+    <div class="dots" id="dots"></div>
+    <div class="status">
+      <span id="statusEmoji">☕</span>
+      <div class="bar"><div class="fill" id="statusFill"></div></div>
+    </div>
+  </div>
+
+  <div class="mascot-wrap" id="mascotWrap"></div>
+
+  <!-- Stage 1: Intro -->
+  <div class="stage" data-stage="0">
+    <p class="eyebrow">Cozy Desk Training</p>
+    <h1>Adapt, Don't Mirror</h1>
+    <p class="body-text">Meet your desk buddy: the Composure Mug ☕. It stays warm and steaming when you handle tough moments well — and goes cold if you mirror a customer's mood instead of meeting their needs.</p>
+    <p class="body-text">Ready to practice keeping your cool while still adapting?</p>
+    <button class="btn-primary" onclick="goNext()">Start the shift →</button>
+  </div>
+
+  <!-- Stage 2: Poor vs Better response -->
+  <div class="stage" data-stage="1">
+    <p class="eyebrow">Scene One</p>
+    <h2>The Repeat Caller</h2>
+    <div class="quote-bubble">"This is ridiculous! I've already explained this three times!"</div>
+    <p class="body-text" style="margin-bottom:12px;">Pick your response:</p>
+    <button class="choice" onclick="pickResponse(this, false)">"Well, I can't help you if you keep getting angry."</button>
+    <button class="choice" onclick="pickResponse(this, true)">"I understand why repeating this would be frustrating. Let me summarize what I have and get this moving."</button>
+    <div class="feedback" id="fb1"></div>
+    <button class="btn-primary" id="next1" style="display:none;" onclick="goNext()">Continue →</button>
+  </div>
+
+  <!-- Stage 3: Match vs Mirror sort -->
+  <div class="stage" data-stage="2">
+    <p class="eyebrow">Scene Two</p>
+    <h2>Match the Need, Not the Mood</h2>
+    <p class="body-text">Tap each word: sort it into what you should <b>match</b> or what you should <b>never mirror</b>.</p>
+    <div class="bins">
+      <div class="bin match-bin"><div class="bin-label">✅ Match</div><div id="matchBin"></div></div>
+      <div class="bin mirror-bin"><div class="bin-label">🚫 Don't Mirror</div><div id="mirrorBin"></div></div>
+    </div>
+    <div class="chip-grid" id="sortPool"></div>
+    <button class="btn-primary" id="next2" disabled onclick="goNext()">Continue →</button>
+  </div>
+
+  <!-- Stage 4: Build the better response -->
+  <div class="stage" data-stage="3">
+    <p class="eyebrow">Scene Three</p>
+    <h2>Build the Better Response</h2>
+    <p class="body-text">Tap the pieces in the right order to build a response that de-escalates.</p>
+    <div class="slots" id="slots">
+      <div class="slot" data-order="1"></div>
+      <div class="slot" data-order="2"></div>
+      <div class="slot" data-order="3"></div>
+    </div>
+    <div class="pool" id="buildPool"></div>
+    <button class="btn-primary" id="next3" disabled onclick="goNext()">Continue →</button>
+  </div>
+
+  <!-- Stage 5: Channel focus quiz -->
+  <div class="stage" data-stage="4">
+    <p class="eyebrow">Scene Four</p>
+    <h2>Same Message, Different Channel</h2>
+    <p class="body-text">A confused customer emails you a technical question. What should you prioritize?</p>
+    <button class="choice" onclick="pickChannel(this, false)">Sending one complete, dense paragraph with every detail at once.</button>
+    <button class="choice" onclick="pickChannel(this, true)">Plain language, one step at a time, checking understanding as you go.</button>
+    <div class="feedback" id="fb4"></div>
+    <button class="btn-primary" id="next4" style="display:none;" onclick="goNext()">Continue →</button>
+  </div>
+
+  <!-- Stage 6: Celebration -->
+  <div class="stage" data-stage="5">
+    <p class="eyebrow">Shift Complete</p>
+    <h2>The Mug Stayed Warm ☕</h2>
+    <p class="body-text">You listened, summarized, and moved things forward — without ever borrowing the customer's mood.</p>
+    <div class="key-message">"Adapt to what the customer needs. Never mirror how they're behaving."</div>
+    <button class="btn-primary" onclick="restart()">Run it again</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL_STAGES = 6;
+  let current = 0;
+  let composure = 60; // percent
+
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < TOTAL_STAGES; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    dotsEl.appendChild(d);
+  }
+
+  function renderDots() {
+    const dots = dotsEl.querySelectorAll('.dot');
+    dots.forEach((d, i) => {
+      d.classList.remove('passed', 'active');
+      if (i < current) d.classList.add('passed');
+      else if (i === current) d.classList.add('active');
+    });
+  }
+
+  function renderStage() {
+    document.querySelectorAll('.stage').forEach(s => {
+      s.classList.toggle('visible', Number(s.dataset.stage) === current);
+    });
+    renderDots();
+    renderMascot();
+  }
+
+  function updateComposure(delta) {
+    composure = Math.max(15, Math.min(100, composure + delta));
+    document.getElementById('statusFill').style.width = composure + '%';
+    const emoji = document.getElementById('statusEmoji');
+    emoji.textContent = composure > 70 ? '☕' : composure > 40 ? '🌤️' : '❄️';
+  }
+
+  function goNext() {
+    if (current < TOTAL_STAGES - 1) {
+      current++;
+      renderStage();
+      if (current === TOTAL_STAGES - 1) launchSparkles();
+    }
+  }
+
+  function restart() {
+    current = 0;
+    composure = 60;
+    updateComposure(0);
+    document.querySelectorAll('.choice').forEach(c => { c.classList.remove('correct','wrong'); c.disabled = false; });
+    document.getElementById('fb1').classList.remove('show');
+    document.getElementById('fb4').classList.remove('show');
+    document.getElementById('next1').style.display = 'none';
+    document.getElementById('next4').style.display = 'none';
+    document.getElementById('matchBin').innerHTML = '';
+    document.getElementById('mirrorBin').innerHTML = '';
+    document.getElementById('next2').disabled = true;
+    document.querySelectorAll('.slot').forEach(s => { s.classList.remove('filled'); s.textContent=''; });
+    document.getElementById('next3').disabled = true;
+    initSortStage();
+    initBuildStage();
+    renderStage();
+  }
+
+  // --- Mascot: Composure Mug ---
+  function mugSVG() {
+    const cold = composure <= 40;
+    const warm = composure > 70;
+    const steamOpacity = warm ? 0.85 : cold ? 0 : 0.4;
+    const mugColor = cold ? '#a9b8b4' : '#fffdf8';
+    const liquidColor = cold ? '#8fa39d' : '#e2933f';
+    const rot = cold ? -6 : 0;
+    return `
+    <svg width="120" height="120" viewBox="0 0 120 120" style="transform: rotate(${rot}deg);">
+      <ellipse cx="60" cy="100" rx="34" ry="6" fill="#1f3a34" opacity="0.08"/>
+      <path d="M30 45 h50 v35 a25 25 0 0 1 -25 25 h0 a25 25 0 0 1 -25 -25 Z" fill="${mugColor}" stroke="#1f3a34" stroke-width="2.5" style="transition: fill 0.5s ease;"/>
+      <path d="M80 55 h10 a12 12 0 0 1 0 24 h-10" fill="none" stroke="#1f3a34" stroke-width="2.5"/>
+      <path d="M35 50 h40 v6 a20 20 0 0 1 -20 20 h0 a20 20 0 0 1 -20 -20 Z" fill="${liquidColor}" style="transition: fill 0.5s ease;"/>
+      <g style="opacity:${steamOpacity}; transition: opacity 0.5s ease;">
+        <path d="M45 38 q-4 -8 0 -14 q4 -6 0 -12" fill="none" stroke="#5f9d97" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M60 38 q-4 -8 0 -14 q4 -6 0 -12" fill="none" stroke="#5f9d97" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M75 38 q-4 -8 0 -14 q4 -6 0 -12" fill="none" stroke="#5f9d97" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      ${cold ? `<g><circle cx="48" cy="65" r="1.5" fill="#fff"/><circle cx="58" cy="70" r="1.5" fill="#fff"/><circle cx="66" cy="62" r="1.5" fill="#fff"/></g>` : ''}
+    </svg>`;
+  }
+
+  function renderMascot() {
+    const wrap = document.getElementById('mascotWrap');
+    if (current === 0 || current === TOTAL_STAGES - 1) {
+      wrap.innerHTML = mugSVG();
+      wrap.style.display = 'flex';
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+
+  // --- Stage 2: pick response ---
+  function pickResponse(el, isGood) {
+    document.querySelectorAll('#dots')[0];
+    const choices = document.querySelectorAll('.stage[data-stage="1"] .choice');
+    choices.forEach(c => c.disabled = true);
+    const fb = document.getElementById('fb1');
+    if (isGood) {
+      el.classList.add('correct');
+      updateComposure(15);
+      fb.textContent = "That's it — acknowledged the frustration, didn't argue, and gave a next step. The mug stays warm.";
+    } else {
+      el.classList.add('wrong');
+      updateComposure(-15);
+      fb.textContent = "That mirrors the tension back at them instead of moving things forward. It reads as defensive, not adaptive.";
+    }
+    fb.classList.add('show');
+    document.getElementById('next1').style.display = 'block';
+  }
+
+  // --- Stage 3: sort chips ---
+  const sortItems = [
+    { text: 'Level of detail', type: 'match' },
+    { text: 'Insults', type: 'mirror' },
+    { text: 'Need for reassurance', type: 'match' },
+    { text: 'Sarcasm', type: 'mirror' },
+    { text: 'Preferred channel', type: 'match' },
+    { text: 'Hostility', type: 'mirror' },
+  ];
+  let sortedCount = 0;
+
+  function initSortStage() {
+    sortedCount = 0;
+    const pool = document.getElementById('sortPool');
+    pool.innerHTML = '';
+    sortItems.forEach((item, idx) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.textContent = item.text;
+      chip.onclick = () => sortChip(chip, item);
+      pool.appendChild(chip);
+    });
+  }
+
+  function sortChip(chip, item) {
+    if (chip.classList.contains('match') || chip.classList.contains('mirror')) return;
+    chip.classList.add(item.type);
+    chip.onclick = null;
+    const bin = document.getElementById(item.type === 'match' ? 'matchBin' : 'mirrorBin');
+    const clone = chip.cloneNode(true);
+    clone.style.display = 'inline-block';
+    clone.style.margin = '3px';
+    bin.appendChild(clone);
+    chip.style.opacity = '0.25';
+    chip.style.pointerEvents = 'none';
+    sortedCount++;
+    if (item.type === 'match') updateComposure(4); else updateComposure(2);
+    if (sortedCount === sortItems.length) {
+      document.getElementById('next2').disabled = false;
+    }
+  }
+
+  // --- Stage 4: build response puzzle ---
+  const buildParts = [
+    { text: 'Acknowledge the frustration', order: 1 },
+    { text: 'Summarize the issue', order: 2 },
+    { text: 'Give a clear next step', order: 3 },
+  ];
+  let filledSlots = 0;
+
+  function initBuildStage() {
+    filledSlots = 0;
+    const pool = document.getElementById('buildPool');
+    pool.innerHTML = '';
+    const shuffled = [...buildParts].sort(() => Math.random() - 0.5);
+    shuffled.forEach(part => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.textContent = part.text;
+      chip.onclick = () => tryPlace(chip, part);
+      pool.appendChild(chip);
+    });
+  }
+
+  function tryPlace(chip, part) {
+    const nextOrder = filledSlots + 1;
+    const slot = document.querySelector(`.slot[data-order="${nextOrder}"]`);
+    if (part.order === nextOrder) {
+      slot.textContent = part.text;
+      slot.classList.add('filled');
+      chip.remove();
+      filledSlots++;
+      updateComposure(5);
+      if (filledSlots === buildParts.length) {
+        document.getElementById('next3').disabled = false;
+      }
+    } else {
+      chip.classList.add('wrong');
+      updateComposure(-3);
+      setTimeout(() => chip.classList.remove('wrong'), 400);
+    }
+  }
+
+  // --- Stage 5: channel quiz ---
+  function pickChannel(el, isGood) {
+    const choices = document.querySelectorAll('.stage[data-stage="4"] .choice');
+    choices.forEach(c => c.disabled = true);
+    const fb = document.getElementById('fb4');
+    if (isGood) {
+      el.classList.add('correct');
+      updateComposure(15);
+      fb.textContent = "Right — technical support calls for plain language, one step at a time, with understanding checked along the way.";
+    } else {
+      el.classList.add('wrong');
+      updateComposure(-15);
+      fb.textContent = "A dense wall of detail assumes they understand the system as well as you do. Break it into steps instead.";
+    }
+    fb.classList.add('show');
+    document.getElementById('next4').style.display = 'block';
+  }
+
+  // --- Sparkles on finish ---
+  function launchSparkles() {
+    const emojis = ['✨','🌿','☕','💫'];
+    for (let i = 0; i < 14; i++) {
+      setTimeout(() => {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        s.style.left = Math.random() * 90 + '%';
+        s.style.top = '10px';
+        document.getElementById('card').appendChild(s);
+        setTimeout(() => s.remove(), 1800);
+      }, i * 90);
+    }
+  }
+
+  // init
+  initSortStage();
+  initBuildStage();
+  updateComposure(0);
+  renderStage();
+</script>
+
+</body>
+</html>
