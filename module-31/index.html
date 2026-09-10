@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding Differences Without Stereotyping</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,300..800;1,300..800&family=Lemonada:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #0141b3;
+      --coral-accent: #e7654b;
+      --amber-warm: #f8ac5e;
+      --peach-light: #f3d5b9;
+      --rust-dark: #924430;
+      --pink-soft: #ffe4df;
+      --brown-deep: #642a1f;
+      --peach-coral: #f7a285;
+      --white: #ffffff;
+      --navy-dark: #0f1c4d;
+      --gray-light: #f8f9fa;
+      --gray-border: #e2e8f0;
+      
+      --font-heading: 'Lemonada', cursive, sans-serif;
+      --font-body: 'Karla', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--pink-soft);
+      color: var(--navy-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .game-container {
+      background: var(--white);
+      width: 100%;
+      max-width: 820px;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(15, 28, 77, 0.1);
+      overflow: hidden;
+      border: 2px solid var(--peach-light);
+      position: relative;
+    }
+
+    /* Top Bar Header */
+    .game-header {
+      background: var(--primary-blue);
+      color: var(--white);
+      padding: 18px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .game-title {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-badge {
+      background: var(--amber-warm);
+      color: var(--navy-dark);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      white-space: nowrap;
+    }
+
+    /* Progress Indicator */
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: var(--peach-light);
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--coral-accent);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .content-card {
+      padding: 32px;
+    }
+
+    /* Graphic Asset Container */
+    .illustration-header {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 20px auto;
+      display: block;
+    }
+
+    /* Typography Elements */
+    h1 {
+      font-family: var(--font-heading);
+      color: var(--primary-blue);
+      font-size: 1.75rem;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: var(--font-heading);
+      color: var(--brown-deep);
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      font-size: 1.05rem;
+    }
+
+    /* Start Screen */
+    .welcome-box {
+      text-align: center;
+      padding: 20px 10px;
+    }
+
+    .welcome-box p {
+      color: var(--navy-dark);
+      max-width: 620px;
+      margin: 0 auto 24px auto;
+    }
+
+    .pill-tag {
+      display: inline-block;
+      background: var(--pink-soft);
+      color: var(--rust-dark);
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Question Cards */
+    .scenario-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .scenario-counter {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--coral-accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .scenario-text {
+      background: var(--pink-soft);
+      border-left: 5px solid var(--coral-accent);
+      padding: 18px 22px;
+      border-radius: 0 14px 14px 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: var(--navy-dark);
+    }
+
+    /* Assumption Drawer */
+    .assumption-box {
+      background: #fff8f0;
+      border: 2px dashed var(--amber-warm);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .assumption-title {
+      font-weight: 700;
+      color: var(--rust-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* Options */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn-option {
+      background: var(--white);
+      border: 2px solid var(--gray-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--navy-dark);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn-option:hover:not(:disabled) {
+      border-color: var(--primary-blue);
+      background: #f0f5ff;
+      transform: translateY(-2px);
+    }
+
+    .btn-option:disabled {
+      cursor: default;
+      opacity: 0.85;
+    }
+
+    .option-key {
+      background: var(--peach-light);
+      color: var(--brown-deep);
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    /* Feedback Cards */
+    .feedback-card {
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      animation: slideUp 0.3s ease;
+    }
+
+    .feedback-card.awareness {
+      background: #eefbf3;
+      border: 2px solid #2e7d32;
+      color: #1b5e20;
+    }
+
+    .feedback-card.judgment {
+      background: #fff8e1;
+      border: 2px solid #f57f17;
+      color: #e65100;
+    }
+
+    .feedback-card.stereotype {
+      background: #fbe9e7;
+      border: 2px solid #d32f2f;
+      color: #c62828;
+    }
+
+    .feedback-header {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Action Buttons */
+    .btn-primary {
+      background: var(--primary-blue);
+      color: var(--white);
+      border: none;
+      padding: 14px 28px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      background: #002d80;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Results & Reflection Screen */
+    .result-score-box {
+      text-align: center;
+      padding: 28px 24px;
+      background: var(--pink-soft);
+      border-radius: 16px;
+      margin: 20px 0;
+    }
+
+    .score-large {
+      font-family: var(--font-heading);
+      font-size: 3rem;
+      color: var(--primary-blue);
+      margin: 8px 0;
+    }
+
+    .badge-title {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--rust-dark);
+      margin-bottom: 8px;
+    }
+
+    /* Interactive Reflection */
+    .reflection-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 24px 0;
+    }
+
+    .flow-step {
+      background: var(--white);
+      border: 2px solid var(--amber-warm);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      font-size: 0.95rem;
+    }
+
+    .flow-arrow {
+      color: var(--coral-accent);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .content-card { padding: 20px; }
+      .game-header { padding: 16px 20px; }
+      .game-title { font-size: 0.9rem; }
+      h1 { font-size: 1.4rem; }
+      .reflection-flow { flex-direction: column; align-items: stretch; }
+      .flow-arrow { justify-content: center; transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-container">
+  <!-- Header Bar -->
+  <div class="game-header">
+    <div class="game-title">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="#FFFFFF" stroke-width="2"/>
+        <path d="M2 12H22M12 2C14.5 4.5 16 8.2 16 12C16 15.8 14.5 19.5 12 22C9.5 19.5 8 15.8 8 12C8 8.2 9.5 4.5 12 2Z" stroke="#FFFFFF" stroke-width="1.8"/>
+      </svg>
+      Understanding Differences Without Stereotyping
+    </div>
+    <div class="score-badge" id="score-display">Score: 0</div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Screen 0: Welcome Screen -->
+  <div id="screen-welcome" class="content-card welcome-box">
+    <!-- Diversity Avatar SVG Asset matching presentation color palette -->
+    <svg class="illustration-header" viewBox="0 0 360 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="180" cy="80" r="70" fill="#FFE4DF"/>
+      <!-- Person 1 (Coral) -->
+      <path d="M120 135C120 115 135 100 155 100C175 100 190 115 190 135V150H120V135Z" fill="#E7654B"/>
+      <circle cx="155" cy="78" r="18" fill="#F8AC5E"/>
+      <!-- Person 2 (Blue Center) -->
+      <path d="M150 145C150 120 168 105 186 105C204 105 222 120 222 145V150H150V145Z" fill="#0141B3"/>
+      <circle cx="186" cy="82" r="20" fill="#F3D5B9"/>
+      <!-- Person 3 (Rust) -->
+      <path d="M195 138C195 118 210 102 230 102C250 102 265 118 265 138V150H195V138Z" fill="#924430"/>
+      <circle cx="230" cy="80" r="17" fill="#F7A285"/>
+      <!-- Unity Ring -->
+      <circle cx="180" cy="80" r="75" stroke="#F8AC5E" stroke-width="3" stroke-dasharray="6 6"/>
+    </svg>
+
+    <span class="pill-tag">Interactive Customer Service Activity</span>
+    <h1>Assumption or Awareness?</h1>
+    <p>In customer service and teamwork, culture shapes how we communicate. But jumping to conclusions can lead to misunderstandings and stereotyping.</p>
+    <p>Navigate through 9 realistic workplace scenarios. Practice identifying assumptions and applying true cultural awareness.</p>
+    <button class="btn-primary" onclick="startGame()">Begin Training Activity →</button>
+  </div>
+
+  <!-- Screen 1: Game Scenarios -->
+  <div id="screen-game" class="content-card hidden">
+    <div class="scenario-header-flex">
+      <div class="scenario-counter" id="scenario-counter">Scenario 1 of 9</div>
+      <!-- Mini Decorative Icon -->
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="16" fill="#FFE4DF"/>
+        <path d="M16 8C12.1 8 9 11.1 9 15C9 18.9 12.1 22 16 22C19.9 22 23 18.9 23 15C23 11.1 19.9 8 16 8ZM16 20C13.2 20 11 17.8 11 15C11 12.2 13.2 10 16 10C18.8 10 21 12.2 21 15C21 17.8 18.8 20 16 20Z" fill="#0141B3"/>
+        <circle cx="16" cy="15" r="3" fill="#E7654B"/>
+      </svg>
+    </div>
+
+    <div class="scenario-text" id="scenario-text"></div>
+
+    <!-- Assumption Mechanic (Shown dynamically for specific questions) -->
+    <div id="assumption-box" class="assumption-box hidden">
+      <div class="assumption-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#924430"/>
+        </svg>
+        Think Before You Decide: What are you assuming?
+      </div>
+      <p style="font-size: 0.95rem; margin-bottom: 12px;">Identify the potential hidden assumption before selecting your customer service approach:</p>
+      <div id="assumption-options" class="options-grid"></div>
+    </div>
+
+    <!-- Main Response Options -->
+    <div id="response-container">
+      <p style="font-weight: 700; margin-bottom: 12px; color: var(--navy-dark);" id="response-prompt">Choose the best approach:</p>
+      <div class="options-grid" id="options-grid"></div>
+    </div>
+
+    <!-- Feedback Container -->
+    <div id="feedback-container" class="hidden">
+      <div id="feedback-card" class="feedback-card">
+        <div class="feedback-header" id="feedback-header"></div>
+        <div id="feedback-body"></div>
+      </div>
+      <div style="margin-top: 20px; text-align: right;">
+        <button class="btn-primary" id="btn-next" onclick="nextScenario()">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Results Screen -->
+  <div id="screen-results" class="content-card hidden" style="text-align: center;">
+    <!-- Trophy / Earth Illustration from Slide Deck Theme -->
+    <svg class="illustration-header" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="60" r="50" fill="#FFE4DF"/>
+      <path d="M80 45C80 36.7 86.7 30 95 30H105C113.3 30 120 36.7 120 45V65C120 73.3 113.3 80 105 80H95C86.7 80 80 73.3 80 65V45Z" fill="#F8AC5E"/>
+      <path d="M90 80H110V92H90V80Z" fill="#924430"/>
+      <path d="M82 92H118V98H82V92Z" fill="#0141B3"/>
+      <path d="M100 38L103 44L110 45L105 50L106 57L100 53L94 57L95 50L90 45L97 44L100 38Z" fill="#FFFFFF"/>
+    </svg>
+
+    <span class="pill-tag">Activity Complete</span>
+    <h1>Your Results</h1>
+    
+    <div class="result-score-box">
+      <div class="badge-title" id="badge-title">Cultural Awareness Champion</div>
+      <div class="score-large" id="final-score">0 / 18</div>
+      <p id="badge-desc" style="margin-bottom: 0;"></p>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <button class="btn-primary" onclick="showReflection()">Proceed to Final Reflection →</button>
+    </div>
+  </div>
+
+  <!-- Screen 3: Reflection Screen -->
+  <div id="screen-reflection" class="content-card hidden">
+    <!-- Guiding Principles Icon Asset from Slide Deck -->
+    <svg class="illustration-header" style="max-width: 180px;" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="80" cy="50" r="40" fill="#FFE4DF"/>
+      <path d="M65 50L75 60L95 40" stroke="#0141B3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="80" cy="50" r="45" stroke="#E7654B" stroke-width="2" stroke-dasharray="4 4"/>
+    </svg>
+
+    <span class="pill-tag" style="display: block; text-align: center;">Key Takeaway</span>
+    <h2 style="text-align: center;">Reflect & Apply</h2>
+    
+    <blockquote style="background: var(--pink-soft); border-left: 5px solid var(--primary-blue); padding: 18px 22px; border-radius: 0 14px 14px 0; font-style: italic; font-size: 1.1rem; margin-bottom: 24px; color: var(--brown-deep);">
+      “Someone’s behavior may tell you what happened, but it doesn’t always tell you why.”
+    </blockquote>
+
+    <p style="font-weight: 700; text-align: center;">Before making a judgment about an unfamiliar behavior, remember the core workflow:</p>
+
+    <div class="reflection-flow">
+      <div class="flow-step">1. Observe</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-step">2. Pause</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-step">3. Consider Possibilities</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-step">4. Gather Context</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-step">5. Respond Professionally</div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+      <button class="btn-primary" onclick="restartGame()">🔄 Restart Activity</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Game Data
+  const scenarios = [
+    {
+      id: 1,
+      text: "A customer responds to several questions with very short, direct answers and does not use traditional greetings or friendly pleasantries.",
+      hasAssumption: false,
+      options: [
+        {
+          key: "A",
+          text: "Customers from this culture are usually less friendly, so keep the interaction strictly transactional.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Broadly labeling an entire cultural group as 'unfriendly' ignores personal preference, situational context, or language barriers."
+        },
+        {
+          key: "B",
+          text: "The customer is intentionally being rude and probably doesn't want to cooperate.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Interpreting directness strictly as rudeness applies your personal expectations of communication onto the customer."
+        },
+        {
+          key: "C",
+          text: "Avoid assuming what the behavior means. Focus on the customer's request, communicate clearly, and look for additional context.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Excellent! Direct communication styles vary widely. Staying neutral and focused on service ensures professional delivery."
+        }
+      ]
+    },
+    {
+      id: 2,
+      text: "A customer avoids saying 'no' directly when presented with an option, stating instead: 'That might be somewhat difficult to do right now.'",
+      hasAssumption: true,
+      assumptions: [
+        "The customer is agreeing and wants to proceed despite challenges.",
+        "The customer is trying to be deliberately confusing.",
+        "The customer is expressing hesitation or a soft refusal."
+      ],
+      correctAssumptionIndex: 0,
+      options: [
+        {
+          key: "A",
+          text: "Assume people from this background are incapable of direct honesty and move on.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Generalizing that an entire group lacks honesty creates bias instead of effective communication."
+        },
+        {
+          key: "B",
+          text: "Recognize that in many styles, indirect phrasing can signal hesitation. Ask open-ended questions to clarify their preference.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Spot on! Indirect communication is often used to maintain politeness. Asking clarifying questions helps verify their true intent."
+        },
+        {
+          key: "C",
+          text: "Assume they mean 'yes' because they didn't explicitly say the word 'no'.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Assuming 'difficult' means 'yes' imposes your own standard of direct communication, risking misunderstanding."
+        }
+      ]
+    },
+    {
+      id: 3,
+      text: "A customer repeatedly asks you to confirm information that you have already clearly explained twice.",
+      hasAssumption: false,
+      options: [
+        {
+          key: "A",
+          text: "Recognize that factors like language nuances, risk sensitivity, or stress could require re-confirmation. Patiently verify understanding.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Great perspective! Re-confirming details often reflects high attention to accuracy or reassurance rather than disrespect."
+        },
+        {
+          key: "B",
+          text: "Assume the customer is intentionally testing your patience or ignoring your explanation.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Viewing repeated questions as a personal challenge creates friction."
+        },
+        {
+          key: "C",
+          text: "Assume customers from this demographic always struggle with basic instructions.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Attributing comprehension speed to a broad demographic background is an unfair assumption."
+        }
+      ]
+    },
+    {
+      id: 4,
+      text: "During team meetings, a colleague rarely speaks up or offers spontaneous ideas unless directly called upon.",
+      hasAssumption: true,
+      assumptions: [
+        "The colleague lacks initiative or interest in the project.",
+        "The colleague might prefer structured opportunities to share input.",
+        "The colleague is intentionally holding back information."
+      ],
+      correctAssumptionIndex: 0,
+      options: [
+        {
+          key: "A",
+          text: "Assume they are disengaged and don't care about contributing.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Judging silence as lack of interest ignores individual processing styles or norms around speaking up."
+        },
+        {
+          key: "B",
+          text: "Assume people from their culture are inherently passive in workplace settings.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Reducing individual meeting styles to a cultural label overlooks personal personality traits."
+        },
+        {
+          key: "C",
+          text: "Consider that participation styles vary—some process ideas before speaking. Offer structured, inclusive ways to share input.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Exactly! Respecting different participation styles creates an environment where everyone can contribute effectively."
+        }
+      ]
+    },
+    {
+      id: 5,
+      text: "A customer prefers very formal language and uses official titles (e.g., 'Mr.', 'Dr.') throughout an email exchange.",
+      hasAssumption: false,
+      options: [
+        {
+          key: "A",
+          text: "Match their professional tone with polite clarity, recognizing that formality is often a sign of respect, not coldness.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Excellent! Formality is frequently used to show professionalism and respect."
+        },
+        {
+          key: "B",
+          text: "Assume customers who use formal titles are distant, rigid, and hard to work with.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Interpreting formality as emotional distance misreads respect as coldness."
+        },
+        {
+          key: "C",
+          text: "Assume people from older generations or specific backgrounds are always uptight about titles.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Grouping individuals by demographic stereotypes ignores individual preference for professionalism."
+        }
+      ]
+    },
+    {
+      id: 6,
+      text: "A customer becomes visibly frustrated or uncomfortable when an agent opens the conversation with casual phrasing ('Hey there! What’s up?').",
+      hasAssumption: false,
+      options: [
+        {
+          key: "A",
+          text: "Assume everyone from that culture demands overly subservient customer service.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Generalizing expectations onto a full culture prevents genuine, individualized service."
+        },
+        {
+          key: "B",
+          text: "Pivot immediately to a formal, respectful tone, recognizing that standards around casualness in business vary widely.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Great adaptability! Adjusting your style when casual tone isn't well-received demonstrates true service awareness."
+        },
+        {
+          key: "C",
+          text: "Assume the customer is unreasonable and simply looking for something to complain about.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Dismissing customer discomfort as 'unreasonable' misses an opportunity to align communication styles."
+        }
+      ]
+    },
+    {
+      id: 7,
+      text: "A teammate disagrees with a project proposal indirectly by asking gentle questions about timing rather than explicitly saying 'I disagree.'",
+      hasAssumption: false,
+      options: [
+        {
+          key: "A",
+          text: "Notice the indirect feedback, pause, and explore whether there are underlying concerns about the proposal.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Perfect response! Recognizing indirect signals allows you to surface valuable feedback gracefully."
+        },
+        {
+          key: "B",
+          text: "Assume colleagues from that background are incapable of direct workplace communication.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Making absolute claims about ability based on background is inaccurate and unhelpful."
+        },
+        {
+          key: "C",
+          text: "Assume they fully support the core proposal since they didn't explicitly say 'I disagree'.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Taking indirect questions as agreement ignores non-verbal context."
+        }
+      ]
+    },
+    {
+      id: 8,
+      text: "A client takes 48 hours to respond to a brief request that you expected would take only 10 minutes.",
+      hasAssumption: true,
+      assumptions: [
+        "The client does not care about your project deadline.",
+        "Response times can depend on internal approval processes or workload.",
+        "The client is purposely delaying to exercise authority."
+      ],
+      correctAssumptionIndex: 0,
+      options: [
+        {
+          key: "A",
+          text: "Assume clients from that region or industry are naturally slow or unprofessional.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Broad negative characterizations of work ethic based on location or group are groundless."
+        },
+        {
+          key: "B",
+          text: "Assume the client is intentionally ignoring you to prioritize other people.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Attributing delay to negative intent causes unnecessary frustration."
+        },
+        {
+          key: "C",
+          text: "Recognize response times vary based on workload, hierarchy, or review workflows. Follow up politely without assuming bad intent.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Spot on! Looking at structural and contextual factors prevents hasty negative assumptions."
+        }
+      ]
+    },
+    {
+      id: 9,
+      text: "An international client asks for immediate written documentation following a verbal agreement made over the phone.",
+      hasAssumption: false,
+      options: [
+        {
+          key: "A",
+          text: "Assume the client doesn't trust you personally and is being difficult.",
+          type: "judgment",
+          points: 1,
+          explanation: "Personal Judgment: Taking documentation requests personally misinterprets standard governance practices."
+        },
+        {
+          key: "B",
+          text: "Promptly provide the documentation, recognizing that written confirmation provides clarity across organizational standards.",
+          type: "awareness",
+          points: 2,
+          explanation: "Cultural Awareness: Exactly! Written records ensure clarity and alignment across boundaries without implying personal distrust."
+        },
+        {
+          key: "C",
+          text: "Assume people from that region are inherently paranoid and suspicious.",
+          type: "stereotype",
+          points: 0,
+          explanation: "Stereotyping: Labeling an entire region as 'paranoid' converts standard protocol into an unfair stereotype."
+        }
+      ]
+    }
+  ];
+
+  // State Management
+  let currentScenarioIndex = 0;
+  let score = 0;
+  let assumptionCleared = false;
+
+  // UI Elements
+  const elScoreDisplay = document.getElementById('score-display');
+  const elProgressBar = document.getElementById('progress-bar');
+  const elCounter = document.getElementById('scenario-counter');
+  const elScenarioText = document.getElementById('scenario-text');
+  const elAssumptionBox = document.getElementById('assumption-box');
+  const elAssumptionOptions = document.getElementById('assumption-options');
+  const elResponseContainer = document.getElementById('response-container');
+  const elResponsePrompt = document.getElementById('response-prompt');
+  const elOptionsGrid = document.getElementById('options-grid');
+  const elFeedbackContainer = document.getElementById('feedback-container');
+  const elFeedbackCard = document.getElementById('feedback-card');
+  const elFeedbackHeader = document.getElementById('feedback-header');
+  const elFeedbackBody = document.getElementById('feedback-body');
+
+  function startGame() {
+    currentScenarioIndex = 0;
+    score = 0;
+    updateScore();
+    showScreen('screen-game');
+    loadScenario();
+  }
+
+  function showScreen(screenId) {
+    ['screen-welcome', 'screen-game', 'screen-results', 'screen-reflection'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(screenId).classList.remove('hidden');
+  }
+
+  function updateScore() {
+    elScoreDisplay.textContent = `Score: ${score}`;
+  }
+
+  function loadScenario() {
+    const scenario = scenarios[currentScenarioIndex];
+    
+    // Progress
+    const total = scenarios.length;
+    const progressPercent = ((currentScenarioIndex) / total) * 100;
+    elProgressBar.style.width = `${progressPercent}%`;
+    elCounter.textContent = `Scenario ${currentScenarioIndex + 1} of ${total}`;
+    
+    // Text
+    elScenarioText.textContent = scenario.text;
+    
+    // Reset Views
+    elFeedbackContainer.classList.add('hidden');
+    elOptionsGrid.innerHTML = '';
+    
+    if (scenario.hasAssumption) {
+      assumptionCleared = false;
+      elAssumptionBox.classList.remove('hidden');
+      elResponseContainer.classList.add('hidden');
+      renderAssumptionOptions(scenario);
+    } else {
+      assumptionCleared = true;
+      elAssumptionBox.classList.add('hidden');
+      elResponseContainer.classList.remove('hidden');
+      renderResponseOptions(scenario);
+    }
+  }
+
+  function renderAssumptionOptions(scenario) {
+    elAssumptionOptions.innerHTML = '';
+    scenario.assumptions.forEach((item, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-option';
+      btn.innerHTML = `<span class="option-key">?</span> <span>${item}</span>`;
+      btn.onclick = () => selectAssumption(index, scenario);
+      elAssumptionOptions.appendChild(btn);
+    });
+  }
+
+  function selectAssumption(selectedIndex, scenario) {
+    const buttons = elAssumptionOptions.querySelectorAll('.btn-option');
+    buttons.forEach((b, idx) => {
+      b.disabled = true;
+      if (idx === scenario.correctAssumptionIndex) {
+        b.style.borderColor = 'var(--coral-accent)';
+        b.style.background = 'var(--pink-soft)';
+      }
+    });
+
+    setTimeout(() => {
+      elAssumptionBox.classList.add('hidden');
+      elResponseContainer.classList.remove('hidden');
+      renderResponseOptions(scenario);
+    }, 1200);
+  }
+
+  function renderResponseOptions(scenario) {
+    elOptionsGrid.innerHTML = '';
+    const shuffledOptions = [...scenario.options];
+    
+    shuffledOptions.forEach((opt) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-option';
+      btn.innerHTML = `<span class="option-key">${opt.key}</span> <span>${opt.text}</span>`;
+      btn.onclick = () => selectOption(opt);
+      elOptionsGrid.appendChild(btn);
+    });
+  }
+
+  function selectOption(selectedOption) {
+    const buttons = elOptionsGrid.querySelectorAll('.btn-option');
+    buttons.forEach(b => b.disabled = true);
+
+    score += selectedOption.points;
+    updateScore();
+
+    elFeedbackContainer.classList.remove('hidden');
+    elFeedbackCard.className = 'feedback-card ' + selectedOption.type;
+
+    let icon = '💡';
+    let title = 'Cultural Awareness';
+    if (selectedOption.type === 'judgment') {
+      icon = '👀';
+      title = 'Personal Judgment';
+    } else if (selectedOption.type === 'stereotype') {
+      icon = '⚠️';
+      title = 'Stereotyping Risk';
+    }
+
+    elFeedbackHeader.innerHTML = `<span>${icon}</span> <span>${title} (+${selectedOption.points} pts)</span>`;
+    elFeedbackBody.textContent = selectedOption.explanation;
+
+    elFeedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function nextScenario() {
+    currentScenarioIndex++;
+    if (currentScenarioIndex < scenarios.length) {
+      loadScenario();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    elProgressBar.style.width = '100%';
+    showScreen('screen-results');
+
+    const elFinalScore = document.getElementById('final-score');
+    const elTitle = document.getElementById('badge-title');
+    const elDesc = document.getElementById('badge-desc');
+
+    const maxScore = scenarios.length * 2;
+    elFinalScore.textContent = `${score} / ${maxScore}`;
+
+    if (score >= 15) {
+      elTitle.textContent = '🌎 Cultural Awareness Champion';
+      elDesc.textContent = 'You consistently look beyond immediate assumptions and focus on context, communication flexibility, and professional awareness.';
+    } else if (score >= 9) {
+      elTitle.textContent = '👀 Awareness in Progress';
+      elDesc.textContent = 'You recognize many differences, but remember to pause before interpreting unfamiliar behaviors through personal or group shortcuts.';
+    } else {
+      elTitle.textContent = '💭 Pause & Reconsider';
+      elDesc.textContent = 'Practice separating what you observe from what you assume. Unfamiliar behaviors are not automatically rude, cold, or unprofessional.';
+    }
+  }
+
+  function showReflection() {
+    showScreen('screen-reflection');
+  }
+
+  function restartGame() {
+    startGame();
+  }
+</script>
+</body>
+</html>
