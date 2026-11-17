@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Work: The Superpower of High Performers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12161F;
+    --ink-2:#1B2130;
+    --paper:#F3EEE1;
+    --paper-2:#EAE3D2;
+    --signal:#E8A33D;   /* focus / deep work */
+    --static:#C4453A;   /* interruption / noise */
+    --flow:#4F8F7F;     /* calm / flow */
+    --yellow:#C99A3B;   /* moderate attention */
+    --ink-mute:#8891A3;
+    --text:#232A38;
+    --radius:6px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    margin:0 0 .4em 0;
+    color:var(--text);
+    letter-spacing:-0.01em;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    display:flex;
+    align-items:center;
+    gap:.6em;
+    margin-bottom:.9em;
+  }
+  .status-chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.65rem;
+    letter-spacing:.08em;
+    padding:.15em .6em;
+    border-radius:100px;
+    text-transform:uppercase;
+  }
+  .status-open{background:rgba(232,163,61,.18); color:var(--signal); border:1px solid rgba(232,163,61,.4);}
+  .status-flow{background:rgba(79,143,127,.18); color:var(--flow); border:1px solid rgba(79,143,127,.4);}
+  .status-alert{background:rgba(196,69,58,.18); color:var(--static); border:1px solid rgba(196,69,58,.4);}
+
+  p{color:var(--text); margin:0 0 1em 0;}
+  a{color:inherit;}
+  ul{margin:0 0 1em 0; padding-left:1.2em; color:var(--text);}
+  li{margin-bottom:.4em;}
+
+  /* ---------- progress bar ---------- */
+  #progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:var(--signal); z-index:999; transition:width .1s linear;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(18,22,31,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding:.9rem 1.5rem;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{display:flex; align-items:center; gap:.6em;}
+  .rec-dot{
+    width:9px; height:9px; border-radius:50%; background:var(--signal);
+    box-shadow:0 0 0 0 rgba(232,163,61,.6);
+    animation:pulse 2.4s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(232,163,61,.55);}
+    70%{box-shadow:0 0 0 9px rgba(232,163,61,0);}
+    100%{box-shadow:0 0 0 0 rgba(232,163,61,0);}
+  }
+  .brand-name{font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; color:var(--paper);}
+  .queue-label{font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--ink-mute); letter-spacing:.06em;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    max-width:900px; margin:0 auto; padding:5.5rem 1.5rem 3.5rem;
+    text-align:left;
+  }
+  .hero h1{
+    font-size:clamp(2.1rem,5vw,3.4rem);
+    color:var(--paper);
+    line-height:1.08;
+    max-width:11ch;
+  }
+  .hero .lede{
+    color:var(--ink-mute);
+    font-size:1.08rem;
+    max-width:56ch;
+    margin-top:1.1rem;
+  }
+  .hero .cta{
+    margin-top:2rem;
+    display:inline-flex; align-items:center; gap:.5em;
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--signal); text-decoration:none; border-bottom:1px solid var(--signal); padding-bottom:3px;
+  }
+
+  /* ---------- layout ---------- */
+  main{max-width:900px; margin:0 auto; padding:0 1.5rem 6rem;}
+
+  .ticket{
+    position:relative;
+    background:var(--paper);
+    border-radius:var(--radius);
+    padding:2.4rem 2.2rem 2.2rem;
+    margin-bottom:2.4rem;
+    box-shadow:0 18px 40px -20px rgba(0,0,0,.55);
+    border-left:4px solid var(--signal);
+  }
+  .ticket.flow{border-left-color:var(--flow);}
+  .ticket.alert{border-left-color:var(--static);}
+  .ticket.mixed{border-left-color:var(--yellow);}
+  .ticket::before{
+    content:"";
+    position:absolute; top:-1px; left:16px; right:16px; height:8px;
+    background-image:radial-gradient(circle, var(--ink) 42%, transparent 43%);
+    background-size:14px 14px; background-repeat:repeat-x; background-position:top center;
+  }
+
+  /* ---------- opening story ---------- */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:1.4rem;}
+  @media (max-width:640px){ .duo{grid-template-columns:1fr;} }
+  .agent-card{
+    background:var(--paper-2); border-radius:4px; padding:1.2rem 1.2rem 1rem;
+  }
+  .agent-card h3{font-size:1.05rem; margin-bottom:.6rem;}
+  .agent-card ul{font-size:.92rem;}
+  .agent-card.win{border:1px solid rgba(79,143,127,.5);}
+  .agent-card.lose{border:1px solid rgba(196,69,58,.4);}
+  .agent-tag{font-family:'IBM Plex Mono',monospace; font-size:.65rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-mute);}
+
+  /* ---------- capability grid ---------- */
+  .cap-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:.7rem; margin:1.2rem 0 1.4rem;}
+  .cap{
+    background:var(--paper-2); border-radius:4px; padding:.8rem .9rem;
+    font-size:.88rem; color:var(--text); border-left:3px solid var(--signal);
+  }
+
+  /* ---------- callout boxes ---------- */
+  .callout{
+    background:var(--paper-2); border-radius:4px; padding:1rem 1.2rem; margin:1.2rem 0;
+    font-size:.92rem;
+  }
+  .callout .callout-label{
+    font-family:'IBM Plex Mono',monospace; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+    display:block; margin-bottom:.4rem;
+  }
+  .callout.tip{border-left:3px solid var(--flow);}
+  .callout.tip .callout-label{color:var(--flow);}
+  .callout.manager{border-left:3px solid var(--yellow);}
+  .callout.manager .callout-label{color:var(--yellow);}
+  .callout.fact{border-left:3px solid var(--signal);}
+  .callout.fact .callout-label{color:var(--signal);}
+
+  /* ---------- interruption meter (customer example) ---------- */
+  .meter-widget{background:var(--paper-2); border-radius:4px; padding:1.2rem; margin-top:1.2rem;}
+  .meter-row{display:flex; align-items:center; gap:1rem; flex-wrap:wrap;}
+  .meter-track{flex:1; min-width:180px; height:10px; background:rgba(0,0,0,.1); border-radius:100px; overflow:hidden;}
+  .meter-fill{height:100%; width:0%; background:var(--flow); transition:width .35s ease, background .35s ease;}
+  .meter-btns{display:flex; gap:.5rem;}
+  button{
+    font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em; text-transform:uppercase;
+    padding:.55em 1em; border-radius:4px; border:1px solid var(--text); background:transparent; color:var(--text);
+    cursor:pointer; transition:background .2s, color .2s;
+  }
+  button:hover{background:var(--text); color:var(--paper);}
+  button:disabled{opacity:.4; cursor:not-allowed;}
+  button.primary{background:var(--text); color:var(--paper);}
+  button.primary:hover{opacity:.85; background:var(--text);}
+  #meter-status{font-size:.85rem; margin-top:.7rem; color:var(--text);}
+
+  /* ---------- puzzle race (signature) ---------- */
+  .race-wrap{margin-top:1.4rem;}
+  .race-lanes{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; margin-top:1.2rem;}
+  @media (max-width:640px){ .race-lanes{grid-template-columns:1fr;} }
+  .lane{background:var(--paper-2); border-radius:4px; padding:1rem;}
+  .lane-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.7rem;}
+  .lane-title{font-family:'IBM Plex Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-mute);}
+  .lane-time{font-family:'IBM Plex Mono',monospace; font-size:.95rem; color:var(--text); font-weight:600;}
+  .puzzle-grid{
+    position:relative;
+    display:grid; grid-template-columns:repeat(5,1fr); gap:4px;
+    aspect-ratio:1/1;
+  }
+  .cell{background:rgba(0,0,0,.08); border-radius:2px; transition:background .18s;}
+  .cell.filled{background:var(--flow);}
+  .lane.distracted .cell.filled{background:var(--signal);}
+  .interrupt-badge{
+    position:absolute; font-size:1.3rem; pointer-events:none;
+    animation:zap .55s ease forwards;
+  }
+  @keyframes zap{
+    0%{opacity:0; transform:scale(.4) translateY(6px);}
+    30%{opacity:1; transform:scale(1.15) translateY(0);}
+    100%{opacity:0; transform:scale(1) translateY(-8px);}
+  }
+  .race-controls{display:flex; align-items:center; gap:1rem; margin-top:1.2rem; flex-wrap:wrap;}
+  #race-summary{font-size:.9rem; color:var(--text); margin-top:1rem; min-height:1.4em;}
+
+  /* ---------- table ---------- */
+  table{width:100%; border-collapse:collapse; margin-top:1rem; font-size:.9rem;}
+  th,td{text-align:left; padding:.6em .7em; border-bottom:1px solid rgba(0,0,0,.1);}
+  th{font-family:'IBM Plex Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-mute);}
+  td.deep{border-left:3px solid var(--flow);}
+  td.shallow{border-left:3px solid var(--ink-mute);}
+
+  /* ---------- reflection ---------- */
+  textarea{
+    width:100%; font-family:'Inter',sans-serif; font-size:.92rem; color:var(--text);
+    background:var(--paper-2); border:1px solid rgba(0,0,0,.12); border-radius:4px; padding:.8em .9em;
+    resize:vertical; min-height:70px; margin-top:.4rem;
+  }
+  .reflect-q{margin-bottom:1.3rem;}
+  .reflect-q label{font-weight:600; font-size:.94rem; color:var(--text);}
+
+  /* ---------- focus map activity ---------- */
+  .chip-pool{display:flex; flex-wrap:wrap; gap:.6rem; margin:1.2rem 0;}
+  .chip{
+    font-size:.85rem; padding:.5em .9em; background:var(--paper-2); border:1px solid rgba(0,0,0,.15);
+    border-radius:100px; cursor:grab; user-select:none; transition:transform .12s, box-shadow .12s;
+  }
+  .chip:hover{transform:translateY(-1px);}
+  .chip.selected{outline:2px solid var(--text); outline-offset:1px;}
+  .chip.correct{border-color:var(--flow); background:rgba(79,143,127,.18);}
+  .chip.incorrect{border-color:var(--static); background:rgba(196,69,58,.15);}
+  .zones{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:.6rem;}
+  @media (max-width:640px){ .zones{grid-template-columns:1fr;} }
+  .zone{
+    min-height:150px; border-radius:4px; padding:.8rem; border:2px dashed rgba(0,0,0,.18);
+    background:rgba(0,0,0,.02);
+  }
+  .zone-green{border-color:rgba(79,143,127,.5);}
+  .zone-yellow{border-color:rgba(201,154,59,.5);}
+  .zone-red{border-color:rgba(196,69,58,.4);}
+  .zone-label{font-family:'IBM Plex Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.6rem; display:block;}
+  .zone-green .zone-label{color:var(--flow);}
+  .zone-yellow .zone-label{color:var(--yellow);}
+  .zone-red .zone-label{color:var(--static);}
+  .zone-chips{display:flex; flex-wrap:wrap; gap:.4rem;}
+  #map-score{margin-top:1rem; font-size:.9rem; color:var(--text);}
+
+  /* ---------- common mistake widget ---------- */
+  .spiral-widget{background:var(--paper-2); border-radius:4px; padding:1.2rem; margin-top:1.2rem;}
+  .spiral-track{height:10px; border-radius:100px; background:rgba(0,0,0,.1); overflow:hidden; margin:.8rem 0;}
+  .spiral-fill{height:100%; width:100%; background:var(--flow); transition:width .4s ease, background .4s ease;}
+  .spiral-icons{font-size:1.1rem; letter-spacing:.2em; min-height:1.4em;}
+  #spiral-msg{font-size:.88rem; margin-top:.5rem; color:var(--text);}
+
+  /* ---------- knowledge check ---------- */
+  .quiz-q{margin-bottom:1.6rem;}
+  .quiz-q p.qtext{font-weight:600; color:var(--text); margin-bottom:.7rem;}
+  .quiz-opts{display:flex; flex-direction:column; gap:.5rem;}
+  .qopt{
+    text-align:left; font-family:'Inter',sans-serif; text-transform:none; letter-spacing:0;
+    font-size:.9rem; padding:.7em .9em;
+  }
+  .qopt.right{border-color:var(--flow); background:rgba(79,143,127,.15); color:var(--text);}
+  .qopt.wrong{border-color:var(--static); background:rgba(196,69,58,.12); color:var(--text);}
+  .qfeedback{font-size:.85rem; margin-top:.5rem; min-height:1.2em; color:var(--text);}
+
+  footer{
+    text-align:center; padding:3rem 1.5rem 4rem; color:var(--ink-mute);
+  }
+  footer .closer{
+    font-family:'Fraunces',serif; font-size:1.6rem; color:var(--paper); margin-bottom:.3rem;
+  }
+  footer .closer span{color:var(--static);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <div class="brand">
+    <span class="rec-dot"></span>
+    <span class="brand-name">Deep Work</span>
+  </div>
+  <span class="queue-label">Lesson 1 · Leadership &amp; Focus Series</span>
+</header>
+
+<section class="hero">
+  <p class="eyebrow"><span class="status-chip status-open">Queue: New</span> Ticket DW-00 · Briefing</p>
+  <h1>Deep Work: The Superpower of High Performers</h1>
+  <p class="lede">Two agents. Same ticket load. Same hours. Wildly different Fridays. This lesson is about why — and how you can build the kind of focus that makes the hard tickets easier.</p>
+  <a class="cta" href="#story">Open the first ticket ↓</a>
+</section>
+
+<main>
+
+  <!-- DW-01 Opening Story -->
+  <section class="ticket" id="story">
+    <p class="eyebrow"><span class="status-chip status-open">DW-01</span> Opening Story</p>
+    <h2>Two Support Agents</h2>
+    <p>Emma and Ryan are both Technical Support Specialists. Both start at 8:00&nbsp;AM. Both receive roughly forty tickets a day. Both have similar experience.</p>
+    <p>By Friday afternoon, their weeks look nothing alike.</p>
+    <div class="duo">
+      <div class="agent-card win">
+        <span class="agent-tag">Agent — Emma</span>
+        <h3>Nearly every ticket closed</h3>
+        <ul>
+          <li>Documentation is thorough</li>
+          <li>Customers praise her communication</li>
+          <li>Rarely works overtime</li>
+        </ul>
+      </div>
+      <div class="agent-card lose">
+        <span class="agent-tag">Agent — Ryan</span>
+        <h3>Twelve tickets still open</h3>
+        <ul>
+          <li>Skipped lunch twice, stayed late three evenings</li>
+          <li>Documentation contains errors</li>
+          <li>QA scores slipping</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:1.2rem;">Ryan wasn't slower or less knowledgeable. He simply worked differently — responding immediately to every email, chat, and question. Emma protected periods of uninterrupted concentration. <strong>The difference wasn't effort. It was focus.</strong></p>
+  </section>
+
+  <!-- DW-02 What is Deep Work -->
+  <section class="ticket flow">
+    <p class="eyebrow"><span class="status-chip status-flow">DW-02</span> Definition</p>
+    <h2>What Is Deep Work?</h2>
+    <p><strong>Deep Work</strong> is a period of uninterrupted concentration spent on cognitively demanding tasks, without distraction. It isn't the same as "working hard" — it's working without interruption.</p>
+    <div class="cap-grid">
+      <div class="cap">Analyze complex problems</div>
+      <div class="cap">Troubleshoot technical issues</div>
+      <div class="cap">Write accurate documentation</div>
+      <div class="cap">Create knowledge articles</div>
+      <div class="cap">Investigate recurring issues</div>
+      <div class="cap">Learn new systems</div>
+      <div class="cap">Make better decisions</div>
+    </div>
+    <p>Picture a 1,000-piece puzzle. Every two minutes, someone pulls your hands off the table to make you solve a different puzzle before letting you come back. Eventually you're frustrated — not because the puzzle is hard, but because you never stay focused long enough to make progress. That's what many support days feel like.</p>
+  </section>
+
+  <!-- DW-03 Why it matters -->
+  <section class="ticket">
+    <p class="eyebrow"><span class="status-chip status-open">DW-03</span> Why It Matters Here</p>
+    <h2>Deep Work in Customer Service</h2>
+    <p>Deep work isn't just for programmers and writers. Support professionals rely on it constantly:</p>
+    <ul>
+      <li>Investigating an escalation across multiple departments</li>
+      <li>Comparing order histories and billing records</li>
+      <li>Diagnosing technical problems</li>
+      <li>Writing detailed ticket documentation</li>
+      <li>Updating knowledge base articles</li>
+      <li>Identifying trends in recurring issues</li>
+      <li>Conducting Quality Assurance reviews</li>
+    </ul>
+    <p>Every interruption during these tasks raises the odds of missing information, making bad assumptions, forgetting a customer commitment, or introducing documentation errors.</p>
+  </section>
+
+  <!-- DW-04 Customer example with interruption meter -->
+  <section class="ticket alert">
+    <p class="eyebrow"><span class="status-chip status-alert">DW-04</span> Case Walkthrough</p>
+    <h2>The Double-Charge Ticket</h2>
+    <p>A customer was charged twice for the same subscription. Resolving it means reviewing payment history, checking previous tickets, comparing billing records, consulting internal docs, contacting Finance, and explaining the findings clearly — six steps that all depend on each other.</p>
+    <p>Try it yourself: add interruptions to this investigation and watch what happens to the risk of missing something important.</p>
+    <div class="meter-widget">
+      <div class="meter-row">
+        <span class="lane-title" style="min-width:110px;">Risk of error</span>
+        <div class="meter-track"><div class="meter-fill" id="risk-fill"></div></div>
+        <div class="meter-btns">
+          <button id="risk-add">+ Add interruption</button>
+          <button id="risk-reset">Reset</button>
+        </div>
+      </div>
+      <p id="meter-status">0 interruptions — full context intact.</p>
+    </div>
+  </section>
+
+  <!-- DW-05 Flow state -->
+  <section class="ticket flow">
+    <p class="eyebrow"><span class="status-chip status-flow">DW-05</span> The Flow State</p>
+    <h2>Ever Lose Track of Time?</h2>
+    <p>Maybe you cracked a hard technical problem, wrangled a messy spreadsheet, or wrote documentation that seemed to write itself. Psychologists call this <strong>flow</strong> — a state where time speeds up, concentration sharpens, mistakes drop, and work feels more enjoyable.</p>
+    <div class="callout fact">
+      <span class="callout-label">Interesting Fact</span>
+      Many professionals get less than two uninterrupted hours per workday, despite working eight or more. The rest gets fragmented by meetings, notifications, and task-switching.
+    </div>
+    <p>Flow is fragile — one unnecessary interruption can break it completely. See it happen below.</p>
+  </section>
+
+  <!-- DW-06 Signature: puzzle race -->
+  <section class="ticket">
+    <p class="eyebrow"><span class="status-chip status-open">DW-06</span> The Brain Under Distraction</p>
+    <h2>Run the Focus Race</h2>
+    <p>Two agents, same 25-piece puzzle. One works undisturbed. The other gets interrupted — and loses a piece of progress every time. Press start and watch what interruptions actually cost.</p>
+    <div class="race-wrap">
+      <div class="race-lanes">
+        <div class="lane" id="lane-focus">
+          <div class="lane-head">
+            <span class="lane-title">Focused lane</span>
+            <span class="lane-time" id="focus-time">0.0s</span>
+          </div>
+          <div class="puzzle-grid" id="grid-focus"></div>
+        </div>
+        <div class="lane distracted" id="lane-distract">
+          <div class="lane-head">
+            <span class="lane-title">Distracted lane</span>
+            <span class="lane-time" id="distract-time">0.0s</span>
+          </div>
+          <div class="puzzle-grid" id="grid-distract"></div>
+        </div>
+      </div>
+      <div class="race-controls">
+        <button class="primary" id="race-btn">Run the race</button>
+        <span id="interrupt-count" style="font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--text);"></span>
+      </div>
+      <p id="race-summary"></p>
+    </div>
+  </section>
+
+  <!-- DW-07 Deep vs shallow table -->
+  <section class="ticket">
+    <p class="eyebrow"><span class="status-chip status-open">DW-07</span> Reference</p>
+    <h2>Deep Work vs. Shallow Work</h2>
+    <p>Not every task needs deep concentration — knowing the difference tells you when to protect your focus, and when it's fine to let it go.</p>
+    <table>
+      <thead><tr><th>Deep work</th><th>Shallow work</th></tr></thead>
+      <tbody>
+        <tr><td class="deep">Investigating escalations</td><td class="shallow">Checking routine emails</td></tr>
+        <tr><td class="deep">Writing documentation</td><td class="shallow">Scheduling meetings</td></tr>
+        <tr><td class="deep">Troubleshooting technical issues</td><td class="shallow">Updating calendar entries</td></tr>
+        <tr><td class="deep">Creating SOPs</td><td class="shallow">Responding to simple chats</td></tr>
+        <tr><td class="deep">Analyzing recurring problems</td><td class="shallow">Filing documents</td></tr>
+        <tr><td class="deep">Developing training materials</td><td class="shallow">Basic administrative work</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1rem;">Shallow work isn't unimportant — it just takes less mental effort. The mistake is letting it eat the whole day.</p>
+  </section>
+
+  <!-- DW-08 Reflection -->
+  <section class="ticket flow">
+    <p class="eyebrow"><span class="status-chip status-flow">DW-08</span> Reflection</p>
+    <h2>Think About Yesterday</h2>
+    <p>There's no right answer here — just write what's true. Nothing you type is saved or sent anywhere.</p>
+    <div class="reflect-q">
+      <label>How many uninterrupted periods longer than 30 minutes did you have?</label>
+      <textarea placeholder="Type your answer..."></textarea>
+    </div>
+    <div class="reflect-q">
+      <label>How many times did you switch tasks?</label>
+      <textarea placeholder="Type your answer..."></textarea>
+    </div>
+    <div class="reflect-q">
+      <label>Which tasks truly required deep concentration?</label>
+      <textarea placeholder="Type your answer..."></textarea>
+    </div>
+  </section>
+
+  <!-- DW-09 Focus map activity -->
+  <section class="ticket mixed">
+    <p class="eyebrow"><span class="status-chip status-open">DW-09</span> Activity</p>
+    <h2>Build Your Focus Map</h2>
+    <p>Sort yesterday's tasks into Green (full concentration), Yellow (moderate attention), or Red (routine admin). Drag a chip into a zone — or tap a chip, then tap the zone, if dragging is tricky on your device.</p>
+    <div class="chip-pool" id="chip-pool">
+      <div class="chip" draggable="true" data-answer="green">Investigate a billing escalation</div>
+      <div class="chip" draggable="true" data-answer="green">Write a knowledge base article</div>
+      <div class="chip" draggable="true" data-answer="green">Troubleshoot a technical issue</div>
+      <div class="chip" draggable="true" data-answer="green">Analyze recurring complaint trends</div>
+      <div class="chip" draggable="true" data-answer="yellow">Respond to a routine customer email</div>
+      <div class="chip" draggable="true" data-answer="yellow">Review a ticket before a call</div>
+      <div class="chip" draggable="true" data-answer="yellow">Check voicemail messages</div>
+      <div class="chip" draggable="true" data-answer="red">Update your calendar</div>
+      <div class="chip" draggable="true" data-answer="red">File completed documents</div>
+      <div class="chip" draggable="true" data-answer="red">Read team announcements</div>
+    </div>
+    <div class="zones">
+      <div class="zone zone-green" data-zone="green"><span class="zone-label">Green · full focus</span><div class="zone-chips"></div></div>
+      <div class="zone zone-yellow" data-zone="yellow"><span class="zone-label">Yellow · moderate</span><div class="zone-chips"></div></div>
+      <div class="zone zone-red" data-zone="red"><span class="zone-label">Red · routine</span><div class="zone-chips"></div></div>
+    </div>
+    <div class="race-controls">
+      <button class="primary" id="map-check">Check my map</button>
+      <button id="map-reset">Reset</button>
+    </div>
+    <p id="map-score"></p>
+  </section>
+
+  <!-- Expert tip + manager note -->
+  <section class="ticket">
+    <p class="eyebrow"><span class="status-chip status-open">DW-09.1</span> Notes From the Field</p>
+    <div class="callout tip">
+      <span class="callout-label">Expert Tip</span>
+      Schedule your most demanding work during your peak energy hours — often the first two to three hours of your shift. Save low-value admin for the dip.
+    </div>
+    <div class="callout manager">
+      <span class="callout-label">Manager Note</span>
+      Leaders should avoid booking unnecessary meetings during the hours their team typically does its most complex work. Protecting focus improves both quality and output.
+    </div>
+  </section>
+
+  <!-- Common mistake -->
+  <section class="ticket alert">
+    <p class="eyebrow"><span class="status-chip status-alert">DW-10</span> Common Mistake</p>
+    <h2>"I'll just quickly check one email."</h2>
+    <p>One email becomes three. Three becomes fifteen minutes. Fifteen minutes becomes a completely different task — and you've forgotten where you left off. Try it below.</p>
+    <div class="spiral-widget">
+      <div class="spiral-track"><div class="spiral-fill" id="spiral-fill"></div></div>
+      <div class="spiral-icons" id="spiral-icons"></div>
+      <div class="race-controls">
+        <button id="spiral-check">Check one email</button>
+        <button id="spiral-reset">Reset focus</button>
+      </div>
+      <p id="spiral-msg">Your focus meter is full. See how fast "just one email" drains it.</p>
+    </div>
+  </section>
+
+  <!-- Knowledge check -->
+  <section class="ticket flow">
+    <p class="eyebrow"><span class="status-chip status-flow">DW-11</span> Knowledge Check</p>
+    <h2>Quick Check Before You Close This Ticket</h2>
+
+    <div class="quiz-q" data-correct="1">
+      <p class="qtext">1. What does "Deep Work" actually mean?</p>
+      <div class="quiz-opts">
+        <button class="qopt">Working long hours without a break</button>
+        <button class="qopt">Uninterrupted concentration on cognitively demanding tasks</button>
+        <button class="qopt">Handling many small tasks at once</button>
+        <button class="qopt">Any work done away from your desk</button>
+      </div>
+      <p class="qfeedback"></p>
+    </div>
+
+    <div class="quiz-q" data-correct="1">
+      <p class="qtext">2. What can break a flow state?</p>
+      <div class="quiz-opts">
+        <button class="qopt">A scheduled, planned break</button>
+        <button class="qopt">One unnecessary interruption</button>
+        <button class="qopt">Finishing a task early</button>
+        <button class="qopt">Writing documentation</button>
+      </div>
+      <p class="qfeedback"></p>
+    </div>
+
+    <div class="quiz-q" data-correct="2">
+      <p class="qtext">3. Which of these is shallow work?</p>
+      <div class="quiz-opts">
+        <button class="qopt">Investigating a multi-department escalation</button>
+        <button class="qopt">Writing a new SOP</button>
+        <button class="qopt">Updating a calendar entry</button>
+        <button class="qopt">Diagnosing a technical issue</button>
+      </div>
+      <p class="qfeedback"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="closer">Focus Creates Progress.</p>
+  <p class="closer"><span>Distraction Creates Delay.</span></p>
+  <p style="margin-top:1rem; font-family:'IBM Plex Mono',monospace; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;">Ticket DW-00 · Resolved</p>
+</footer>
+
+<script>
+// ---------- scroll progress ----------
+const progressBar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  progressBar.style.width = scrolled + '%';
+});
+
+// ---------- DW-04 interruption / risk meter ----------
+(function(){
+  const fill = document.getElementById('risk-fill');
+  const status = document.getElementById('meter-status');
+  const addBtn = document.getElementById('risk-add');
+  const resetBtn = document.getElementById('risk-reset');
+  let count = 0;
+
+  function render(){
+    const pct = Math.min(count / 6, 1) * 100;
+    fill.style.width = pct + '%';
+    let color = '#4F8F7F', msg;
+    if(count === 0){ msg = 'full context intact.'; color = '#4F8F7F'; }
+    else if(count <= 1){ msg = 'still manageable — low risk of missing details.'; color = '#4F8F7F'; }
+    else if(count <= 3){ msg = 'context is thinning — moderate risk of a missed step.'; color = '#C99A3B'; }
+    else { msg = 'high risk: important details are likely being missed.'; color = '#C4453A'; }
+    fill.style.background = color;
+    status.textContent = count + (count === 1 ? ' interruption — ' : ' interruptions — ') + msg;
+  }
+  addBtn.addEventListener('click', () => { count = Math.min(count + 1, 6); render(); });
+  resetBtn.addEventListener('click', () => { count = 0; render(); });
+  render();
+})();
+
+// ---------- DW-06 puzzle race ----------
+(function(){
+  const gridFocus = document.getElementById('grid-focus');
+  const gridDistract = document.getElementById('grid-distract');
+  const focusTimeEl = document.getElementById('focus-time');
+  const distractTimeEl = document.getElementById('distract-time');
+  const raceBtn = document.getElementById('race-btn');
+  const summaryEl = document.getElementById('race-summary');
+  const interruptCountEl = document.getElementById('interrupt-count');
+  const laneDistract = document.getElementById('lane-distract');
+  const TOTAL = 25;
+
+  function buildGrid(container){
+    container.innerHTML = '';
+    for(let i=0;i<TOTAL;i++){
+      const d = document.createElement('div');
+      d.className = 'cell';
+      container.appendChild(d);
+    }
+  }
+  buildGrid(gridFocus);
+  buildGrid(gridDistract);
+
+  let running = false;
+
+  function runLane(container, opts, onDone){
+    const cells = Array.from(container.children);
+    const start = performance.now();
+    let filled = 0;
+    let interruptions = 0;
+
+    const timerId = setInterval(() => {
+      const el = opts.timeEl;
+      el.textContent = ((performance.now() - start) / 1000).toFixed(1) + 's';
+    }, 100);
+
+    const tick = setInterval(() => {
+      if(opts.distraction && Math.random() < 0.35){
+        interruptions++;
+        if(opts.onInterrupt) opts.onInterrupt(interruptions);
+        const filledCells = cells.filter(c => c.classList.contains('filled'));
+        if(filledCells.length > 0){
+          const victim = filledCells[Math.floor(Math.random()*filledCells.length)];
+          victim.classList.remove('filled');
+          filled--;
+          spawnBadge(container);
+        }
+        return; // interruption consumes this tick
+      }
+      const empties = cells.filter(c => !c.classList.contains('filled'));
+      if(empties.length === 0){
+        clearInterval(tick);
+        clearInterval(timerId);
+        const finalTime = (performance.now() - start) / 1000;
+        opts.timeEl.textContent = finalTime.toFixed(1) + 's';
+        onDone(finalTime, interruptions);
+        return;
+      }
+      const next = empties[Math.floor(Math.random()*empties.length)];
+      next.classList.add('filled');
+      filled++;
+    }, 220);
+  }
+
+  function spawnBadge(container){
+    const icons = ['📧','💬','🔔','📞'];
+    const badge = document.createElement('div');
+    badge.className = 'interrupt-badge';
+    badge.textContent = icons[Math.floor(Math.random()*icons.length)];
+    badge.style.left = (30 + Math.random()*40) + '%';
+    badge.style.top = (30 + Math.random()*40) + '%';
+    container.style.position = 'relative';
+    container.appendChild(badge);
+    setTimeout(() => badge.remove(), 550);
+  }
+
+  raceBtn.addEventListener('click', () => {
+    if(running) return;
+    running = true;
+    raceBtn.disabled = true;
+    raceBtn.textContent = 'Racing…';
+    summaryEl.textContent = '';
+    interruptCountEl.textContent = '';
+    buildGrid(gridFocus);
+    buildGrid(gridDistract);
+    focusTimeEl.textContent = '0.0s';
+    distractTimeEl.textContent = '0.0s';
+
+    let results = {};
+    let doneCount = 0;
+
+    function checkDone(){
+      doneCount++;
+      if(doneCount === 2){
+        const diff = (results.distract.time - results.focus.time).toFixed(1);
+        summaryEl.textContent = 'Focused lane finished in ' + results.focus.time.toFixed(1) +
+          's. Distracted lane finished in ' + results.distract.time.toFixed(1) + 's — ' +
+          diff + 's slower, after ' + results.distract.interruptions + ' interruption' +
+          (results.distract.interruptions === 1 ? '' : 's') + '.';
+        raceBtn.disabled = false;
+        raceBtn.textContent = 'Run again';
+        running = false;
+      }
+    }
+
+    runLane(gridFocus, { timeEl: focusTimeEl, distraction:false }, (time) => {
+      results.focus = { time };
+      checkDone();
+    });
+
+    runLane(gridDistract, {
+      timeEl: distractTimeEl,
+      distraction:true,
+      onInterrupt: (n) => { interruptCountEl.textContent = n + ' interruption' + (n===1?'':'s') + ' so far'; }
+    }, (time, interruptions) => {
+      results.distract = { time, interruptions };
+      checkDone();
+    });
+  });
+})();
+
+// ---------- DW-09 focus map ----------
+(function(){
+  const pool = document.getElementById('chip-pool');
+  const zones = document.querySelectorAll('.zone');
+  const checkBtn = document.getElementById('map-check');
+  const resetBtn = document.getElementById('map-reset');
+  const scoreEl = document.getElementById('map-score');
+  let selectedChip = null;
+  let originalParents = new Map();
+
+  document.querySelectorAll('.chip').forEach(chip => {
+    originalParents.set(chip, pool);
+
+    chip.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', '');
+      e.dataTransfer.effectAllowed = 'move';
+      chip._dragging = chip;
+      window._draggedChip = chip;
+    });
+
+    chip.addEventListener('click', () => {
+      if(selectedChip === chip){
+        chip.classList.remove('selected');
+        selectedChip = null;
+        return;
+      }
+      document.querySelectorAll('.chip.selected').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedChip = chip;
+    });
+  });
+
+  function placeChip(chip, container){
+    chip.classList.remove('correct','incorrect','selected');
+    container.appendChild(chip);
+  }
+
+  zones.forEach(zone => {
+    const dropArea = zone.querySelector('.zone-chips');
+    zone.addEventListener('dragover', e => e.preventDefault());
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      const chip = window._draggedChip;
+      if(chip) placeChip(chip, dropArea);
+    });
+    zone.addEventListener('click', () => {
+      if(selectedChip){
+        placeChip(selectedChip, dropArea);
+        selectedChip = null;
+      }
+    });
+  });
+
+  pool.addEventListener('dragover', e => e.preventDefault());
+  pool.addEventListener('drop', e => {
+    e.preventDefault();
+    const chip = window._draggedChip;
+    if(chip) placeChip(chip, pool);
+  });
+
+  checkBtn.addEventListener('click', () => {
+    let correct = 0, total = 0;
+    document.querySelectorAll('.chip').forEach(chip => {
+      total++;
+      const parentZone = chip.closest('.zone');
+      chip.classList.remove('correct','incorrect');
+      if(parentZone){
+        const zoneName = parentZone.getAttribute('data-zone');
+        if(zoneName === chip.getAttribute('data-answer')){
+          chip.classList.add('correct');
+          correct++;
+        } else {
+          chip.classList.add('incorrect');
+        }
+      }
+    });
+    scoreEl.textContent = correct + ' of ' + total + ' placed correctly. Unplaced or mismatched cards won\'t score — drag them and check again.';
+  });
+
+  resetBtn.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(chip => placeChip(chip, pool));
+    scoreEl.textContent = '';
+  });
+})();
+
+// ---------- DW-10 email spiral ----------
+(function(){
+  const fill = document.getElementById('spiral-fill');
+  const iconsEl = document.getElementById('spiral-icons');
+  const msg = document.getElementById('spiral-msg');
+  const checkBtn = document.getElementById('spiral-check');
+  const resetBtn = document.getElementById('spiral-reset');
+  let clicks = 0;
+  const icons = [];
+
+  function render(){
+    const pct = Math.max(100 - clicks * 32, 4);
+    fill.style.width = pct + '%';
+    fill.style.background = pct > 60 ? '#4F8F7F' : (pct > 30 ? '#C99A3B' : '#C4453A');
+    iconsEl.textContent = icons.join(' ');
+    if(clicks === 0) msg.textContent = 'Your focus meter is full. See how fast "just one email" drains it.';
+    else if(clicks === 1) msg.textContent = 'That\'s one email checked. Feels harmless.';
+    else if(clicks === 2) msg.textContent = 'One became three. You\'re still telling yourself it\'s quick.';
+    else msg.textContent = 'Fifteen minutes gone — and you\'ve forgotten where you left off in the original task.';
+  }
+  checkBtn.addEventListener('click', () => {
+    clicks = Math.min(clicks + 1, 3);
+    icons.push('📧');
+    render();
+  });
+  resetBtn.addEventListener('click', () => {
+    clicks = 0;
+    icons.length = 0;
+    render();
+  });
+  render();
+})();
+
+// ---------- DW-11 knowledge check ----------
+(function(){
+  document.querySelectorAll('.quiz-q').forEach(q => {
+    const correctIdx = parseInt(q.getAttribute('data-correct'), 10);
+    const opts = q.querySelectorAll('.qopt');
+    const feedback = q.querySelector('.qfeedback');
+    opts.forEach((opt, idx) => {
+      opt.addEventListener('click', () => {
+        opts.forEach(o => o.classList.remove('right','wrong'));
+        if(idx === correctIdx){
+          opt.classList.add('right');
+          feedback.textContent = 'Correct.';
+        } else {
+          opt.classList.add('wrong');
+          opts[correctIdx].classList.add('right');
+          feedback.textContent = 'Not quite — the highlighted answer is correct.';
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
