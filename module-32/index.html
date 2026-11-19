@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Day 5: Mapping, Escalations and Production Independence</title>
+<style>
+:root{--bg:#fff;--fg:#000;--mut:#6b6b6b;--card:#f5f5f5;--line:#dcdcdc;--ok:#0a8f45;--bad:#d62828;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;line-height:1.6}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);z-index:5;padding:14px 20px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.logo{font-weight:900;letter-spacing:.18em;font-size:14px}
+.bar{height:3px;background:var(--line);margin-top:10px}.bar i{display:block;height:100%;width:0;background:var(--fg);transition:width .3s}
+nav{display:flex;gap:8px;overflow-x:auto;padding:12px 20px;border-bottom:1px solid var(--line)}
+nav button{flex:none;background:none;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font:700 13px inherit;cursor:pointer}
+nav button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+main{max-width:780px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:clamp(34px,8vw,60px);line-height:1.02;font-weight:900;letter-spacing:-.03em;margin:0 0 16px}
+h2{font-size:26px;font-weight:900;letter-spacing:-.02em;margin:36px 0 8px}
+h3{font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin:26px 0 6px}
+p,li{color:#1a1a1a}a{color:var(--fg);text-decoration:underline;text-underline-offset:3px}
+.tag{color:var(--mut);font-size:13px;text-transform:uppercase;letter-spacing:.14em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:16px 0}
+.out{border-left:4px solid var(--fg)}.warn{border-left:4px solid var(--bad)}
+.act{border:2px solid var(--fg);background:var(--bg)}
+.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}th{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+.quiz{margin-top:40px;border:2px solid var(--fg);border-radius:16px;padding:20px}.quiz h2{margin-top:0}
+.q{margin:18px 0}.q p{font-weight:700;margin:0 0 10px;color:var(--fg)}
+.opt{display:block;width:100%;text-align:left;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0;font:15px inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--fg)}
+.opt.ok{border-color:var(--ok);background:rgba(10,143,69,.1)}.opt.bad{border-color:var(--bad);background:rgba(214,40,40,.1)}
+.exp{font-size:14px;color:var(--mut);margin-top:6px}
+.btn{background:var(--fg);color:var(--bg);border:0;border-radius:999px;padding:14px 28px;font:800 14px inherit;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.btn.ghost{background:none;color:var(--fg);border:1px solid var(--line)}
+.foot{display:flex;justify-content:space-between;gap:10px;margin-top:34px}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.links a{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-decoration:none;font-weight:700}
+.links a:hover{border-color:var(--fg)}.links small{display:block;color:var(--mut);font-weight:400}
+.score{font-size:64px;font-weight:900;letter-spacing:-.04em}
+</style>
+</head>
+<body>
+<header><div class="logo">UNITEDMASTERS <span style="color:var(--mut)">/ SUPPORT TRAINING</span></div><div class="bar"><i id="bar"></i></div></header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<script>
+var M="https://moodle-lms.sirius-support.com/";
+function u(id){return M+"mod/url/view.php?id="+id}
+var L={course:M+"course/view.php?id=574",zd:u(4624),od:u(4629),tr:u(4628),wl:u(4689),rg:u(4677),
+cb:u(4688),sr:u(4683),cs:u(4684)};
+function a(k,t){return '<a href="'+L[k]+'" target="_blank" rel="noopener">'+t+'</a>'}
+function act(items,note){return '<div class="card act"><div class="tag">Existing Moodle activities</div><ul>'+items.map(function(n){return '<li>'+a(n[0],n[1])+'</li>'}).join('')+'</ul><p class="exp">'+(note||'Follow their current procedures; this page explains the why.')+'</p></div>'}
+var NOURL='Direct links for these two weren’t available, so they open the course page. Reuse the existing activities rather than creating duplicates.';
+var P=[
+{t:"Production Expectations, Ticket Ownership and SLA Management",h:
+'<div class="card warn"><b>Week 1 expectation.</b> You now take more ownership of Basic tickets. You are not expected to handle everything. Knowing when to hold a ticket for live trainer review is part of the job.</div>'+
+'<h3>Owning your queue</h3><ul><li>Review your assigned tickets and the unassigned queue in '+a('zd','Zendesk')+'.</li><li>You are accountable for tickets you take. Ownership is set before you start working.</li><li>Prioritize by <b>SLA</b> and watch for upcoming breaches.</li><li>Read the ticket history before responding. The answer may already be there.</li></ul>'+
+'<h3>Basic or complex?</h3><div class="tablewrap"><table><tr><th>Likely Basic</th><th>Complex or high-risk: get help</th></tr><tr><td>Matches a documented workflow</td><td>No matching documentation</td></tr><tr><td>You understand the steps and tools</td><td>Copyright, Content Review or Fraud restriction</td></tr><tr><td>Account and release data are clear</td><td>Needs a high-impact action</td></tr><tr><td>You can confidently explain your answer</td><td>You are making assumptions. Ask or hold for trainer review via the '+a('rg','Ticket Routing Guide')+'</td></tr></table></div>'+
+'<h3>Document as you go</h3><ul><li>Keep internal notes accurate, factual and useful to the next agent.</li><li>Record what you checked, what you found and the action you propose.</li><li>Ask for assistance rather than assume.</li></ul>'+
+act([['rg','Ticket Routing Guide (reused from the earlier training section)']])+
+'<div class="card out"><b>Learning outcome:</b> Manage assigned tickets, prioritize by SLA and recognize when you can respond independently versus when you need guidance.</div>',
+q:[{q:"Which ticket drives your priority order?",o:["The newest one","The one nearest an SLA breach","The easiest one","The longest one"],a:1,e:"Work is prioritized by SLA requirements."},
+{q:"Before responding, you should…",o:["Review the ticket history","Send a macro right away","Reassign it","Close it"],a:0,e:"History often already contains information the customer provided."},
+{q:"You can’t confidently explain the right answer. You…",o:["Assume and send","Hold it and ask for trainer review or help","Pick a random macro","Merge it"],a:1,e:"Requesting help beats making assumptions."}]},
+{t:"YouTube Artist Mapping and Official Artist Channel Investigations",h:
+'<h3>Part A: Understanding YouTube mapping</h3><p>Mapping connects a music release to the correct YouTube artist channel. When it goes wrong, a release can show up on the wrong channel or not appear where the artist expects.</p>'+
+'<div class="tablewrap"><table><tr><th>Channel type</th><th>What to know</th></tr><tr><td>Topic channel</td><td>Auto-generated channel where music releases appear</td></tr><tr><td>Official Artist Channel (OAC)</td><td>Artist’s official channel that has gone through YouTube’s validation process</td></tr></table></div>'+
+'<ul><li>Learn the common symptoms: a release on the wrong artist channel, or releases split across channels.</li><li>Review the recorded Topic-channel/OAC example from Felipe’s training.</li></ul>'+
+'<h3>Part B: Investigating a mapping request</h3><ol><li>Review the release and artist information.</li><li>Check previous ticket history for earlier mapping requests.</li><li>Note what the customer already provided.</li><li>Verify where the release is placed.</li><li>Only if something is genuinely missing, ask for it.</li></ol>'+
+'<div class="card warn"><b>Don’t ask twice.</b> Requesting information the customer already gave in an earlier conversation wastes their time and shows the history wasn’t read.</div>'+
+act([['course','UnitedMasters - Artist Mapping YouTube']],NOURL)+
+'<div class="card out"><b>Learning outcome:</b> Recognize common mapping issues, understand OAC validation and identify what is needed before preparing a mapping request.</div>',
+q:[{q:"A release appears on the wrong artist channel. What kind of case is this?",o:["A mapping issue","A refund","A cancellation","A payout setting"],a:0,e:"Releases associated with the wrong channel are mapping problems."},
+{q:"The customer already sent the needed details in an earlier ticket. You…",o:["Ask them to send everything again","Use the history and ask only for what’s missing","Close the ticket","Escalate immediately"],a:1,e:"Avoid unnecessary requests."},
+{q:"What does an Official Artist Channel go through that a Topic channel doesn’t?",o:["A validation process","A refund review","Nothing","A name change"],a:0,e:"OACs are validated by YouTube."}]},
+{t:"YouTube Studio, Mapping Requests and Escalation Workflows",h:
+'<h3>Part A: YouTube Studio and mapping requests</h3><ul><li>You’re introduced to <b>YouTube Studio</b> and <b>Music Front Desk</b> and when each may be used during an investigation.</li><li>Verify release placement and available artist-channel information first.</li><li>Gather what the request requires and prepare it through the appropriate internal process.</li><li>Be aware of credential requirements for the relevant tools.</li><li>Pending requests use the <b>On Hold</b> status. Monitor them and follow up.</li></ul>'+
+'<h3>Part B: Major escalation categories</h3><div class="tablewrap"><table><tr><th>Category</th><th>Recognize it as</th></tr><tr><td>Copyright</td><td>A copyright-related block</td></tr><tr><td>Content Review</td><td>A content review rejection</td></tr><tr><td>Fraud</td><td>A fraud-related restriction</td></tr><tr><td>Unknown platform issue</td><td>A novel problem with no matching documentation</td></tr></table></div>'+
+'<p>These route to an internal UM team. Follow the '+a('rg','Ticket Routing Guide')+', write clear, factual internal notes and include the investigation details the team needs.</p>'+
+'<div class="card warn"><b>Don’t disclose internal restrictions.</b> Never tell the customer about internal investigations, restrictions or sensitive processes beyond what the procedure allows.</div>'+
+'<h3>Ask or escalate?</h3><div class="card"><b>Request more information</b> when the missing detail can come from the customer and you can then proceed. <b>Escalate</b> when the case belongs to an internal team or has no documented workflow.</div>'+
+act([['course','UnitedMasters - Artist Mapping YouTube'],['rg','Ticket Routing Guide']],'The mapping course link opens the course page. Reuse the existing activities rather than creating duplicates.')+
+'<div class="card out"><b>Learning outcome:</b> Understand the mapping request process, identify major escalation categories and prepare tickets for the right team without disclosing sensitive information.</div>',
+q:[{q:"A ticket shows a Fraud-related restriction. You…",o:["Explain the investigation to the customer","Follow the routing guide and escalate with factual notes","Lift the restriction","Ignore it"],a:1,e:"Fraud cases go to the internal team, without sharing sensitive details."},
+{q:"Which status is used for pending mapping requests?",o:["On Hold","Solved","Deleted","Closed"],a:0,e:"On Hold, with follow-up while the request is pending."},
+{q:"A problem has no documented workflow and no known category. It’s…",o:["A novel platform issue to route via the guide","A simple refund","Safe to guess","Ready to close"],a:0,e:"Novel or unknown issues are escalated, not guessed."}]},
+{t:"Refund Decision-Making and Zendesk Efficiency",h:
+'<h3>Part A: Refund decision tree</h3><p>Start with the investigation in '+a('cb','Chargebee')+'. Identify the <b>purchase source</b> first. It decides who can handle the refund.</p>'+
+'<div class="tablewrap"><table><tr><th>Purchase source</th><th>Path</th></tr><tr><td>Web</td><td>Follow the refund workflow in the documentation</td></tr><tr><td>Apple App Store (iOS)</td><td>Usually directed to Apple as the original platform</td></tr><tr><td>Google Play</td><td>Usually directed to Google Play as the original platform</td></tr></table></div>'+
+'<ul><li>Review refund eligibility considerations in the workflow.</li><li>Work through mixed scenarios, where the details differ between tickets.</li><li>Recognize when you need more information or escalation.</li></ul>'+
+'<div class="card warn"><b>No unsupported promises.</b> Don’t tell a customer a refund will be approved unless the workflow supports it.</div>'+
+act([['sr','Subscription Upgrades, Downgrades, and Refunds'],['cs','Canceling Subscriptions (from Day 4)']])+
+'<h3>Part B: Zendesk efficiency</h3><ul><li><b>Personal views:</b> create and manage your own views to organize your queue.</li><li><b>Next SLA Breach:</b> add this field to your views so the most urgent tickets are easy to see.</li><li><b>Merging:</b> understand correct merge behavior and when tickets should and should not be merged. Check the documentation first.</li><li><b>Fin Copilot translation:</b> use it to understand and reply to customers in other languages, appropriately.</li><li><b>Workspace:</b> keep browser tabs and investigations organized to avoid errors and missed follow-ups.</li></ul>'+
+act([['course','UnitedMasters - Fin Copilot in Zendesk']],NOURL)+
+'<div class="card out"><b>Learning outcome:</b> Apply the correct refund decision process and use Zendesk features to organize and prioritize your work.</div>',
+q:[{q:"First thing to determine in a subscription refund?",o:["Purchase source","Artist genre","Cover art","Release date"],a:0,e:"The purchase source decides the path."},
+{q:"Which field helps you spot tickets nearing an SLA breach?",o:["Next SLA Breach","Tags","Subject","CC"],a:0,e:"Add Next SLA Breach to your personal views."},
+{q:"A customer asks if their refund will definitely be approved. You…",o:["Promise it","Avoid promising outcomes the workflow doesn’t support","Say it’s approved tomorrow","Ignore them"],a:1,e:"Don’t make unsupported refund promises."}]},
+{t:"Independent Ticket Handling, Week 1 Review and Coaching",h:
+'<h3>Part A: Independent Basic ticket handling</h3><ol><li>Select an appropriate Basic ticket.</li><li>Read the request and ticket history.</li><li>Locate the right Knowledge Base documentation.</li><li>Investigate account and release information.</li><li>Identify the workflow and next steps.</li><li>Prepare the response with the right macro, and fill in every [bracket].</li><li>Set the correct disposition and status.</li><li>Write the internal note.</li><li>Ask the trainer if you need help, and complete the ticket through resolution.</li></ol>'+
+'<div class="card"><b>Self-review checklist:</b> Right workflow? Verification complete? Macro customized? Status and disposition correct? Note useful? Any promise I can’t back up?</div>'+
+'<h3>Part B: Week 1 knowledge review</h3><ul><li>UnitedMasters foundations and membership structures</li><li>Zendesk navigation and ticket management</li><li>Account access and verification workflows</li><li>Payment investigations and '+a('tr','Trolley')+'</li><li>Wario and release-editing fundamentals</li><li>Subscriptions and refund handling</li><li>Mapping requests and escalation procedures</li></ul>'+
+'<h3>Part C: Performance review and coaching</h3><ul><li>Which workflows you can now complete independently, and which were introduced for exposure only.</li><li>Recurring mistakes from the first week.</li><li>Quality of your investigations and documentation.</li><li>Your escalation judgment.</li><li>Areas needing more practice, and learning priorities for <b>Weeks 2–6</b>.</li></ul>'+
+'<div class="card"><b>Training note:</b> Day 5 ends the foundation week. The goal is not mastery of every workflow. It is confidence with selected Basic tickets, recognizing major escalation paths and knowing which complex workflows come next.</div>'+
+'<div class="card out"><b>Learning outcome:</b> Handle selected Basic tickets with less prompting, show Week 1 understanding and know when to seek support or escalate.</div>',
+q:[{q:"Which ticket suits independent handling?",o:["A Basic ticket matching a documented workflow","A Fraud restriction","An undocumented issue","Whichever is hardest"],a:0,e:"Choose Basic tickets you can follow from documentation."},
+{q:"Before sending a macro reply you…",o:["Replace brackets and check it fits","Send as is","Delete the text","Add emojis"],a:0,e:"Customize and proofread every time."},
+{q:"What’s the goal of Day 5?",o:["Complete mastery of every workflow","Confidence with selected Basic tickets and knowing when to escalate","Skip coaching","Handle only complex tickets"],a:1,e:"Mastery comes over Weeks 2–6."}]}
+];
+var N=P.length,cur=0,score={},nav=document.getElementById('nav'),main=document.getElementById('main');
+try{score=JSON.parse(localStorage.getItem('um5')||'{}')}catch(e){score={}}
+function save(){try{localStorage.setItem('um5',JSON.stringify(score))}catch(e){}}
+function total(){var c=0,t=0;P.forEach(function(p,i){p.q.forEach(function(_,j){t++;if(score[i+'_'+j]===true)c++})});return[c,t]}
+function go(i){location.hash=i<N?'p'+(i+1):i==N?'links':'results';window.scrollTo(0,0)}
+function lk(arr){return arr.map(function(x){return '<a href="'+L[x[0]]+'" target="_blank" rel="noopener">'+x[1]+'<small>'+x[2]+'</small></a>'}).join('')}
+function render(){
+nav.innerHTML='';
+P.forEach(function(p,i){nav.insertAdjacentHTML('beforeend','<button class="'+(cur==i?'on':'')+'" data-i="'+i+'">Page '+(i+1)+'</button>')});
+nav.insertAdjacentHTML('beforeend','<button class="'+(cur==N?'on':'')+'" data-i="'+N+'">Links</button><button class="'+(cur==N+1?'on':'')+'" data-i="'+(N+1)+'">Results</button>');
+nav.querySelectorAll('button').forEach(function(b){b.onclick=function(){go(+b.dataset.i)}});
+document.getElementById('bar').style.width=Math.min(100,cur/(N+1)*100)+'%';
+var h='';
+if(cur<N){var p=P[cur];
+ h+=(cur==0?'<div class="tag">Day 5 · 9:00 AM–6:00 PM EST</div><h1>Mapping, Escalations &amp; Production Independence</h1><p>Consolidate Week 1: take ownership of Basic tickets, learn YouTube artist mapping, recognize major escalations and work faster in Zendesk. When this module and the current documentation disagree, the documentation wins.</p>':'')+
+ '<div class="tag">Page '+(cur+1)+' of '+N+'</div><h2>'+p.t+'</h2>'+p.h+'<div class="quiz"><h2>Quick quiz</h2>';
+ p.q.forEach(function(q,j){h+='<div class="q" data-j="'+j+'"><p>'+(j+1)+'. '+q.q+'</p>';q.o.forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+o+'</button>'});h+='<div class="exp"></div></div>'});
+ h+='</div><div class="foot"><button class="btn ghost" '+(cur==0?'style="visibility:hidden"':'')+' id="pv">Back</button><button class="btn" id="nx">'+(cur==N-1?'Links &amp; tools':'Next page')+'</button></div>';
+}else if(cur==N){
+ h='<div class="tag">Quick access</div><h1>Links</h1><h3>Tools</h3><div class="links">'+lk([['zd','Zendesk','Ticketing'],['cb','Using Chargebee','Subscriptions'],['tr','Trolley','Payment evidence'],['od','Operator Dashboard','UM Admin'],['wl','Watchlist','Name-change checks'],['rg','Ticket Routing Guide','Escalation routes']])+'</div><h3>Day 5 activities</h3><div class="links">'+lk([['course','Artist Mapping YouTube','Course page'],['rg','Ticket Routing Guide','Course'],['course','Fin Copilot in Zendesk','Course page'],['sr','Upgrades, Downgrades, and Refunds','Course']])+'</div><div class="foot"><button class="btn ghost" id="pv">Back</button><button class="btn" id="nx">See results</button></div>';
+}else{
+ var r=total();h='<div class="tag">Day 5 results</div><div class="score">'+r[0]+'/'+r[1]+'</div><p>'+(r[0]==r[1]?'Perfect. You’re ready to wrap up Week 1.':'Revisit any page and retake its quiz to improve.')+'</p><h3>End-of-day competencies</h3><ol><li>Manage assigned queues and prioritize by SLA.</li><li>Recognize which tickets you can handle independently.</li><li>Identify YouTube mapping issues and understand OAC validation.</li><li>Use tools and documentation to investigate mapping requests.</li><li>Understand On Hold and follow-up for pending requests.</li><li>Recognize Copyright, Content Review, Fraud and unknown platform escalations.</li><li>Apply the refund process by purchase source.</li><li>Use Zendesk views, Next SLA Breach, merging and Fin Copilot translation appropriately.</li><li>Complete selected Basic tickets with reduced prompting.</li><li>Document investigations and communicate professionally.</li><li>Identify knowledge gaps for Weeks 2–6.</li></ol><h3>Practical assessment (with your trainer)</h3><ul><li>Ticket ownership exercise</li><li>YouTube mapping exercise and mapping investigation</li><li>Escalation exercise (Copyright, Content Review, Fraud, unknown)</li><li>Refund decision exercise</li><li>Zendesk efficiency exercise (personal view, Next SLA Breach)</li><li>Independent ticket handling and Week 1 review</li></ul><div class="foot"><button class="btn ghost" id="pv">Back</button><button class="btn ghost" id="rs">Reset quizzes</button></div>';
+}
+main.innerHTML=h;
+main.querySelectorAll('.q').forEach(function(el){var j=+el.dataset.j,q=P[cur].q[j],key=cur+'_'+j;
+ el.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){var k=+b.dataset.k;score[key]=(k==q.a);save();
+  el.querySelectorAll('.opt').forEach(function(x,i){x.disabled=true;if(i==q.a)x.classList.add('ok');else if(i==k)x.classList.add('bad')});
+  el.querySelector('.exp').textContent=(k==q.a?'Correct. ':'Not quite. ')+q.e}});
+});
+var pv=document.getElementById('pv'),nx=document.getElementById('nx'),rs=document.getElementById('rs');
+if(pv)pv.onclick=function(){go(cur-1)};if(nx)nx.onclick=function(){go(cur+1)};
+if(rs)rs.onclick=function(){score={};save();go(0);render()};
+}
+function fromHash(){var h=location.hash.replace('#','');cur=h=='links'?N:h=='results'?N+1:/^p[1-5]$/.test(h)?+h[1]-1:0;render()}
+window.addEventListener('hashchange',fromHash);fromHash();
+</script>
+</body>
+</html>
